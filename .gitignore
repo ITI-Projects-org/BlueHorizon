@@ -1,0 +1,21 @@
+# ===== .NET Ignores =====
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+*.vs/
+*.dbmdl
+*.pdb
+
+# ===== Angular Ignores =====
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/cache/
+/frontend/.env
+
+# IDEs
+.vscode/
+.idea/
+*.iml
