@@ -10,7 +10,7 @@ namespace Village_System.Models
     {
         [Key]
         public int Id { get; set; }
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         public DocumentType DocumentType { get; set; }
         public string DocumentPath { get; set; }
         public DateTime UploadDate { get; set; }

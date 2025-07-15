@@ -5,7 +5,7 @@ namespace Village_System.Models
     public class AccessPermission
     {
         public int Id { get; set; }
-        [ForeignKey("QrCode")]
+        [ForeignKey(nameof(QRCode))]
         public int QRCodeID { get; set; }
         public virtual QRCode QRCode { get; set; }
         public AccessType AccessType { get; set; }

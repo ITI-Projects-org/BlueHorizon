@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Village_System.Models;
 
@@ -11,9 +12,11 @@ using Village_System.Models;
 namespace Village_System.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    partial class VillageSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250715125033_string_User_Id")]
+    partial class string_User_Id
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

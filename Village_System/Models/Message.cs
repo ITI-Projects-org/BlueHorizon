@@ -7,14 +7,14 @@ namespace Village_System.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(ApplicationUser))]
-        public int Sender { get; set; }
+        public string Sender { get; set; }
         [ForeignKey(nameof(ApplicationUser))]
-        public int Reciever { get; set; }
+        public string Reciever { get; set; }
         [ForeignKey(nameof(Booking))]
         public int BookingId { get; set; }
-        public string MessageContent{ get; set; }
-        public DateTime TimeStamp{ get; set; }
-        public bool IsRead{ get; set; }
+        public string MessageContent { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public bool IsRead { get; set; }
 
     }
 }

@@ -12,7 +12,6 @@ namespace Village_System.DTOs.AuthenticationDTO
         [Compare("Password",ErrorMessage="Confirm Password doesn't match Password")]
         public string ConfirmPassword{ get; set; }
         public string Role { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        
     }
 }

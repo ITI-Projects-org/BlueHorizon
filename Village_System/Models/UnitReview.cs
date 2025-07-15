@@ -9,7 +9,7 @@ namespace Village_System.Models
         [ForeignKey(nameof(Unit))]
         public int UnitId { get; set; }
         [ForeignKey(nameof(Tenant))]
-        public int TenantID { get; set; }
+        public string TenantID { get; set; }
         [ForeignKey(nameof(Booking))]
         public int BookingId { get; set; }
         public int Rating { get; set; }
