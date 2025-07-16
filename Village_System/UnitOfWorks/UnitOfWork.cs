@@ -154,6 +154,18 @@ namespace Village_System.UnitOfWorks
             }
         }
 
+        public IOwnerRepository ownerRepository;
+        public IOwnerRepository OwnerRepository
+        {
+            get
+            {
+                if (ownerRepository == null)
+                {
+                    ownerRepository = new OwnerRepository(_context);
+                };
+                return ownerRepository;
+            }
+        }
 
         public void Dispose()
         {

@@ -29,12 +29,12 @@
     }
     public enum VerificationStatus
     {
-        Pending, Verified, Rejected
+        NotVerified ,Pending, Verified, Rejected
     }
 
     public enum DocumentType
     {
-        OwnershipContract, NationaId_Front, NationaId_Back
+        OwnershipContract, NationaId_Front, NationaId_Back 
     }
     public enum TransactionStatus
     {

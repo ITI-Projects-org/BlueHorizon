@@ -20,6 +20,7 @@ namespace Village_System.Models
         public DbSet<QRCode> QRCodes{ get; set; }
         public DbSet<UnitAmenity> UnitAmenities{ get; set; }
         public DbSet<UnitReview> UnitReviews{ get; set; }
+        public DbSet<Unit> Units{ get; set; }
     
         protected override void OnModelCreating(ModelBuilder builder)
         {

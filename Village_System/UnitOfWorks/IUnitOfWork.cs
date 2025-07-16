@@ -6,6 +6,7 @@ namespace Village_System.UnitOfWorks
     public interface IUnitOfWork : IDisposable
     {
         IAccessPermissionRepository AccessPermissionRepository { get; }
+        IOwnerRepository OwnerRepository { get; }
         IAmenityRepository AmenityRepository { get; }
         IBookingRepository BookingRepository { get; }
         IMessageRepository MessageRepository { get; }

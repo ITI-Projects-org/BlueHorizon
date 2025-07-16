@@ -49,7 +49,7 @@ namespace Village_System.Controllers
                 }
                 else
                     return BadRequest("Invalid Role");
-                return Ok("registered");
+                return Ok(new{Message="registerd"});
             }
             catch(Exception err){
                 Console.WriteLine(err);

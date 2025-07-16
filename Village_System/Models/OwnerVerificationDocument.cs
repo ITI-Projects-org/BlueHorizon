@@ -15,6 +15,7 @@ namespace Village_System.Models
         public DocumentType DocumentType { get; set; }
         public string DocumentPath { get; set; }
         public DateTime UploadDate { get; set; }
+        public string NationalId { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
 using Village_System.Models;
 using Village_System.Repositories.Interfaces;
 
@@ -10,6 +11,11 @@ namespace Village_System.Repositories.Implementations
         public GenericRepository(VillageSystemDbContext context)
         {
             _context = context;
+        }
+        public async Task<T> AddAsync(T entity)
+        {
+            await _context.Set<T>().AddAsync(entity);
+            return entity;
         }
         public async  Task<IEnumerable<T>> GetAllAsync()
         {

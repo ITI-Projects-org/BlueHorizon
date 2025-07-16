@@ -11,6 +11,7 @@ namespace Village_System.Mappers
             
             CreateMap<RegisterDTO,Tenant>().ReverseMap();
             CreateMap<RegisterDTO, Owner>().ReverseMap();
+            CreateMap<OwnerVerificationDocument, OwnerVerificationDTO>().ReverseMap();
         }
     }
 }

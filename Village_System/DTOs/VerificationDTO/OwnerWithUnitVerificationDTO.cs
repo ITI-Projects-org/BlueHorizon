@@ -1,22 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security;
-using Microsoft.AspNetCore.Mvc.Formatters;
+using Village_System.Models;
 
-namespace Village_System.Models
+namespace Village_System.DTOs.VerificationDTO
 {
-    public class Unit
-    {
-        [Key]
-        public int Id { get; set; }
-        [ForeignKey(nameof(Owner))]
+    public class OwnerWithUnitVerificationDTO{
+        public int? Id { get; set; }
         public string OwnerId { get; set; }
-        public virtual Owner Owner { get; set; } // navigaiton prop
+        public virtual Owner Owner { get; set; }
+        public DocumentType DocumentType { get; set; }
+        public string DocumentPath { get; set; }
+        public DateTime UploadDate { get; set; }
+        public string NationalId { get; set; }
+        public virtual Unit Unit { get; set; }
+
+        public string VerificationNotes { get; set; }
+        public VerificationStatus VerificationStatus { get; set; }
+        public string BankAccountDetails { get; set; }
+
+        // add untiverification data
+
+        public int UnitId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }
         public int Bedrooms { get; set; }
-
         public int Bathrooms { get; set; }
         public int Sleeps { get; set; }
         public int DistanceToSea { get; set; }
@@ -26,8 +33,8 @@ namespace Village_System.Models
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
         public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
-        public VerificationStatus VerificationStatus { get; set; }
-        public DocumentType Contract{ get; set; }
+        public DocumentType Contract { get; set; }
         public string ContractPath { get; set; }
+
     }
 }

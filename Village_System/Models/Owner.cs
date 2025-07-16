@@ -12,5 +12,7 @@ namespace Village_System.Models
         public string VerificationNotes { get; set; }
         [NotMapped]
         public float AverageOwnerRating { get; set; } // calculated field
+        public virtual ICollection<Unit> Units { get; set; }
+
     }
 }

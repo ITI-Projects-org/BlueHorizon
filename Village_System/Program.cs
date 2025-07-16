@@ -60,14 +60,24 @@ namespace Village_System
                     IssuerSigningKey = secreteKey
                 };
             }  
-            )
-            ;
+            );
+
+            builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .WithOrigins("http://localhost:4200") // <-- your frontend URL
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
             var app = builder.Build();
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
             }
-
+    app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
