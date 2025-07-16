@@ -24,10 +24,6 @@ namespace Village_System.Models
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
+        public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
     }
-}
-
-public enum UnitType
-{
-    Apartment, Chalet, Villa,
 }

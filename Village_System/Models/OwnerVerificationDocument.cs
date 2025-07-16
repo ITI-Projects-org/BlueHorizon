@@ -11,6 +11,7 @@ namespace Village_System.Models
         [Key]
         public int Id { get; set; }
         public string OwnerId { get; set; }
+        public virtual Owner Owner { get; set; }
         public DocumentType DocumentType { get; set; }
         public string DocumentPath { get; set; }
         public DateTime UploadDate { get; set; }

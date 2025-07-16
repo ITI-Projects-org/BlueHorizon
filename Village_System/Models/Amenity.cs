@@ -7,6 +7,6 @@ namespace Village_System.Models
         [Key]
         public int Id { get; set; }
         public AmenityName Name { get; set; }
-
+        public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
     }
 }

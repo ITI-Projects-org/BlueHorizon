@@ -8,9 +8,11 @@ namespace Village_System.Models
         [Key]
         public int Id { get; set; }
         [ForeignKey(nameof(Tenant))]
-        public int TenantId { get; set; }
+        public string TenantId { get; set; }
+        public virtual Tenant Tenant { get; set; }
         [ForeignKey(nameof(Unit))]
         public int UnitId { get; set; }
+        public virtual Unit Unit { get; set; }
         public DateTime BookingDate { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
@@ -21,6 +23,7 @@ namespace Village_System.Models
         public int NumberOfGuests { get; set; }
         public Boolean UnitReviewed { get; set; }
         public Boolean OwnerReviewd { get; set; }
+        public virtual QRCode QRCode { get; set; }
     }
 }
 

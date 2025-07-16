@@ -6,7 +6,7 @@ namespace Village_System.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(QRCode))]
-        public int QRCodeID { get; set; }
+        public int QRCodeId { get; set; }
         public virtual QRCode QRCode { get; set; }
         public AccessType AccessType { get; set; }
         public TargetLocation TargetLocation { get; set; }

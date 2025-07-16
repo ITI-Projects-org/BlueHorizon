@@ -10,7 +10,10 @@ namespace Village_System.Models
     {
         [ForeignKey(nameof(Unit))]
         public int UnitId { get; set; }
+        public virtual Unit Unit{ get; set; }
         [ForeignKey(nameof(Amenity))]
         public int AmenityId { get; set; }
+        public virtual Amenity Amenity { get; set; }
+
     }
 }

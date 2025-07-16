@@ -6,11 +6,14 @@ namespace Village_System.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(Owner))]
-        public string OwnerID { get; set; }
+        public string OwnerId { get; set; }
+        public virtual Owner Owner { get; set; }
         [ForeignKey(nameof(Tenant))]
-        public string TenantID { get; set; }
+        public string TenantId { get; set; }
+        public virtual Tenant Tenant { get; set; }
         [ForeignKey(nameof(Booking))]
-        public int BookingID { get; set; }
+        public int BookingId { get; set; }
+        public virtual Booking Booking { get; set; }
         public int Rating { get; set; }
         public string Comment { get; set; }
         public DateTime ReviewDate { get; set; }

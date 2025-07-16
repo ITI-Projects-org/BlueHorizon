@@ -7,7 +7,7 @@ namespace Village_System.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(Booking))]
-        public int BookingID { get; set; }
+        public int BookingId { get; set; }
         public virtual Booking Booking { get; set; }
         public int Amount { get; set; }
         public DateTime TransactionDate { get; set; }

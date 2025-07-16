@@ -12,8 +12,8 @@ using Village_System.Models;
 namespace Village_System.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    [Migration("20250714234224_The_Complete_Schema_2")]
-    partial class The_Complete_Schema_2
+    [Migration("20250715171306_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,7 +172,7 @@ namespace Village_System.Migrations
                     b.Property<int>("AccessType")
                         .HasColumnType("int");
 
-                    b.Property<int>("QRCodeID")
+                    b.Property<int>("QRCodeId")
                         .HasColumnType("int");
 
                     b.Property<int>("TargetLocation")
@@ -180,7 +180,7 @@ namespace Village_System.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QRCodeID");
+                    b.HasIndex("QRCodeId");
 
                     b.ToTable("AccessPermission");
                 });
@@ -198,7 +198,7 @@ namespace Village_System.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Amenty");
+                    b.ToTable("Amenity");
                 });
 
             modelBuilder.Entity("Village_System.Models.ApplicationUser", b =>
@@ -303,7 +303,8 @@ namespace Village_System.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("OwnerPayoutAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<bool>("OwnerReviewd")
                         .HasColumnType("bit");
@@ -312,13 +313,16 @@ namespace Village_System.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("PlatformComission")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
@@ -327,6 +331,10 @@ namespace Village_System.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("Bookings");
                 });
@@ -349,16 +357,24 @@ namespace Village_System.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Reciever")
-                        .HasColumnType("int");
+                    b.Property<string>("Reciever")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Sender")
-                        .HasColumnType("int");
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("Reciever");
+
+                    b.HasIndex("Sender");
 
                     b.ToTable("Messages");
                 });
@@ -371,15 +387,16 @@ namespace Village_System.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookingID")
+                    b.Property<int>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OwnerID")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -390,10 +407,17 @@ namespace Village_System.Migrations
                     b.Property<int>("ReviewStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("TenantID")
-                        .HasColumnType("int");
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("OwnerReviews");
                 });
@@ -413,13 +437,16 @@ namespace Village_System.Migrations
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("OwnerVerificationDocuments");
                 });
@@ -435,7 +462,7 @@ namespace Village_System.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int>("BookingID")
+                    b.Property<int>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentGatewayReference")
@@ -453,7 +480,7 @@ namespace Village_System.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingID");
+                    b.HasIndex("BookingId");
 
                     b.ToTable("PaymentTransactions");
                 });
@@ -481,7 +508,70 @@ namespace Village_System.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
                     b.ToTable("QRCodes");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("AverageUnitRating")
+                        .HasColumnType("real");
+
+                    b.Property<decimal>("BasePricePerNight")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Bathrooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Bedrooms")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DistanceToSea")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Sleeps")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VillageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Unit");
                 });
 
             modelBuilder.Entity("Village_System.Models.UnitAmenity", b =>
@@ -493,6 +583,8 @@ namespace Village_System.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UnitId", "AmenityId");
+
+                    b.HasIndex("AmenityId");
 
                     b.ToTable("UnitAmenities");
                 });
@@ -521,13 +613,20 @@ namespace Village_System.Migrations
                     b.Property<int>("ReviewStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("TenantID")
-                        .HasColumnType("int");
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("UnitReviews");
                 });
@@ -615,22 +714,190 @@ namespace Village_System.Migrations
                 {
                     b.HasOne("Village_System.Models.QRCode", "QRCode")
                         .WithMany()
-                        .HasForeignKey("QRCodeID")
+                        .HasForeignKey("QRCodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("QRCode");
                 });
 
+            modelBuilder.Entity("Village_System.Models.Booking", b =>
+                {
+                    b.HasOne("Village_System.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Message", b =>
+                {
+                    b.HasOne("Village_System.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.ApplicationUser", "RecieverUser")
+                        .WithMany()
+                        .HasForeignKey("Reciever")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.ApplicationUser", "SenderUser")
+                        .WithMany()
+                        .HasForeignKey("Sender")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("RecieverUser");
+
+                    b.Navigation("SenderUser");
+                });
+
+            modelBuilder.Entity("Village_System.Models.OwnerReview", b =>
+                {
+                    b.HasOne("Village_System.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Owner", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Village_System.Models.OwnerVerificationDocument", b =>
+                {
+                    b.HasOne("Village_System.Models.Owner", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Village_System.Models.PaymentTransaction", b =>
                 {
                     b.HasOne("Village_System.Models.Booking", "Booking")
                         .WithMany()
-                        .HasForeignKey("BookingID")
+                        .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Village_System.Models.QRCode", b =>
+                {
+                    b.HasOne("Village_System.Models.Booking", "Booking")
+                        .WithOne("QRCode")
+                        .HasForeignKey("Village_System.Models.QRCode", "BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Unit", b =>
+                {
+                    b.HasOne("Village_System.Models.Owner", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Village_System.Models.UnitAmenity", b =>
+                {
+                    b.HasOne("Village_System.Models.Amenity", "Amenity")
+                        .WithMany("UnitAmenities")
+                        .HasForeignKey("AmenityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Unit", "Unit")
+                        .WithMany("UnitAmenities")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Amenity");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("Village_System.Models.UnitReview", b =>
+                {
+                    b.HasOne("Village_System.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Village_System.Models.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Amenity", b =>
+                {
+                    b.Navigation("UnitAmenities");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Booking", b =>
+                {
+                    b.Navigation("QRCode")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Village_System.Models.Unit", b =>
+                {
+                    b.Navigation("UnitAmenities");
                 });
 #pragma warning restore 612, 618
         }

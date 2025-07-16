@@ -12,5 +12,6 @@ namespace Village_System.Models
         public string QRCodeValue { get; set; } //(the actual generated string/image data)
         public DateTime GeneratedDate { get; set; }
         public DateTime ExpirationDate { get; set; }
+        public virtual Booking Booking{ get; set; }
     }
 }

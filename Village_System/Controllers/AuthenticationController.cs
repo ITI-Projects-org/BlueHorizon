@@ -94,7 +94,6 @@ namespace Village_System.Controllers
             var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
             return Ok(new {token });
             
-            return Unauthorized("InValid Email or Passowrd");
         }
 
 
