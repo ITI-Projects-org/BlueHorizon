@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using API.DTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
@@ -10,7 +9,6 @@ namespace API.Mappers
     {
         public MappingConfig()
         {
-            
             CreateMap<RegisterDTO,Tenant>().ReverseMap();
             CreateMap<RegisterDTO, Owner>().ReverseMap();
             CreateMap<OwnerVerificationDocument, OwnerWithUnitVerificationDTO>().ReverseMap();
