@@ -1,0 +1,34 @@
+<p>register works!</p>
+
+<form [formGroup]="registerForm" (submit)="Submit()">
+    <div class="form-control">
+        <label>UserName</label><br>
+        <input type="text" formControlName="username" [ngClass]="{'is-invalid':username.invalid && username.touched}">
+    </div>
+    <div class="form-control">
+        <label>Email</label><br>
+
+        <input type="text" formControlName="email" [ngClass]="{'is-invalid':email.invalid && email.touched}">
+    </div>
+    <div class="form-control">
+        <label>Password</label><br>
+
+        <input type="text" formControlName="password" [ngClass]="{'is-invalid':password.invalid && password.touched}">
+    </div>
+    <div class="form-control">
+        <label>Confirm Password</label><br>
+
+        <input type="text" formControlName="confirmpassword"
+            [ngClass]="{'is-invalid':confirmpassword.invalid && confirmpassword.touched}">
+    </div>
+    <div class="form-control">
+        <label>Role</label><br>
+        <!-- <input type="text" formControlName="role" [ngClass]="{'is-invalid':role.invalid && role.touched}"> -->
+        <select formControlName="role">
+            <option value="Tenant">Tenant</option>
+            <option value="Owner">Owner</option>
+            <option value="Admin">Admin</option>
+        </select>
+    </div>
+    <button class="btn btn-success">Register</button>
+</form>

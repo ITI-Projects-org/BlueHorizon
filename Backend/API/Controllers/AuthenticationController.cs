@@ -89,7 +89,7 @@ namespace API.Controllers
 
             // Get user type from discriminator instead of GetType() to avoid proxy issues
             var userType = user is Owner ? "Owner" : user is Tenant ? "Tenant" : "Admin";
-            userData.Add(new Claim(ClaimTypes.Role, userType));
+            //userData.Add(new Claim(ClaimTypes.Role, userType));
 
             var roles = await _userManager.GetRolesAsync(user);
             Console.WriteLine($"User {user.Email} has roles: {string.Join(", ", roles)}"); // Debug line
@@ -133,6 +133,15 @@ namespace API.Controllers
         {
             return Ok("Authorized Owner");
         }
+        [HttpGet("Admin")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult Admin()
+        {
+            return Ok("Authorized Admin");
+        }
     }
 
 }
+
+
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZGE4NDY3YS04NTE5LTQ1MWEtOTE2ZS0xZTA4MWUzOTcwNmEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjhkYTg0NjdhLTg1MTktNDUxYS05MTZlLTFlMDgxZTM5NzA2YSIsInVzZXJuYW1lIjoiZWxzYWJhZ2giLCJlbWFpbCI6ImVsc2FiYWdoQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoyNjE2Nzg3MjkzfQ.OWk7wcqstF_3e9xh2NjeTSNlqejaAvE6zAEEJ8h62T8
