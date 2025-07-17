@@ -83,6 +83,7 @@ namespace Village_System.Controllers
             #region Claims
             var userData = new List<Claim>();
             userData.Add(new Claim("userId", user.Id));
+            userData.Add(new Claim(ClaimTypes.NameIdentifier ,user.Id));
             userData.Add(new Claim("username", _login.Username));
             userData.Add(new Claim("email", user.Email));
 

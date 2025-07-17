@@ -30,6 +30,12 @@ namespace Village_System.Models
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
 
+            builder.Entity<Unit>()
+            .HasMany(u => u.UnitAmenities)
+            .WithOne(ua => ua.Unit)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+            
 
             builder.Entity<Owner>()
                 .HasMany(o => o.Units)
@@ -111,7 +117,6 @@ namespace Village_System.Models
             builder.Entity<Unit>()
                 .HasOne(u => u.Owner)
                 .WithMany()
-                .HasForeignKey(u => u.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Message relationships
@@ -142,7 +147,7 @@ namespace Village_System.Models
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Unit)
                 .WithMany(u => u.UnitAmenities)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             builder.Entity<UnitAmenity>()

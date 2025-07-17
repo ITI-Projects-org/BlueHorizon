@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,15 +30,20 @@ namespace Village_System.Controllers
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO){
             #region Verify Owner
-            var owner = await _unit.OwnerRepository.GetByIdAsync(ownerVerificationDTO.OwnerId);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = User.FindFirstValue("userId");
+            ownerVerificationDTO.OwnerId = userId;
+            var owner = await _unit.OwnerRepository.GetByIdAsync(userId);
             if (owner == null)
                 return BadRequest("Owner not found");
 
             if (owner.VerificationStatus != VerificationStatus.NotVerified && owner.VerificationStatus != VerificationStatus.Rejected)
                 return BadRequest("Owner already verified or pending");
 
-            OwnerVerificationDocument? ownerVerificationDocument = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
-            _unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
+            //OwnerVerificationDocument? ownerVerificationDocument = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+            //ownerVerificationDocument.OwnerId = userId;
+            //_unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
 
             owner.VerificationStatus = VerificationStatus.Pending; 
             owner.VerificationDate = DateTime.Now;
