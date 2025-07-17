@@ -19,6 +19,7 @@ namespace API
             builder.Services.AddControllers();
 
             builder.Services.AddDbContext<BlueHorizonDbContext>(options => options
+
                 .UseLazyLoadingProxies()
                 .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
