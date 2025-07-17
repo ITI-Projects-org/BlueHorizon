@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Village_System.DTOs;
 using Village_System.DTOs.AuthenticationDTO;
 using Village_System.Models;
 
@@ -12,6 +13,7 @@ namespace Village_System.Mappers
             CreateMap<RegisterDTO,Tenant>().ReverseMap();
             CreateMap<RegisterDTO, Owner>().ReverseMap();
             CreateMap<OwnerVerificationDocument, OwnerVerificationDTO>().ReverseMap();
+            CreateMap<RegisterDTO,Admin>().ReverseMap();  
         }
     }
 }

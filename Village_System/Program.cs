@@ -1,10 +1,12 @@
 
+using System.Numerics;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Village_System.Mappers;
 using Village_System.Models;
+using Village_System.UnitOfWorks;
 //using Village_System.MapperConfig;
 
 namespace Village_System
@@ -30,11 +32,6 @@ namespace Village_System
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase= false;
                 options.Password.RequiredLength= 3;
-
-
-                
-
-
             })
                 .AddEntityFrameworkStores<VillageSystemDbContext>()
                 .AddDefaultTokenProviders();
@@ -42,7 +39,7 @@ namespace Village_System
             builder.Services.AddOpenApi();
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
-
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 

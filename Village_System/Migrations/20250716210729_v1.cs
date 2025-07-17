@@ -184,7 +184,8 @@ namespace Village_System.Migrations
                     OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DocumentType = table.Column<int>(type: "int", nullable: false),
                     DocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,7 +199,7 @@ namespace Village_System.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Unit",
+                name: "Units",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -215,17 +216,26 @@ namespace Village_System.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VillageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AverageUnitRating = table.Column<float>(type: "real", nullable: false)
+                    AverageUnitRating = table.Column<float>(type: "real", nullable: false),
+                    VerificationStatus = table.Column<int>(type: "int", nullable: false),
+                    Contract = table.Column<int>(type: "int", nullable: false),
+                    ContractPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OwnerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Unit", x => x.Id);
+                    table.PrimaryKey("PK_Units", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Unit_AspNetUsers_OwnerId",
+                        name: "FK_Units_AspNetUsers_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Units_AspNetUsers_OwnerId1",
+                        column: x => x.OwnerId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -257,9 +267,9 @@ namespace Village_System.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Unit_UnitId",
+                        name: "FK_Bookings_Units_UnitId",
                         column: x => x.UnitId,
-                        principalTable: "Unit",
+                        principalTable: "Units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -281,9 +291,9 @@ namespace Village_System.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UnitAmenities_Unit_UnitId",
+                        name: "FK_UnitAmenities_Units_UnitId",
                         column: x => x.UnitId,
-                        principalTable: "Unit",
+                        principalTable: "Units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -437,9 +447,9 @@ namespace Village_System.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UnitReviews_Unit_UnitId",
+                        name: "FK_UnitReviews_Units_UnitId",
                         column: x => x.UnitId,
-                        principalTable: "Unit",
+                        principalTable: "Units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -573,11 +583,6 @@ namespace Village_System.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Unit_OwnerId",
-                table: "Unit",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UnitAmenities_AmenityId",
                 table: "UnitAmenities",
                 column: "AmenityId");
@@ -596,6 +601,16 @@ namespace Village_System.Migrations
                 name: "IX_UnitReviews_UnitId",
                 table: "UnitReviews",
                 column: "UnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Units_OwnerId",
+                table: "Units",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Units_OwnerId1",
+                table: "Units",
+                column: "OwnerId1");
         }
 
         /// <inheritdoc />
@@ -650,7 +665,7 @@ namespace Village_System.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "Unit");
+                name: "Units");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

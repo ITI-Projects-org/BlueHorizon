@@ -22,7 +22,9 @@ namespace Village_System.Repositories.Implementations
              });
 
 
-            var result = data.Select(o => new OwnerWithUnitVerificationDTO
+            var result = data
+                .Where(d=>d.Owner.VerificationStatus == VerificationStatus.Pending)
+                .Select(o => new OwnerWithUnitVerificationDTO
             {
                 OwnerId = o.Owner.Id,
                 VerificationStatus = o.Owner.VerificationStatus,
@@ -32,8 +34,15 @@ namespace Village_System.Repositories.Implementations
                 DocumentPath = o.OwnerVerification.DocumentPath,
                 UploadDate = o.OwnerVerification.UploadDate,
                 VerificationNotes = o.Owner.VerificationNotes,
-                Unit = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault()
-            });
+                OwnerName = o.Owner.UserName,
+                //Unit = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault()
+                UnitId = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Id,
+                Address = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Address,
+                UnitType = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().UnitType,
+                ContractPath = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().ContractPath,
+                Contract = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Contract
+
+            }).ToList();
             return result;
         }
     }

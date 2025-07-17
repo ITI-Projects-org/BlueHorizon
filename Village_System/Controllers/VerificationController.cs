@@ -27,7 +27,7 @@ namespace Village_System.Controllers
         }
         [HttpPost("OwnerVerificationRequest")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO,UnitVerificationDTO unitVerificationDTO){
+        public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO){
             #region Verify Owner
             var owner = await _unit.OwnerRepository.GetByIdAsync(ownerVerificationDTO.OwnerId);
             if (owner == null)
@@ -45,6 +45,8 @@ namespace Village_System.Controllers
             #endregion
             #region Verify Unit
             // verify unit take logic from Momen
+            // Note: You'll need to add UnitVerificationDTO properties to OwnerWithUnitVerificationDTO
+            // or create a separate endpoint for unit verification
             #endregion
             await _unit.SaveAsync();
             return Ok();

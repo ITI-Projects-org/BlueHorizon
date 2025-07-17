@@ -39,14 +39,23 @@ namespace Village_System.Controllers
                     if(!result.Succeeded) 
                         return BadRequest(result.Errors.Select(e=>e.Description));
                     await _userManager.AddToRoleAsync(tenant, _register.Role); }
-                else if (_register.Role=="Owner")
-                { 
+                else if (_register.Role == "Owner")
+                {
                     Owner owner = _mapper.Map<Owner>(_register);
                     var result = await _userManager.CreateAsync(owner, _register.Password);
-                    if (!result.Succeeded) 
+                    if (!result.Succeeded)
                         return BadRequest(result.Errors.Select(e => e.Description));
                     await _userManager.AddToRoleAsync(owner, _register.Role);
                 }
+                else if (_register.Role == "Admin")
+                {
+                    Admin admin = _mapper.Map<Admin>(_register);
+                    var result = await _userManager.CreateAsync(admin, _register.Password);
+                    if (!result.Succeeded)
+                        return BadRequest(result.Errors.Select(e => e.Description));
+                    await _userManager.AddToRoleAsync(admin, _register.Role);
+                }
+
                 else
                     return BadRequest("Invalid Role");
                 return Ok(new{Message="registerd"});

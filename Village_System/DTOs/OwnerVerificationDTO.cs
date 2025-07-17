@@ -1,4 +1,4 @@
-﻿namespace Village_System.Mappers
+﻿namespace Village_System.DTOs
 {
     internal class OwnerVerificationDTO
     {

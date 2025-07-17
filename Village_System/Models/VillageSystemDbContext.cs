@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,13 +30,17 @@ namespace Village_System.Models
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
 
-            
+
+            builder.Entity<Owner>()
+                .HasMany(o => o.Units)
+                .WithOne(u => u.Owner);
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
                 .HasValue<ApplicationUser>("Base")
                 .HasValue<Tenant>("Tenant")
-                .HasValue<Owner>("Owner");
+                .HasValue<Owner>("Owner")
+                .HasValue<Admin>("Admin");
 
             builder.Entity<ApplicationUser>()
                 .HasIndex(u => u.Email)

@@ -12,7 +12,7 @@ using Village_System.Models;
 namespace Village_System.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    [Migration("20250715171306_v1")]
+    [Migration("20250716210729_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -437,6 +437,10 @@ namespace Village_System.Migrations
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
 
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -539,6 +543,13 @@ namespace Village_System.Migrations
                     b.Property<int>("Bedrooms")
                         .HasColumnType("int");
 
+                    b.Property<int>("Contract")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -553,6 +564,9 @@ namespace Village_System.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("OwnerId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Sleeps")
                         .HasColumnType("int");
 
@@ -563,6 +577,9 @@ namespace Village_System.Migrations
                     b.Property<int>("UnitType")
                         .HasColumnType("int");
 
+                    b.Property<int>("VerificationStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("VillageName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -571,7 +588,9 @@ namespace Village_System.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Unit");
+                    b.HasIndex("OwnerId1");
+
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("Village_System.Models.UnitAmenity", b =>
@@ -835,6 +854,10 @@ namespace Village_System.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Village_System.Models.Owner", null)
+                        .WithMany("Units")
+                        .HasForeignKey("OwnerId1");
+
                     b.Navigation("Owner");
                 });
 
@@ -898,6 +921,11 @@ namespace Village_System.Migrations
             modelBuilder.Entity("Village_System.Models.Unit", b =>
                 {
                     b.Navigation("UnitAmenities");
+                });
+
+            modelBuilder.Entity("Village_System.Models.Owner", b =>
+                {
+                    b.Navigation("Units");
                 });
 #pragma warning restore 612, 618
         }
