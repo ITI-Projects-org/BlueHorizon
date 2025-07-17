@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Village_System.DTOs.VerificationDTO;
@@ -9,7 +10,8 @@ namespace Village_System.Controllers
 {
    [Route("api/[controller]")]
    [ApiController]
-    public class VerificationController : Controller
+    
+    public class VerificationController : ControllerBase
     {
         public IMapper _mapper { get; }
         public IUnitOfWork _unit { get; }
@@ -19,13 +21,11 @@ namespace Village_System.Controllers
             _mapper = mapper;
             _unit = unit;
         }
-
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-        [HttpPost("OwnerVerificationRequest")]
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
+        [HttpPost("AddRequest")]
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO){
             #region Verify Owner
@@ -36,22 +36,27 @@ namespace Village_System.Controllers
             if (owner.VerificationStatus != VerificationStatus.NotVerified && owner.VerificationStatus != VerificationStatus.Rejected)
                 return BadRequest("Owner already verified or pending");
 
-            var ownerVerificationDocument = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
-            var res = await _unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
-
+            OwnerVerificationDocument? ownerVerificationDocument = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+            _unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
 
             owner.VerificationStatus = VerificationStatus.Pending; 
             owner.VerificationDate = DateTime.Now;
             #endregion
+
+            #region Table VerificationOwnerDocument
+            OwnerVerificationDocument doc = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+            _unit.OwnerVerificationDocumentRepository.AddAsync(doc);
+            #endregion
+
             #region Verify Unit
-            // verify unit take logic from Momen
-            // Note: You'll need to add UnitVerificationDTO properties to OwnerWithUnitVerificationDTO
-            // or create a separate endpoint for unit verification
+            Unit unit = _mapper.Map<Unit>(ownerVerificationDTO);
+            _unit.UnitRepository.AddAsync(unit);
+            //unit.UnitAmenities = ownerVerificationDTO.UnitAmenities;
             #endregion
             await _unit.SaveAsync();
             return Ok();
         }
-        [HttpGet("RespondOwnerVerification")]
+        [HttpGet("Requests")]
         [Authorize(Roles ="Admin")]
         
         public async Task<IActionResult> GetAllOwnersVerificationRequests() { 
@@ -63,7 +68,17 @@ namespace Village_System.Controllers
                 = _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
             
             return Ok(OwnersUnitsWaitingForVerification);
-                
+        }
+        
+        [HttpPost("Respond")]
+        [Authorize(Roles = "Admin")]
+        public async Task RespondToVerificationRequest([FromBody] RespondToVerificationRequestDTO respondDTO)
+        {
+            Owner owner = await _unit.OwnerRepository.GetByIdAsync(respondDTO.OwnerId);
+            owner.VerificationStatus = respondDTO.VerificationStatus;
+            Unit unit = await _unit.UnitRepository.GetByIdAsync(respondDTO.UnitId);
+            unit.VerificationStatus = respondDTO.VerificationStatus;
+            await _unit.SaveAsync();
         }
 
     }

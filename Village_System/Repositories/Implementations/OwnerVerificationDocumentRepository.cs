@@ -28,17 +28,6 @@ namespace Village_System.Repositories.Implementations
                  Owner = d.Owner,
                  OwnerVerification = d.OwnerVerification,
                  Unit = u});
-            //data =  data.Join(_context.Units,
-            //    d => d.Owner.Id,
-            //    u => u.OwnerId,
-            //    (d, u) =>
-            //    new
-            //    {
-            //        Owner = d.Owner,
-            //        OwnerVerification = d.OwnerVerification,
-            //        Unit = u
-            //    });
-
 
             var result = data
                 .Where(d=>d.Owner.VerificationStatus == VerificationStatus.Pending)
@@ -53,13 +42,11 @@ namespace Village_System.Repositories.Implementations
                 UploadDate = o.OwnerVerification.UploadDate,
                 VerificationNotes = o.Owner.VerificationNotes,
                 OwnerName = o.Owner.UserName,
-                //Unit = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault()
                 UnitId = o.Unit.Id,
                 Address = o.Unit.Address,
                 UnitType = o.Unit.UnitType,
                 ContractPath = o.Unit.ContractPath,
                 Contract = o.Unit.Contract
-                
             }).ToList();
             return result;
         }

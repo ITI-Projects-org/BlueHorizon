@@ -10,18 +10,18 @@ namespace Village_System.DTOs.VerificationDTO
         //public virtual Owner Owner { get; set; }
         public DocumentType DocumentType { get; set; }
         public string DocumentPath { get; set; }
-        public DateTime UploadDate { get; set; }
+        public DateTime UploadDate { get; set; } // 
         public string NationalId { get; set; }
         public virtual Unit Unit { get; set; }
         
 
         public string VerificationNotes { get; set; }
-        public VerificationStatus VerificationStatus { get; set; }
+        public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.NotVerified;
         public string BankAccountDetails { get; set; }
 
         // add untiverification data
 
-        public int UnitId { get; set; }
+        public int? UnitId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }

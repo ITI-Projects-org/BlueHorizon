@@ -74,14 +74,12 @@ namespace Village_System
             {
                 app.MapOpenApi();
             }
-    app.UseCors("AllowFrontend");
+            
+            app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();    
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }
