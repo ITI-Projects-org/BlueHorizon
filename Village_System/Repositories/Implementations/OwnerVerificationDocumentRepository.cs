@@ -19,7 +19,25 @@ namespace Village_System.Repositories.Implementations
              new {
                  Owner = o,
                  OwnerVerification = ov
-             });
+             }).Join(_context.Units,
+             
+             d=>d.Owner.Id,
+             u=>u.OwnerId,
+             (d, u) => new
+             {
+                 Owner = d.Owner,
+                 OwnerVerification = d.OwnerVerification,
+                 Unit = u});
+            //data =  data.Join(_context.Units,
+            //    d => d.Owner.Id,
+            //    u => u.OwnerId,
+            //    (d, u) =>
+            //    new
+            //    {
+            //        Owner = d.Owner,
+            //        OwnerVerification = d.OwnerVerification,
+            //        Unit = u
+            //    });
 
 
             var result = data
@@ -36,12 +54,12 @@ namespace Village_System.Repositories.Implementations
                 VerificationNotes = o.Owner.VerificationNotes,
                 OwnerName = o.Owner.UserName,
                 //Unit = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault()
-                UnitId = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Id,
-                Address = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Address,
-                UnitType = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().UnitType,
-                ContractPath = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().ContractPath,
-                Contract = _context.Units.Where(u => u.OwnerId == o.Owner.Id).FirstOrDefault().Contract
-
+                UnitId = o.Unit.Id,
+                Address = o.Unit.Address,
+                UnitType = o.Unit.UnitType,
+                ContractPath = o.Unit.ContractPath,
+                Contract = o.Unit.Contract
+                
             }).ToList();
             return result;
         }
