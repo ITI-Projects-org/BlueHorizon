@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class UnitRepository : GenericRepository<Unit>, IUnitRepository
     {
-        public UnitRepository(VillageSystemDbContext _context) : base(_context)
+        public UnitRepository(BlueHorizonDbContext _context) : base(_context)
         {
         }
     }

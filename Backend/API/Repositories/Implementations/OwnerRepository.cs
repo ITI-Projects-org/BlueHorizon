@@ -9,7 +9,7 @@ namespace API.Repositories.Implementations
 {
     public class OwnerRepository : GenericRepository<Owner>, IOwnerRepository
     {
-        public OwnerRepository(VillageSystemDbContext context) : base(context)
+        public OwnerRepository(BlueHorizonDbContext context) : base(context)
         {
             
         }

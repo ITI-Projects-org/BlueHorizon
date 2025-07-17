@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class AccessPermissionRepository : GenericRepository<AccessPermission>, IAccessPermissionRepository
     {
-        public AccessPermissionRepository(VillageSystemDbContext _context): base(_context)
+        public AccessPermissionRepository(BlueHorizonDbContext _context): base(_context)
         {
             
         }

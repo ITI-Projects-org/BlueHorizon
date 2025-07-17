@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class OwnerReviewRepository : GenericRepository<OwnerReview>, IOwnerReviewRepository
     {
-        public OwnerReviewRepository(VillageSystemDbContext _context) : base(_context)
+        public OwnerReviewRepository(BlueHorizonDbContext _context) : base(_context)
         {
         }
     }

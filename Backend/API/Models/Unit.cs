@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security;
-using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace API.Models
 {
@@ -11,12 +9,11 @@ namespace API.Models
         public int Id { get; set; }
         [ForeignKey(nameof(Owner))]
         public string OwnerId { get; set; }
-        public virtual Owner Owner { get; set; } // navigaiton prop
+        public virtual Owner Owner { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }
         public int Bedrooms { get; set; }
-
         public int Bathrooms { get; set; }
         public int Sleeps { get; set; }
         public int DistanceToSea { get; set; }

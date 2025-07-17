@@ -18,7 +18,7 @@ namespace API
             // Add services to the container.
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<VillageSystemDbContext>(options => options
+            builder.Services.AddDbContext<BlueHorizonDbContext>(options => options
                 .UseLazyLoadingProxies()
                 .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
@@ -33,7 +33,7 @@ namespace API
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 3;
             })
-                .AddEntityFrameworkStores<VillageSystemDbContext>()
+                .AddEntityFrameworkStores<BlueHorizonDbContext>()
                 .AddDefaultTokenProviders();
 
             builder.Services.AddOpenApi();

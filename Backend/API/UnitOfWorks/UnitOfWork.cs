@@ -6,8 +6,8 @@ namespace API.UnitOfWorks
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public VillageSystemDbContext _context { get; }
-        public UnitOfWork(VillageSystemDbContext context)
+        public BlueHorizonDbContext _context { get; }
+        public UnitOfWork(BlueHorizonDbContext context)
         {
             _context = context;
         }
