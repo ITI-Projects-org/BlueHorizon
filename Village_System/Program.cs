@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Village_System.Mappers;
 using Village_System.Models;
+using Village_System.UnitOfWorks;
 //using Village_System.MapperConfig;
 
 namespace Village_System
@@ -38,7 +39,7 @@ namespace Village_System
             })
                 .AddEntityFrameworkStores<VillageSystemDbContext>()
                 .AddDefaultTokenProviders();
-            
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();  
             builder.Services.AddOpenApi();
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
@@ -67,7 +68,7 @@ namespace Village_System
             {
                 app.MapOpenApi();
             }
-
+            app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

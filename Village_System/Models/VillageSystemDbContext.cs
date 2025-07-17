@@ -8,6 +8,7 @@ namespace Village_System.Models
     {
         public VillageSystemDbContext(DbContextOptions<VillageSystemDbContext> options) : base(options) { }
 
+        public DbSet<Unit> Units { get; set; }
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<AccessPermission> AccessPermission{ get; set; }
