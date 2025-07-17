@@ -5,6 +5,6 @@ namespace API.Repositories.Implementations
 {
     public class BookingRepository : GenericRepository<Booking>, IBookingRepository
     {
-        public BookingRepository(VillageSystemDbContext _context) : base(_context) { }
+        public BookingRepository(BlueHorizonDbContext _context) : base(_context) { }
     }
 }

@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class QRCodeRepository : GenericRepository<QRCode>, IQRCodeRepository
     {
-        public QRCodeRepository(VillageSystemDbContext _context) : base(_context)
+        public QRCodeRepository(BlueHorizonDbContext _context) : base(_context)
         { }
     }
 }

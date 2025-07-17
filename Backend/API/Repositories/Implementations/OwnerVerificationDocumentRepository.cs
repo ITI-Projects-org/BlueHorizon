@@ -8,7 +8,7 @@ namespace API.Repositories.Implementations
     public class OwnerVerificationDocumentRepository : GenericRepository<OwnerVerificationDocument>, IOwnerVerificationDocumentRepository
     {
 
-        public OwnerVerificationDocumentRepository(VillageSystemDbContext _context) : base(_context){}
+        public OwnerVerificationDocumentRepository(BlueHorizonDbContext _context) : base(_context){}
         public async Task<IEnumerable<OwnerWithUnitVerificationDTO>> GetPendingOwnersWithUnitAsync()
         {
 

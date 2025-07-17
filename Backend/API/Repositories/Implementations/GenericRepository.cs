@@ -7,8 +7,8 @@ namespace API.Repositories.Implementations
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public VillageSystemDbContext _context { get; }
-        public GenericRepository(VillageSystemDbContext context)
+        public BlueHorizonDbContext _context { get; }
+        public GenericRepository(BlueHorizonDbContext context)
         {
             _context = context;
         }

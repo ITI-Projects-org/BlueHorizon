@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class MessageRepository : GenericRepository<Message>, IMessageRepository
     {
-        public MessageRepository(VillageSystemDbContext _context) : base(_context)
+        public MessageRepository(BlueHorizonDbContext _context) : base(_context)
         {
         }
     }

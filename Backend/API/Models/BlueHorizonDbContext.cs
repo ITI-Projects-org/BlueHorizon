@@ -1,28 +1,26 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Models
 {
-    public class VillageSystemDbContext : IdentityDbContext<ApplicationUser>
+    public class BlueHorizonDbContext : IdentityDbContext<ApplicationUser>
     {
-        public VillageSystemDbContext(DbContextOptions<VillageSystemDbContext> options) : base(options) { }
+        public BlueHorizonDbContext(DbContextOptions<BlueHorizonDbContext> options) : base(options) { }
 
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<AccessPermission> AccessPermission{ get; set; }
+        public DbSet<AccessPermission> AccessPermission { get; set; }
         public DbSet<Amenity> Amenity { get; set; }
-        public DbSet<Booking> Bookings{ get; set; }
-        public DbSet<Message> Messages{ get; set; }
-        public DbSet<OwnerReview> OwnerReviews{ get; set; }
-        public DbSet<OwnerVerificationDocument> OwnerVerificationDocuments{ get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<OwnerReview> OwnerReviews { get; set; }
+        public DbSet<OwnerVerificationDocument> OwnerVerificationDocuments { get; set; }
         public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
-        public DbSet<QRCode> QRCodes{ get; set; }
-        public DbSet<UnitAmenity> UnitAmenities{ get; set; }
-        public DbSet<UnitReview> UnitReviews{ get; set; }
-        public DbSet<Unit> Units{ get; set; }
-    
+        public DbSet<QRCode> QRCodes { get; set; }
+        public DbSet<UnitAmenity> UnitAmenities { get; set; }
+        public DbSet<UnitReview> UnitReviews { get; set; }
+        public DbSet<Unit> Units { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -34,8 +32,6 @@ namespace API.Models
             .HasMany(u => u.UnitAmenities)
             .WithOne(ua => ua.Unit)
             .OnDelete(DeleteBehavior.Cascade);
-            
-            
 
             builder.Entity<Owner>()
                 .HasMany(o => o.Units)
@@ -55,9 +51,11 @@ namespace API.Models
             builder.Entity<Booking>()
                 .Property(b => b.TotalPrice)
                 .HasPrecision(10, 2);
+
             builder.Entity<Booking>()
                 .Property(b => b.PlatformComission)
                 .HasPrecision(10, 2);
+
             builder.Entity<Booking>()
                 .Property(b => b.OwnerPayoutAmount)
                 .HasPrecision(10, 2);
@@ -144,6 +142,7 @@ namespace API.Models
                 .WithMany()
                 .HasForeignKey(o => o.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Unit)
                 .WithMany(u => u.UnitAmenities)
@@ -153,14 +152,13 @@ namespace API.Models
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Amenity)
                 .WithMany(a => a.UnitAmenities)
-                .OnDelete( DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<QRCode>()
                 .HasOne(QRCode => QRCode.Booking)
                 .WithOne(b => b.QRCode)
                 .HasForeignKey<QRCode>(qr => qr.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
-                ;
-
         }
     }
 }

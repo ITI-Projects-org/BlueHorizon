@@ -5,7 +5,7 @@ namespace API.Repositories.Implementations
 {
     public class UnitReviewRepository : GenericRepository<UnitReview>, IUnitReviewRepository
     {
-        public UnitReviewRepository(VillageSystemDbContext _context) : base(_context)
+        public UnitReviewRepository(BlueHorizonDbContext _context) : base(_context)
         {
         }
 
