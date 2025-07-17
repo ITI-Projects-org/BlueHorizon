@@ -11,6 +11,7 @@ namespace API.UnitOfWorks
         {
             _context = context;
         }
+
         public IAccessPermissionRepository accessPermissionRepository;
         public IAccessPermissionRepository AccessPermissionRepository
         {
@@ -91,7 +92,6 @@ namespace API.UnitOfWorks
             }
         }
 
-
         public IPaymentTransactionRepository paymentTransactionRepository;
         public IPaymentTransactionRepository PaymentTransactionRepository
         {
@@ -104,6 +104,7 @@ namespace API.UnitOfWorks
                 return paymentTransactionRepository;
             }
         }
+
         public IQRCodeRepository qRCodeRepository;
         public IQRCodeRepository QRCodeRepository
         {
@@ -116,6 +117,7 @@ namespace API.UnitOfWorks
                 return qRCodeRepository;
             }
         }
+
         public IUnitAmenityRepository unitAmenityRepository ;
         public IUnitAmenityRepository UnitAmenityRepository
         {
@@ -141,6 +143,7 @@ namespace API.UnitOfWorks
                 return unitRepository;
             }
         }
+
         public IUnitReviewRepository unitReviewRepository;
         public IUnitReviewRepository UnitReviewRepository
         {
