@@ -34,12 +34,13 @@ namespace API.Models
             .HasMany(u => u.UnitAmenities)
             .WithOne(ua => ua.Unit)
             .OnDelete(DeleteBehavior.Cascade);
-            
-            
+
+
 
             builder.Entity<Owner>()
                 .HasMany(o => o.Units)
-                .WithOne(u => u.Owner);
+                .WithOne(u => u.Owner)
+                .HasForeignKey(u => u.OwnerId);
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
@@ -113,23 +114,17 @@ namespace API.Models
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Unit relationships
-            builder.Entity<Unit>()
-                .HasOne(u => u.Owner)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Message relationships
             builder.Entity<Message>()
                 .HasOne(m => m.SenderUser)
                 .WithMany()
-                .HasForeignKey(m => m.Sender)
+                .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()
                 .HasOne(m => m.RecieverUser)
                 .WithMany()
-                .HasForeignKey(m => m.Reciever)
+                .HasForeignKey(m => m.RecieverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()

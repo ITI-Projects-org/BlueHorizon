@@ -45,7 +45,7 @@ namespace API
             builder.Services.AddAuthentication(op => op.DefaultAuthenticateScheme="myschema")
             .AddJwtBearer("myschema", option =>
             {
-                var key = "this is secrete key  for admin role base";
+                var key = builder.Configuration["JwtKey"]!;
                 var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
 
                 option.TokenValidationParameters = new TokenValidationParameters()
