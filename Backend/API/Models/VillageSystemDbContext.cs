@@ -28,12 +28,7 @@ namespace API.Models
 
             base.OnModelCreating(builder);
 
-            builder.Entity<OwnerVerificationDocument>()
-                .HasOne(o => o.Owner)
-                .WithMany(o => o.OwnerVerificationDocuments) // Add this line
-                .HasForeignKey(o => o.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
-                
+           
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
@@ -45,10 +40,17 @@ namespace API.Models
 
 
 
-            builder.Entity<Owner>()
-                .HasMany(o => o.Units)
-                .WithOne(u => u.Owner)
-                .HasForeignKey(u => u.OwnerId);
+            // builder.Entity<Owner>()
+            //     .HasMany(o => o.Units)
+            //     .WithOne(u => u.Owner)
+            //     .HasForeignKey(u => u.OwnerId);
+
+            builder.Entity<Unit>()
+                .HasOne(u => u.Owner)
+                .WithMany(o => o.Units)
+                .HasForeignKey(u => u.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
@@ -122,11 +124,7 @@ namespace API.Models
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Unit relationships
-            builder.Entity<Unit>()
-                .HasOne(u => u.Owner)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+           
 
             // Message relationships
             builder.Entity<Message>()
@@ -150,9 +148,13 @@ namespace API.Models
             // OwnerVerificationDocument relationships
             builder.Entity<OwnerVerificationDocument>()
                 .HasOne(o => o.Owner)
-                .WithMany()
+                .WithMany(o => o.OwnerVerificationDocuments)
                 .HasForeignKey(o => o.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+        
+
+
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Unit)
                 .WithMany(u => u.UnitAmenities)

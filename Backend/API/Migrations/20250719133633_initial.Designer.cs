@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    [Migration("20250718110751_v6")]
-    partial class v6
+    [Migration("20250719133633_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,11 +224,11 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Reciever")
+                    b.Property<string>("RecieverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Sender")
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -239,9 +239,9 @@ namespace API.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("Reciever");
+                    b.HasIndex("RecieverId");
 
-                    b.HasIndex("Sender");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -720,13 +720,13 @@ namespace API.Migrations
 
                     b.HasOne("API.Models.ApplicationUser", "RecieverUser")
                         .WithMany()
-                        .HasForeignKey("Reciever")
+                        .HasForeignKey("RecieverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("API.Models.ApplicationUser", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("Sender")
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -767,7 +767,7 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.OwnerVerificationDocument", b =>
                 {
                     b.HasOne("API.Models.Owner", "Owner")
-                        .WithMany()
+                        .WithMany("OwnerVerificationDocuments")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -802,7 +802,7 @@ namespace API.Migrations
                     b.HasOne("API.Models.Owner", "Owner")
                         .WithMany("Units")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Owner");
@@ -923,6 +923,8 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Owner", b =>
                 {
+                    b.Navigation("OwnerVerificationDocuments");
+
                     b.Navigation("Units");
                 });
 #pragma warning restore 612, 618

@@ -9,8 +9,8 @@ namespace API.Models
     {
         [Key]
         public int Id { get; set; }
-        public string OwnerId { get; set; }
         [ForeignKey(nameof(OwnerId))]
+        public string OwnerId { get; set; }
         public virtual Owner Owner { get; set; } // navigaiton prop
         public string Title { get; set; }
         public string Description { get; set; }

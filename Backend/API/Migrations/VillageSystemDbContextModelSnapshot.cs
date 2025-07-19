@@ -309,17 +309,12 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("OwnerId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("OwnerId1");
 
                     b.ToTable("OwnerVerificationDocuments");
                 });
@@ -769,14 +764,10 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.OwnerVerificationDocument", b =>
                 {
                     b.HasOne("API.Models.Owner", "Owner")
-                        .WithMany()
+                        .WithMany("OwnerVerificationDocuments")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("API.Models.Owner", null)
-                        .WithMany("OwnerVerificationDocuments")
-                        .HasForeignKey("OwnerId1");
 
                     b.Navigation("Owner");
                 });
@@ -808,7 +799,7 @@ namespace API.Migrations
                     b.HasOne("API.Models.Owner", "Owner")
                         .WithMany("Units")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Owner");
