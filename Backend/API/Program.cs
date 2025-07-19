@@ -47,7 +47,7 @@ namespace API
             builder.Services.AddAuthentication(op => op.DefaultAuthenticateScheme = "myschema")
             .AddJwtBearer("myschema", option =>
             {
-                var key = "this is secrete key for admin role base";
+                var key = "this is secrete key  for admin role base";
                 var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
 
                 option.TokenValidationParameters = new TokenValidationParameters()
@@ -62,12 +62,13 @@ namespace API
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
-                    builder => builder
-                        .WithOrigins("http://localhost:4200") // <-- your frontend URL
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials());
-            });
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin();
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                    });
+                    });
 
             var app = builder.Build();
             if (app.Environment.IsDevelopment())

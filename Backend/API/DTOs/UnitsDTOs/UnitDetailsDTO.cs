@@ -2,8 +2,9 @@
 
 namespace API.DTOs.UnitsDTOs
 {
-    public class AddUnitDTO
+    public class UnitDetailsDTO
     {
+        public string OwnerName { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }
@@ -14,8 +15,7 @@ namespace API.DTOs.UnitsDTOs
         public decimal BasePricePerNight { get; set; }
         public string Address { get; set; }
         public string VillageName { get; set; }
-        public List<int> AmenityIds { get; set; }
-        public IFormFile ContractDocument { get; set; }
-
+        public DateTime CreationDate { get; set; }
+        public float AverageUnitRating { get; set; }
     }
 }
