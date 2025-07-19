@@ -18,10 +18,12 @@ namespace API.Controllers
     {
         public UserManager<ApplicationUser> _userManager { get; }
         public IMapper _mapper { get; set; }
-        public AuthenticationController(UserManager<ApplicationUser> userManager, IMapper mapper)
+        public IConfiguration _config;
+        public AuthenticationController(UserManager<ApplicationUser> userManager, IMapper mapper, IConfiguration config)
         {
             _userManager = userManager;
             _mapper = mapper;
+            _config = config;
         }
         [HttpPost("Register")]
 
@@ -104,14 +106,14 @@ namespace API.Controllers
 
             #endregion
             #region SigningCredentials
-            var key = "this is secrete key  for admin role base";
+            var key = _config["JwtKey"];
             var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
             var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
             #endregion
 
             JwtSecurityToken tokenObject = new JwtSecurityToken(
                 claims: userData,
-                expires: DateTime.Now.AddDays(10000),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: signingCredentials
                 );
 

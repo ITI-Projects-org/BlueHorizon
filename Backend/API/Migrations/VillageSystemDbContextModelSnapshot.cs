@@ -221,11 +221,11 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Reciever")
+                    b.Property<string>("RecieverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Sender")
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -236,9 +236,9 @@ namespace API.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("Reciever");
+                    b.HasIndex("RecieverId");
 
-                    b.HasIndex("Sender");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -722,13 +722,13 @@ namespace API.Migrations
 
                     b.HasOne("API.Models.ApplicationUser", "RecieverUser")
                         .WithMany()
-                        .HasForeignKey("Reciever")
+                        .HasForeignKey("RecieverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("API.Models.ApplicationUser", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("Sender")
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
