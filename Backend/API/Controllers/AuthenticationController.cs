@@ -40,61 +40,67 @@ namespace API.Controllers
         [HttpGet("google-signup-callback")]
         public async Task<IActionResult> GoogleSignupCallback()
         {
-
-            var result = await HttpContext.AuthenticateAsync("Google");
-            var desiredRole = result.Properties.Items["role"] ?? "Tenant";
-            if (!result.Succeeded)
-                return BadRequest("Google authentication failed.");
-
-            var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-            if (email == null)
-                return BadRequest("No email claim from Google.");
-
-            var name = email.Split("@")[0];
-
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            try
             {
+                var result = await HttpContext.AuthenticateAsync("Google");
+                var desiredRole = result.Properties.Items["role"] ?? "Tenant";
+                if (!result.Succeeded)
+                    return BadRequest("Google authentication failed.");
 
-                var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
-                user = _mapper.Map<Tenant>(dto);
-                var createResult = await _userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                    return BadRequest(createResult.Errors.Select(e => e.Description));
-                await _userManager.AddToRoleAsync(user, desiredRole);
+                var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
+                if (email == null)
+                    return BadRequest("No email claim from Google.");
+
+                var name = email.Split("@")[0];
+
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+
+                    var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
+                    user = _mapper.Map<Tenant>(dto);
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                        return BadRequest(createResult.Errors.Select(e => e.Description));
+                    await _userManager.AddToRoleAsync(user, desiredRole);
+                }
+                else
+                {
+                    return BadRequest("user already exists");
+                }
+
+
+                var userData = new List<Claim>();
+                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+                userData.Add(new Claim("username", user.UserName));
+                userData.Add(new Claim(ClaimTypes.Email, user.Email));
+
+
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var role in roles)
+                    userData.Add(new Claim(ClaimTypes.Role, role));
+
+
+                #region SigningCredentials
+                var key = _config["JwtKey"];
+                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
+                #endregion
+
+                JwtSecurityToken tokenObject = new JwtSecurityToken(
+                    claims: userData,
+                    expires: DateTime.Now.AddDays(1),
+                    signingCredentials: signingCredentials
+                    );
+
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+
+                return Ok(new { token });
             }
-            else
+            catch(Exception e)
             {
-                return BadRequest("user already exists");
+                return BadRequest($"an unexpected error occured: {e}");
             }
-
-
-            var userData = new List<Claim>();
-            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            userData.Add(new Claim("username", user.UserName));
-            userData.Add(new Claim(ClaimTypes.Email, user.Email));
-
-
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-                userData.Add(new Claim(ClaimTypes.Role, role));
-
-
-            #region SigningCredentials
-            var key = _config["JwtKey"];
-            var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-            var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-            #endregion
-
-            JwtSecurityToken tokenObject = new JwtSecurityToken(
-                claims: userData,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: signingCredentials
-                );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-            return Ok(new { token });
         }
 
         [HttpGet("google-login")]
@@ -108,52 +114,58 @@ namespace API.Controllers
         [HttpGet("google-login-callback")]
         public async Task<IActionResult> GoogleLoginCallback()
         {
-            
-            var result = await HttpContext.AuthenticateAsync("Google");
-
-            if (!result.Succeeded)
-                return BadRequest("Google authentication failed.");
-
-            
-            var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-
-            if (email == null)
-                return BadRequest("No email claim from Google.");
-
-            
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            try
             {
-                return BadRequest("user is not found");
+                var result = await HttpContext.AuthenticateAsync("Google");
+
+                if (!result.Succeeded)
+                    return BadRequest("Google authentication failed.");
+
+
+                var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
+
+                if (email == null)
+                    return BadRequest("No email claim from Google.");
+
+
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return BadRequest("user is not found");
+                }
+
+
+                var userData = new List<Claim>();
+                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+                userData.Add(new Claim("username", user.UserName));
+                userData.Add(new Claim(ClaimTypes.Email, user.Email));
+
+
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var role in roles)
+                    userData.Add(new Claim(ClaimTypes.Role, role));
+
+
+                #region SigningCredentials
+                var key = _config["JwtKey"];
+                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
+                #endregion
+
+                JwtSecurityToken tokenObject = new JwtSecurityToken(
+                    claims: userData,
+                    expires: DateTime.Now.AddDays(1),
+                    signingCredentials: signingCredentials
+                    );
+
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+
+                return Ok(new { token });
             }
-
-            
-            var userData = new List<Claim>();
-            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            userData.Add(new Claim("username", user.UserName));
-            userData.Add(new Claim(ClaimTypes.Email, user.Email));
-
-
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-                userData.Add(new Claim(ClaimTypes.Role, role));
-
-
-            #region SigningCredentials
-            var key = _config["JwtKey"];
-            var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-            var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-            #endregion
-
-            JwtSecurityToken tokenObject = new JwtSecurityToken(
-                claims: userData,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: signingCredentials
-                );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-             return Ok(new { token });
+            catch(Exception e)
+            {
+                return BadRequest($"an unexpected error occured: {e}");
+            }
         }
 
 
