@@ -31,41 +31,31 @@ namespace API.Controllers
         [HttpGet("google-signup/{role}")]
         public IActionResult GoogleSignup(string role)
         {
-            var redirectUrl = Url.Action("GoogleCallback", "Authentication");
+            var redirectUrl = Url.Action("GoogleSignupCallback", "Authentication");
             var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
             properties.Items["role"] = role;
             return Challenge(properties, "Google");
         }
 
-        [HttpGet("google-login")]
-        public IActionResult GoogleLogin()
+        [HttpGet("google-signup-callback")]
+        public async Task<IActionResult> GoogleSignupCallback()
         {
-            var redirectUrl = Url.Action("GoogleCallback", "Authentication");
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
-            return Challenge(properties, "Google");
-        }
 
-        // 2️⃣ Google callback — extract info, provision user, issue JWT
-        [HttpGet("google-callback")]
-        public async Task<IActionResult> GoogleCallback()
-        {
-            // Authenticate the Google response
             var result = await HttpContext.AuthenticateAsync("Google");
             var desiredRole = result.Properties.Items["role"] ?? "Tenant";
             if (!result.Succeeded)
                 return BadRequest("Google authentication failed.");
 
-            // 3️⃣ Extract claims from Google
             var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-            var name = email.Split("@")[0];
             if (email == null)
                 return BadRequest("No email claim from Google.");
 
-            // 4️⃣ Provision local user
+            var name = email.Split("@")[0];
+
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                // Map to your ApplicationUser subclass; e.g. default Tenant
+
                 var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
                 user = _mapper.Map<Tenant>(dto);
                 var createResult = await _userManager.CreateAsync(user);
@@ -73,8 +63,71 @@ namespace API.Controllers
                     return BadRequest(createResult.Errors.Select(e => e.Description));
                 await _userManager.AddToRoleAsync(user, desiredRole);
             }
+            else
+            {
+                return BadRequest("user already exists");
+            }
 
-            // 5️⃣ Generate your JWT
+
+            var userData = new List<Claim>();
+            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            userData.Add(new Claim("username", user.UserName));
+            userData.Add(new Claim(ClaimTypes.Email, user.Email));
+
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+                userData.Add(new Claim(ClaimTypes.Role, role));
+
+
+            #region SigningCredentials
+            var key = _config["JwtKey"];
+            var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+            var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
+            #endregion
+
+            JwtSecurityToken tokenObject = new JwtSecurityToken(
+                claims: userData,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: signingCredentials
+                );
+
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+
+            return Ok(new { token });
+        }
+
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleLoginCallback", "Authentication");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
+            return Challenge(properties, "Google");
+        }
+
+        [HttpGet("google-login-callback")]
+        public async Task<IActionResult> GoogleLoginCallback()
+        {
+            
+            var result = await HttpContext.AuthenticateAsync("Google");
+
+            if (!result.Succeeded)
+                return BadRequest("Google authentication failed.");
+
+            
+            var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
+
+            if (email == null)
+                return BadRequest("No email claim from Google.");
+
+            
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("user is not found");
+            }
+
+            
             var userData = new List<Claim>();
             userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
             userData.Add(new Claim("username", user.UserName));
