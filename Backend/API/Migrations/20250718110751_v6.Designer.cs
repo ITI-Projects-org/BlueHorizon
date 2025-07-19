@@ -4,6 +4,7 @@ using API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    partial class VillageSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250718110751_v6")]
+    partial class v6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,17 +312,12 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("OwnerId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("OwnerId1");
 
                     b.ToTable("OwnerVerificationDocuments");
                 });
@@ -774,10 +772,6 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("API.Models.Owner", null)
-                        .WithMany("OwnerVerificationDocuments")
-                        .HasForeignKey("OwnerId1");
-
                     b.Navigation("Owner");
                 });
 
@@ -929,8 +923,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Owner", b =>
                 {
-                    b.Navigation("OwnerVerificationDocuments");
-
                     b.Navigation("Units");
                 });
 #pragma warning restore 612, 618

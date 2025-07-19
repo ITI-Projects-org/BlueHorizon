@@ -50,7 +50,7 @@ namespace API.Controllers
             #endregion
 
             #region Table VerificationOwnerDocument
-            OwnerVerificationDocument doc = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+             OwnerVerificationDocument doc = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
             _unit.OwnerVerificationDocumentRepository.AddAsync(doc);
             #endregion
 
@@ -70,11 +70,11 @@ namespace API.Controllers
         var allVerificationRequests = await _unit.OwnerVerificationDocumentRepository.GetAllAsync();
             if (allVerificationRequests == null || !allVerificationRequests.Any())
                 return Ok(new { Message = "No Requests Found" });
-            Task<IEnumerable<OwnerWithUnitVerificationDTO>>? OwnersUnitsWaitingForVerification 
-                = _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
+            IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification 
+                = await _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
             
             return Ok(OwnersUnitsWaitingForVerification);
-        }
+            }
         
         [HttpPost("Respond")]
         [Authorize(Roles = "Admin")]

@@ -34,7 +34,7 @@ namespace API.DTOs.VerificationDTO
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
-        public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
+        public virtual ICollection<UnitAmenity>? UnitAmenities { get; set; }
         public DocumentType Contract { get; set; }
         public string ContractPath { get; set; }
 

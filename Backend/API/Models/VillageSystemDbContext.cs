@@ -25,7 +25,15 @@ namespace API.Models
     
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+
+            builder.Entity<OwnerVerificationDocument>()
+                .HasOne(o => o.Owner)
+                .WithMany(o => o.OwnerVerificationDocuments) // Add this line
+                .HasForeignKey(o => o.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
@@ -113,11 +121,7 @@ namespace API.Models
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Unit relationships
-            builder.Entity<Unit>()
-                .HasOne(u => u.Owner)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+            
 
             // Message relationships
             builder.Entity<Message>()
