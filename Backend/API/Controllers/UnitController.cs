@@ -21,9 +21,10 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Owner")]
-        [HttpPost]
-        public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
+        [HttpPost("AddUnitstorent")]
+        //[Authorize(Roles = "Owner")]
+
+        public async Task<IActionResult> AddUnitstorent([FromBody] AddUnitDTO unitDto)
         {
             try
             {
@@ -33,20 +34,24 @@ namespace API.Controllers
 
                 var unit = _mapper.Map<Unit>(unitDto);
                 unit.OwnerId = userId;
+                unit.VerificationStatus = VerificationStatus.Pending;
+                unit.CreationDate = DateTime.Now;
+                unit.ContractPath = "jbghfdgsfhbjklmdfnslkm";
+                unit.Contract = DocumentType.OwnershipContract;
 
                 // Handle contract document upload
-                if (unitDto.ContractDocument != null)
-                {
-                    var fileName = $"unit_contract_{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                //if (unitDto.ContractDocument != null)
+                //{
+                //    var fileName = $"unit_contract_user:{userId}{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
+                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await unitDto.ContractDocument.CopyToAsync(stream);
-                    }
-                    unit.ContractPath = filePath;
-                }
+                //    using (var stream = new FileStream(filePath, FileMode.Create))
+                //    {
+                //        await unitDto.ContractDocument.CopyToAsync(stream);
+                //    }
+                //    unit.ContractPath = filePath;
+                //}
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
@@ -65,13 +70,84 @@ namespace API.Controllers
                     }
                     await _unitOfWork.SaveAsync();
                 }
+                unit.VerificationStatus = VerificationStatus.Pending;
 
-                return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unit);
+                return CreatedAtAction(nameof(AddUnitstorent), new { id = unit.Id }, unitDto);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
+        #region Real Add Unit 
+        [HttpPost("VerifyUnit/{id:int}")]
+        //[Authorize(Roles = "Owner")]
+
+        public async Task<IActionResult> VerifyUnit( int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            _mapper.Map<Unit>(unit);
+            unit.Id = id;
+            if (unit != null)
+            {
+                unit.VerificationStatus = VerificationStatus.Verified;
+                _unitOfWork.UnitRepository.UpdateByIdAsync(unit.Id, unit);
+                _unitOfWork.SaveAsync();
+                return CreatedAtAction(nameof(VerifyUnit), new { id = unit.Id }, _mapper.Map<UnitDetailsDTO>(unit));
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+
+
+        }
+        #endregion
+
+        #region Unit Details
+        // Get By Id
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUnitById(int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (unit == null)
+            {
+                return Content("Unit Not Found");
+            }
+            return Ok(_mapper.Map<UnitDetailsDTO>(unit));
+        }
+        #endregion
+
+        #region  Update Unit
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
+        {
+
+            if (unitDto == null || !ModelState.IsValid)
+            {
+                return BadRequest("Unit data is null");
+            }
+            var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (existingUnit == null)
+            {
+                return NotFound("Unit Not Found");
+            }
+            var unit = _mapper.Map<Unit>(unitDto);
+            try
+            {
+                _unitOfWork.UnitRepository.UpdateByIdAsync(id, unit);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error updating unit: {ex.Message}");
+            }
+            return Ok("Unit Updated Successfully");
+        }
+
+        #endregion
     }
 }

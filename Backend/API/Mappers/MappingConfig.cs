@@ -22,7 +22,18 @@ namespace API.Mappers
                 .ForMember(dest => dest.VerificationStatus, opt => opt.MapFrom(src => VerificationStatus.Pending))
                 .ForMember(dest => dest.AverageUnitRating, opt => opt.MapFrom(src => 0.0f))
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore())
-                .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => DocumentType.OwnershipContract));
+                .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => DocumentType.OwnershipContract)).ReverseMap();
+            #region Unit Mapping
+
+            //unit to UnitDTO ==> UnitDetails
+            CreateMap<Unit, UnitDetailsDTO>()
+                .ForMember(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Owner.NormalizedUserName));
+
+            // UnitDTO to Unit ==> UpdateUnit
+            CreateMap<UnitDetailsDTO, Unit>()
+                .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
+                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
+            #endregion
         }
     }
 }
