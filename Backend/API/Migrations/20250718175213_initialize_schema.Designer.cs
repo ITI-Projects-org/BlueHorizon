@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    [Migration("20250718135221_v6")]
-    partial class v6
+    [Migration("20250718175213_initialize_schema")]
+    partial class initialize_schema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -431,9 +431,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("OwnerId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Sleeps")
                         .HasColumnType("int");
 
@@ -454,8 +451,6 @@ namespace API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("OwnerId1");
 
                     b.ToTable("Units");
                 });
@@ -805,14 +800,10 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Unit", b =>
                 {
                     b.HasOne("API.Models.Owner", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.Owner", null)
                         .WithMany("Units")
-                        .HasForeignKey("OwnerId1");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });

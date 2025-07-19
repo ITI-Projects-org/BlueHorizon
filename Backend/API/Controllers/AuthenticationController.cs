@@ -10,6 +10,7 @@ using API.DTOs.AuthenticationDTO;
 using API.Models;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 namespace API.Controllers
 {
     [ApiController]
@@ -25,6 +26,84 @@ namespace API.Controllers
             _mapper = mapper;
             _config = config;
         }
+
+
+        [HttpGet("google-signup/{role}")]
+        public IActionResult GoogleSignup(string role)
+        {
+            var redirectUrl = Url.Action("GoogleCallback", "Authentication");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
+            properties.Items["role"] = role;
+            return Challenge(properties, "Google");
+        }
+
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleCallback", "Authentication");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
+            return Challenge(properties, "Google");
+        }
+
+        // 2️⃣ Google callback — extract info, provision user, issue JWT
+        [HttpGet("google-callback")]
+        public async Task<IActionResult> GoogleCallback()
+        {
+            // Authenticate the Google response
+            var result = await HttpContext.AuthenticateAsync("Google");
+            var desiredRole = result.Properties.Items["role"] ?? "Tenant";
+            if (!result.Succeeded)
+                return BadRequest("Google authentication failed.");
+
+            // 3️⃣ Extract claims from Google
+            var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
+            var name = email.Split("@")[0];
+            if (email == null)
+                return BadRequest("No email claim from Google.");
+
+            // 4️⃣ Provision local user
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Map to your ApplicationUser subclass; e.g. default Tenant
+                var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
+                user = _mapper.Map<Tenant>(dto);
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                    return BadRequest(createResult.Errors.Select(e => e.Description));
+                await _userManager.AddToRoleAsync(user, desiredRole);
+            }
+
+            // 5️⃣ Generate your JWT
+            var userData = new List<Claim>();
+            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            userData.Add(new Claim("username", user.UserName));
+            userData.Add(new Claim(ClaimTypes.Email, user.Email));
+
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+                userData.Add(new Claim(ClaimTypes.Role, role));
+
+
+            #region SigningCredentials
+            var key = _config["JwtKey"];
+            var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+            var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
+            #endregion
+
+            JwtSecurityToken tokenObject = new JwtSecurityToken(
+                claims: userData,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: signingCredentials
+                );
+
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+
+             return Ok(new { token });
+        }
+
+
         [HttpPost("Register")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO _register)
@@ -87,7 +166,7 @@ namespace API.Controllers
             userData.Add(new Claim("userId", user.Id));
             userData.Add(new Claim(ClaimTypes.NameIdentifier ,user.Id));
             userData.Add(new Claim("username", _login.Username));
-            userData.Add(new Claim("email", user.Email));
+            userData.Add(new Claim(ClaimTypes.Email, user.Email));
 
             // Get user type from discriminator instead of GetType() to avoid proxy issues
             var userType = user is Owner ? "Owner" : user is Tenant ? "Tenant" : "Admin";
@@ -144,6 +223,3 @@ namespace API.Controllers
     }
 
 }
-
-
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZGE4NDY3YS04NTE5LTQ1MWEtOTE2ZS0xZTA4MWUzOTcwNmEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjhkYTg0NjdhLTg1MTktNDUxYS05MTZlLTFlMDgxZTM5NzA2YSIsInVzZXJuYW1lIjoiZWxzYWJhZ2giLCJlbWFpbCI6ImVsc2FiYWdoQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoyNjE2Nzg3MjkzfQ.OWk7wcqstF_3e9xh2NjeTSNlqejaAvE6zAEEJ8h62T8

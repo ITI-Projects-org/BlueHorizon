@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class v1 : Migration
+    public partial class initialize_schema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -219,8 +219,7 @@ namespace API.Migrations
                     AverageUnitRating = table.Column<float>(type: "real", nullable: false),
                     VerificationStatus = table.Column<int>(type: "int", nullable: false),
                     Contract = table.Column<int>(type: "int", nullable: false),
-                    ContractPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OwnerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ContractPath = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,12 +229,7 @@ namespace API.Migrations
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Units_AspNetUsers_OwnerId1",
-                        column: x => x.OwnerId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -295,7 +289,7 @@ namespace API.Migrations
                         column: x => x.UnitId,
                         principalTable: "Units",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -304,8 +298,8 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sender = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Reciever = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RecieverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BookingId = table.Column<int>(type: "int", nullable: false),
                     MessageContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -315,14 +309,14 @@ namespace API.Migrations
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Reciever",
-                        column: x => x.Reciever,
+                        name: "FK_Messages_AspNetUsers_RecieverId",
+                        column: x => x.RecieverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Sender",
-                        column: x => x.Sender,
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -542,14 +536,14 @@ namespace API.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Reciever",
+                name: "IX_Messages_RecieverId",
                 table: "Messages",
-                column: "Reciever");
+                column: "RecieverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Sender",
+                name: "IX_Messages_SenderId",
                 table: "Messages",
-                column: "Sender");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OwnerReviews_BookingId",
@@ -606,11 +600,6 @@ namespace API.Migrations
                 name: "IX_Units_OwnerId",
                 table: "Units",
                 column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Units_OwnerId1",
-                table: "Units",
-                column: "OwnerId1");
         }
 
         /// <inheritdoc />
