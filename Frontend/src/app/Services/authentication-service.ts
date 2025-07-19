@@ -40,15 +40,7 @@ export class AuthenticationService {
   }
   login(): Observable<{ token: string }> {
     let observable;
-    // delete this
-    this.loginDTO = {
-      email: 'ElSabagh@gmail.com',
-      role: 'Owner',
-      password: '123',
-      username: 'Mohamed_ElSabagh',
-      
-    };
-
+    
     return this.http
       .post<{ token: string }>(`${this.authUrl}/Login`, this.loginDTO)
       .pipe(tap((res) => {localStorage.setItem('token', res.token);
