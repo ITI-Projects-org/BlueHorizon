@@ -764,7 +764,7 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.OwnerVerificationDocument", b =>
                 {
                     b.HasOne("API.Models.Owner", "Owner")
-                        .WithMany()
+                        .WithMany("OwnerVerificationDocuments")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -799,7 +799,7 @@ namespace API.Migrations
                     b.HasOne("API.Models.Owner", "Owner")
                         .WithMany("Units")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Owner");
@@ -920,6 +920,8 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Owner", b =>
                 {
+                    b.Navigation("OwnerVerificationDocuments");
+
                     b.Navigation("Units");
                 });
 #pragma warning restore 612, 618

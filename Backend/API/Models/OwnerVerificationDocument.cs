@@ -10,6 +10,7 @@ namespace API.Models
     {
         [Key]
         public int Id { get; set; }
+        [ForeignKey(nameof(Owner))] 
         public string OwnerId { get; set; }
         public virtual Owner Owner { get; set; }
         public DocumentType DocumentType { get; set; }

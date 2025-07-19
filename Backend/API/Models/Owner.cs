@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
+
+    [NotMapped]
     public class Owner : ApplicationUser
     {
         public string BankAccountDetails { get; set; }
@@ -12,6 +14,7 @@ namespace API.Models
         [NotMapped]
         public float AverageOwnerRating { get; set; } // calculated field
         public virtual ICollection<Unit> Units { get; set; }
+        public virtual ICollection<OwnerVerificationDocument> OwnerVerificationDocuments { get; set; }
 
     }
 }

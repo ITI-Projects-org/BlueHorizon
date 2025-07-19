@@ -25,7 +25,10 @@ namespace API.Models
     
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+
+           
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
@@ -37,10 +40,17 @@ namespace API.Models
 
 
 
-            builder.Entity<Owner>()
-                .HasMany(o => o.Units)
-                .WithOne(u => u.Owner)
-                .HasForeignKey(u => u.OwnerId);
+            // builder.Entity<Owner>()
+            //     .HasMany(o => o.Units)
+            //     .WithOne(u => u.Owner)
+            //     .HasForeignKey(u => u.OwnerId);
+
+            builder.Entity<Unit>()
+                .HasOne(u => u.Owner)
+                .WithMany(o => o.Units)
+                .HasForeignKey(u => u.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
@@ -114,6 +124,8 @@ namespace API.Models
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+           
+
             // Message relationships
             builder.Entity<Message>()
                 .HasOne(m => m.SenderUser)
@@ -136,9 +148,13 @@ namespace API.Models
             // OwnerVerificationDocument relationships
             builder.Entity<OwnerVerificationDocument>()
                 .HasOne(o => o.Owner)
-                .WithMany()
+                .WithMany(o => o.OwnerVerificationDocuments)
                 .HasForeignKey(o => o.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+        
+
+
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Unit)
                 .WithMany(u => u.UnitAmenities)

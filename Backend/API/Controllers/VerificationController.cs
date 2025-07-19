@@ -1,3 +1,4 @@
+
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Azure;
@@ -70,8 +71,8 @@ namespace API.Controllers
         var allVerificationRequests = await _unit.OwnerVerificationDocumentRepository.GetAllAsync();
             if (allVerificationRequests == null || !allVerificationRequests.Any())
                 return Ok(new { Message = "No Requests Found" });
-            Task<IEnumerable<OwnerWithUnitVerificationDTO>>? OwnersUnitsWaitingForVerification 
-                = _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
+            IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification 
+                =await  _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
             
             return Ok(OwnersUnitsWaitingForVerification);
         }
@@ -89,3 +90,4 @@ namespace API.Controllers
 
     }
 }
+
