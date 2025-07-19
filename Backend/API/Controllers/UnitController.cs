@@ -38,7 +38,6 @@ namespace API.Controllers
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
 
-
                 // Handle contract document upload
                 //if (unitDto.ContractDocument != null)
                 //{
