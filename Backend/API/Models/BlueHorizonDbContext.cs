@@ -38,6 +38,7 @@ namespace API.Models
                 .WithOne(u => u.Owner)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
                 .HasValue<ApplicationUser>("Base")
@@ -111,6 +112,15 @@ namespace API.Models
                 .WithMany()
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // Unit relationships
+            builder.Entity<Unit>()
+                .HasOne(u => u.Owner)
+                .WithMany()
+                .HasForeignKey(u => u.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             // Message relationships
             builder.Entity<Message>()

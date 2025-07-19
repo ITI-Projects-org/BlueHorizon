@@ -21,10 +21,10 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("AddUnitstorent")]
-        //[Authorize(Roles = "Owner")]
 
-        public async Task<IActionResult> AddUnitstorent([FromBody] AddUnitDTO unitDto)
+        [Authorize(Roles = "Owner")]
+        [HttpPost]
+        public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
         {
             try
             {
@@ -34,10 +34,10 @@ namespace API.Controllers
 
                 var unit = _mapper.Map<Unit>(unitDto);
                 unit.OwnerId = userId;
+
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
-                unit.ContractPath = "jbghfdgsfhbjklmdfnslkm";
-                unit.Contract = DocumentType.OwnershipContract;
+
 
                 // Handle contract document upload
                 //if (unitDto.ContractDocument != null)
@@ -70,9 +70,10 @@ namespace API.Controllers
                     }
                     await _unitOfWork.SaveAsync();
                 }
+
                 unit.VerificationStatus = VerificationStatus.Pending;
 
-                return CreatedAtAction(nameof(AddUnitstorent), new { id = unit.Id }, unitDto);
+                return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unitDto);
             }
             catch (Exception ex)
             {
@@ -149,5 +150,6 @@ namespace API.Controllers
         }
 
         #endregion
+
     }
 }
