@@ -41,14 +41,6 @@ export class AuthenticationService {
   }
   login(loginDTO:LoginDTO): Observable<{ token: string }> {
     let observable;
-    // delete this
-    // this.loginDTO = {
-    //   email: 'ElSabagh@gmail.com',
-    //   role: 'Owner',
-    //   password: '123',
-    //   username: 'Mohamed_ElSabagh',
-      
-    // };
 
     return this.http
       .post<{ token: string }>(`${this.authUrl}/Login`, loginDTO)

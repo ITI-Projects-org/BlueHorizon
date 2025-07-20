@@ -1,5 +1,6 @@
 
-﻿using System.Security.Claims;
+
+using System.Security.Claims;
 using AutoMapper;
 using Azure;
 using Microsoft.AspNetCore.Authorization;
@@ -13,9 +14,9 @@ using CloudinaryDotNet.Actions;
 
 namespace API.Controllers
 {
-   [Route("api/[controller]")]
-   [ApiController]
-    
+    [Route("api/[controller]")]
+    [ApiController]
+
     public class VerificationController : ControllerBase
     {
         public IMapper _mapper { get; }
@@ -34,7 +35,8 @@ namespace API.Controllers
         //}
         [HttpPost("AddRequest")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> OwnerVerificationRequest([FromForm]OwnerWithUnitVerificationDTO ownerVerificationDTO){
+        public async Task<IActionResult> OwnerVerificationRequest([FromForm] OwnerWithUnitVerificationDTO ownerVerificationDTO)
+        {
             #region Verify Owner
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -51,7 +53,7 @@ namespace API.Controllers
             //ownerVerificationDocument.OwnerId = userId;
             //_unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
 
-            owner.VerificationStatus = VerificationStatus.Pending; 
+            owner.VerificationStatus = VerificationStatus.Pending;
             owner.VerificationDate = DateTime.Now;
             #endregion
 
@@ -68,30 +70,31 @@ namespace API.Controllers
 
             Unit unit = _mapper.Map<Unit>(ownerVerificationDTO);
             unit.ContractPath = imageUploadResult.Url.ToString();
-            
+
             _unit.UnitRepository.AddAsync(unit);
             //unit.UnitAmenities = ownerVerificationDTO.UnitAmenities;
             #endregion
-          
-            
+
+
             await _unit.SaveAsync();
             return Ok();
         }
 
         [HttpGet("Requests")]
-        [Authorize(Roles ="Admin")]
-        
-        public async Task<IActionResult> GetAllOwnersVerificationRequests() { 
-        // from DB to Angular    
-        var allVerificationRequests = await _unit.OwnerVerificationDocumentRepository.GetAllAsync();
+        [Authorize(Roles = "Admin")]
+
+        public async Task<IActionResult> GetAllOwnersVerificationRequests()
+        {
+            // from DB to Angular    
+            var allVerificationRequests = await _unit.OwnerVerificationDocumentRepository.GetAllAsync();
             if (allVerificationRequests == null || !allVerificationRequests.Any())
                 return Ok(new { Message = "No Requests Found" });
-            IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification 
-                =await  _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
-            
+            IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification
+                = await _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
+
             return Ok(OwnersUnitsWaitingForVerification);
         }
-        
+
         [HttpPost("Respond")]
         [Authorize(Roles = "Admin")]
         public async Task RespondToVerificationRequest([FromBody] RespondToVerificationRequestDTO respondDTO)
@@ -105,4 +108,3 @@ namespace API.Controllers
 
     }
 }
-
