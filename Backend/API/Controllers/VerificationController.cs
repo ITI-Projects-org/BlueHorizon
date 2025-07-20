@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using API.DTOs.VerificationDTO;
 using API.Models;
 using API.UnitOfWorks;
+using API.Repositories.Implementations;
+using API.Repositories.Interfaces;
+using CloudinaryDotNet.Actions;
 
 namespace API.Controllers
 {
@@ -17,11 +20,13 @@ namespace API.Controllers
     {
         public IMapper _mapper { get; }
         public IUnitOfWork _unit { get; }
+        public IPhotoService _photoService { get; }
 
-        public VerificationController(IMapper mapper, IUnitOfWork unit)
+        public VerificationController(IMapper mapper, IUnitOfWork unit, IPhotoService photoService)
         {
             _mapper = mapper;
             _unit = unit;
+            _photoService = photoService;
         }
         //public IActionResult Index()
         //{
@@ -29,7 +34,7 @@ namespace API.Controllers
         //}
         [HttpPost("AddRequest")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO){
+        public async Task<IActionResult> OwnerVerificationRequest([FromForm]OwnerWithUnitVerificationDTO ownerVerificationDTO){
             #region Verify Owner
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -56,13 +61,23 @@ namespace API.Controllers
             #endregion
 
             #region Verify Unit
+            ImageUploadResult imageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.ContractFile);
+            Console.WriteLine(imageUploadResult);
+            if (imageUploadResult.Error != null)
+                return BadRequest(imageUploadResult.Error.Message);
+
             Unit unit = _mapper.Map<Unit>(ownerVerificationDTO);
+            unit.ContractPath = imageUploadResult.Url.ToString();
+            
             _unit.UnitRepository.AddAsync(unit);
             //unit.UnitAmenities = ownerVerificationDTO.UnitAmenities;
             #endregion
+          
+            
             await _unit.SaveAsync();
             return Ok();
         }
+
         [HttpGet("Requests")]
         [Authorize(Roles ="Admin")]
         

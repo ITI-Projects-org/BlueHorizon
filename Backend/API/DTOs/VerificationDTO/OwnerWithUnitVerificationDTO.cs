@@ -37,6 +37,7 @@ namespace API.DTOs.VerificationDTO
         public virtual ICollection<UnitAmenity>? UnitAmenities { get; set; }
         public DocumentType Contract { get; set; }
         public string ContractPath { get; set; }
+        public IFormFile ContractFile { get; set; }
 
     }
 }

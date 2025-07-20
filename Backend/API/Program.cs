@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using API.Mappers;
 using API.Models;
 using API.UnitOfWorks;
+using API.Repositories.Interfaces;
+using API.Repositories.Implementations;
 //using API.MapperConfig;
 
 namespace API
@@ -16,7 +18,7 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddControllers();
             builder.Services.AddDbContext<VillageSystemDbContext>(options => 
             options.UseLazyLoadingProxies()
@@ -38,7 +40,7 @@ namespace API
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 
             // Configure the HTTP request pipeline.
