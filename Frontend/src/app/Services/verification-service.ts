@@ -1,0 +1,41 @@
+import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { OwnerVerificationDTO } from './../Models/owner-verification';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { RespondVerificationDTO } from '../Models/respond-verification-dto';
+import { isPlatformBrowser } from '@angular/common';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Verification {
+  private verificationURL = "https://localhost:7083/api/Verification"
+  private ownerVerificationDTO !:OwnerVerificationDTO;
+  constructor(private http:HttpClient, @Inject(PLATFORM_ID) private platformId: Object){}
+
+ 
+  VerifiyOwner(formData:FormData):Observable<any>{
+    return this.http.post<any>(`${this.verificationURL}/AddRequest`,formData,{headers:this.headers})
+    .pipe(tap(res=>console.log(res)));
+  }
+
+  GetPendingOwners():Observable<OwnerVerificationDTO[]>{
+    return this.http.get<OwnerVerificationDTO[]>(`${this.verificationURL}/Requests`,{headers:this.headers})
+  }
+  RespondToVerificationRequest(ResoondVerificationDTO:RespondVerificationDTO):Observable<any>{
+    return this.http.post(`${this.verificationURL}/Respond`,ResoondVerificationDTO,{headers:this.headers});
+  }
+  
+  private get headers(){
+    return new HttpHeaders({
+      // "Content-Type":"multipart/form-data",
+      Authorization: "Bearer "+ this.token
+    })
+  }
+  get token(){
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem("token")?.toString();
+    }
+    return null;
+  }
+}

@@ -4,13 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterDTO } from '../../Models/register-dto';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule], // Add CommonModule for ngClass
   templateUrl: './register.html',
-  standalone: true,
-  styleUrl: './register.css'
+  styleUrls: ['./register.css']
 })
 export class Register implements OnInit{
 
@@ -33,7 +34,7 @@ export class Register implements OnInit{
   
   registerDTO!:RegisterDTO;
 
-  Submit(){
+  Register(){
     console.log(this.registerForm.value);
     this.registerDTO=
     {

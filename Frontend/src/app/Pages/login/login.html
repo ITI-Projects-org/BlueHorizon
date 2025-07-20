@@ -1,1 +1,52 @@
-<p>login works!</p>
+<section class="page-title bg-overlay bg-overlay-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-white">Login</h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Login</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <h3 class="card-title mb-4 text-center">Sign In to Your Account</h3>
+                        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+                            <div class="form-group mb-3">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" class="form-control" formControlName="username"
+                                    [ngClass]="{'is-invalid': username.invalid && username.touched}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control" formControlName="email"
+                                    [ngClass]="{'is-invalid': email.invalid && email.touched}">
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" class="form-control" formControlName="password"
+                                    [ngClass]="{'is-invalid': password.invalid && password.touched}">
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-primary btn-block" type="submit">Login</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <a href="#">Forgot your password?</a>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span>Don't have an account? <a href="/register">Sign up</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

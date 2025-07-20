@@ -1,6 +1,6 @@
 <p>register works!</p>
 
-<form [formGroup]="registerForm" (submit)="Submit()">
+<form [formGroup]="registerForm" (submit)="Register()">
     <div class="form-control">
         <label>UserName</label><br>
         <input type="text" formControlName="username" [ngClass]="{'is-invalid':username.invalid && username.touched}">

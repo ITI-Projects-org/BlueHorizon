@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "/": {},
+    "/PendingOwners": {},
+    "/VerifyOwner": {},
+    "/home": {},
+    "/login": {},
+    "/register": {}
+  }
+}

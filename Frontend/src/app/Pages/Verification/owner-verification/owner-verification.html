@@ -1,0 +1,58 @@
+<section class="page-title bg-overlay bg-overlay-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-white">Owner Verification</h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Owner Verification</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <h3 class="card-title mb-4 text-center">Submit Your Verification</h3>
+                        <form [formGroup]="ownerForm" (submit)="Verify()">
+                            <div class="row">
+                                <div class="col-md-6 mb-3" *ngFor="let field of [
+                  {label:'Document Type', name:'DocumentType', type:'text'},
+                  {label:'Document Path', name:'DocumentPath', type:'text'},
+                  {label:'National ID', name:'NationalId', type:'text'},
+                  {label:'Bank Account Details', name:'BankAccountDetails', type:'text'},
+                  {label:'Title', name:'Title', type:'text'},
+                  {label:'Description', name:'Description', type:'text'},
+                  {label:'Unit Type', name:'UnitType', type:'text'},
+                  {label:'Bedrooms', name:'Bedrooms', type:'number'},
+                  {label:'Bathrooms', name:'Bathrooms', type:'number'},
+                  {label:'Sleeps', name:'Sleeps', type:'number'},
+                  {label:'Distance To Sea', name:'DistanceToSea', type:'number'},
+                  {label:'Base Price Per Night', name:'BasePricePerNight', type:'number'},
+                  {label:'Address', name:'Address', type:'text'},
+                  {label:'Village Name', name:'VillageName', type:'text'},
+                  {label:'Contract', name:'Contract', type:'text'},
+                  {label:'Contract Path', name:'ContractPath', type:'text'}
+                ]">
+                                    <label class="form-label">{{field.label}}</label>
+                                    <input [type]="field.type" class="form-control" [formControlName]="field.name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contract File</label>
+                                    <input type="file" class="form-control" (change)="onFileChange($event)">
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary btn-block" type="submit">Verify</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
