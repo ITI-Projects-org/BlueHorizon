@@ -1,7 +1,4 @@
-export interface Amenity
-{
-    
-}
-enum AmenityName{
-    
+export interface Amenity{
+    id:number;
+    name:string;
 }
