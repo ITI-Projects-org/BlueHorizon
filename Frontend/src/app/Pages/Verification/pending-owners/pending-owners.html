@@ -1,206 +1,43 @@
-<section class="page-title bg-overlay bg-overlay-dark">
+<main class="pending-owners-page py-5">
     <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="text-white">Pending Owners</h1>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Pending Owners</li>
-                </ol>
-            </div>
+        <h2 class="section-title mb-4">Pending Owner Verification Requests</h2>
+
+        <div *ngIf="!requests || requests.length === 0" class="alert alert-info" role="alert">
+            No pending owner verification requests at the moment.
+        </div>
+
+        <div *ngIf="requests && requests.length > 0" class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Request doc</th>
+                        <th>Owner Name</th>
+                        <th>Unit Title</th>
+                        <th>Upload Date</th>
+                        <th>Verification Status</th>
+                        <th>Request Contract</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let request of requests; trackBy: trackById">
+
+                        <!-- <td>{{ request.id }}</td> -->
+                        <img [src]="request.documentPath" />
+                        <td>{{ request.OwnerName }}</td>
+                        <td>{{ request.title }}</td>
+                        <td>{{ request.uploadDate | date:'mediumDate' }}</td>
+                        <td>{{ request.verificationStatus === 0 ? 'Pending' : 'Unknown' }}</td>
+                        <img [src]="request.contractPath" />
+                        <td>
+                            <button class="btn btn-success btn-sm me-2"
+                                (click)="Respond(request.unitId, 2, request.ownerId)">Approve</button>
+                            <button class="btn btn-danger btn-sm"
+                                (click)="Respond(request.unitId, 3, request.ownerId)">Reject</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-</section>
-
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h3 class="mb-4">Owners Awaiting Verification</h3>
-
-                @for (request of requests; track request.id) {
-                <div class="card mb-4 shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Verification Request #{{request.id}}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Owner Information -->
-                            <div class="col-md-6">
-                                <h6 class="text-primary">Owner Information</h6>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Owner ID:</strong></div>
-                                    <div class="col-8">{{request.ownerId || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Owner Name:</strong></div>
-                                    <div class="col-8">{{request.ownerName || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>National ID:</strong></div>
-                                    <div class="col-8">{{request.nationalId || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Bank Details:</strong></div>
-                                    <div class="col-8">{{request.bankAccountDetails || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Document Type:</strong></div>
-                                    <div class="col-8">{{request.documentType || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Document Path:</strong></div>
-                                    <div class="col-8">{{request.documentPath || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Upload Date:</strong></div>
-                                    <div class="col-8">{{request.uploadDate}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Status:</strong></div>
-                                    <div class="col-8">
-                                        <span class="badge badge-warning">Pending</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Unit Information -->
-                            <div class="col-md-6">
-                                <h6 class="text-primary">Unit Information</h6>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Unit ID:</strong></div>
-                                    <div class="col-8">{{request.unitId || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Title:</strong></div>
-                                    <div class="col-8">{{request.title || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Description:</strong></div>
-                                    <div class="col-8">{{request.description || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Unit Type:</strong></div>
-                                    <div class="col-8">{{request.unitType || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Address:</strong></div>
-                                    <div class="col-8">{{request.address || 'N/A'}}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Village:</strong></div>
-                                    <div class="col-8">{{request.villageName || 'N/A'}}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Unit Details -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6 class="text-primary">Unit Details</h6>
-                                <div class="row">
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Bedrooms:</strong> {{request.bedrooms || 'N/A'}}
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Bathrooms:</strong> {{request.bathrooms || 'N/A'}}
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Sleeps:</strong> {{request.sleeps || 'N/A'}}
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Distance to Sea:</strong> {{request.distanceToSea || 'N/A'}}m
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Base Price/Night:</strong> ${{request.basePricePerNight || 'N/A'}}
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Rating:</strong> {{request.averageUnitRating || 'N/A'}}/5
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Creation Date:</strong> {{request.creationDate}}
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <strong>Contract:</strong> {{request.contract || 'N/A'}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contract Information -->
-                        @if (request.contractPath) {
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6 class="text-primary">Contract Information</h6>
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Contract Path:</strong></div>
-                                    <div class="col-8">{{request.contractPath}}</div>
-                                </div>
-                                @if (request.contractPath) {
-                                <div class="row mb-2">
-                                    <div class="col-4"><strong>Contract Preview:</strong></div>
-                                    <div class="col-8">
-                                        <img [src]="request.contractPath" alt="Contract" class="img-thumbnail"
-                                            style="max-width: 200px; max-height: 200px;">
-                                    </div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
-
-                        <!-- Amenities -->
-                        @if (request.unitAmenities && request.unitAmenities.length > 0) {
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6 class="text-primary">Unit Amenities</h6>
-                                <div class="d-flex flex-wrap">
-                                    @for (amenity of request.unitAmenities; track amenity) {
-                                    <span class="badge badge-secondary mr-2 mb-2">{{amenity}}</span>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        }
-
-                        <!-- Verification Notes -->
-                        @if (request.verificationNotes) {
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6 class="text-primary">Verification Notes</h6>
-                                <p class="text-muted">{{request.verificationNotes}}</p>
-                            </div>
-                        </div>
-                        }
-
-                        <!-- Action Buttons -->
-                        <div class="row mt-4">
-                            <div class="col-12 text-center">
-                                <button class="btn btn-success mr-2"
-                                    (click)="Respond(request.unitId, 1, request.ownerId)">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-danger" (click)="Respond(request.unitId, 0, request.ownerId)">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                }
-
-                <!-- No Requests Message -->
-                @if (!requests || requests.length === 0) {
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="text-muted">No pending verification requests found.</h5>
-                        <p class="text-muted">All owners have been processed or there are no new requests.</p>
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-    </div>
-</section>
+</main>

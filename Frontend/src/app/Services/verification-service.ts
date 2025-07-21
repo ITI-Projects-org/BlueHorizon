@@ -14,9 +14,16 @@ export class Verification {
   constructor(private http:HttpClient, @Inject(PLATFORM_ID) private platformId: Object){}
 
  
-  VerifiyOwner(formData:FormData):Observable<any>{
-    return this.http.post<any>(`${this.verificationURL}/AddRequest`,formData,{headers:this.headers})
-    .pipe(tap(res=>console.log(res)));
+  VerifiyOwner(data: FormData) {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + localStorage.getItem('token')
+    );
+    // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
+    return this.http.post(this.verificationURL + '/AddRequest', data, {
+      headers: headers,
+      responseType: 'text'
+    });
   }
 
   GetPendingOwners():Observable<OwnerVerificationDTO[]>{

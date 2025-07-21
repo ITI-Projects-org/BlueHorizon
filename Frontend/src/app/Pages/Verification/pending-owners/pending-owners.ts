@@ -47,4 +47,8 @@ export class PendingOwners implements OnInit{
     }
     })
   }
+
+  trackById(index: number, item: any) {
+    return item.id;
+  }
 }

@@ -1,7 +1,8 @@
 export interface OwnerVerificationDTO {
   id :number|null;
   ownerId :string|null;
-  ownerName :string|null;
+  OwnerName :string|null;
+  DocumentFile :File  | null;
   DocumentType :number | string | null;
   DocumentPath :string|null;
   UploadDate :Date|null;

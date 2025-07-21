@@ -17,7 +17,9 @@ export class OwnerVerification {
 
   ownerForm = new FormGroup({
     DocumentType :new FormControl(0,[Validators.required]),
+    OwnerName:  new FormControl(''),
     DocumentPath :new FormControl(''),
+    DocumentFile :new FormControl(null),
     NationalId :new FormControl('',[Validators.required]),
     BankAccountDetails :new FormControl('',[Validators.required]),
     Title :new FormControl('',[Validators.required]),
@@ -46,10 +48,14 @@ export class OwnerVerification {
  
   })
 
-  onFileChange(event:any){
+  onContractFileChange(event:any){
     let file = event.target.files[0];
-    this.ownerForm.patchValue({ContractFile:file})
-  }
+    this.ownerForm.patchValue({ContractFile:file},
+    )}
+    onDocumentFileChange(event:any){
+    let file = event.target.files[0];
+    this.ownerForm.patchValue({DocumentFile:file},
+    )}
   
   getFormValidationErrors() {
     const errors: any[] = [];
@@ -67,24 +73,35 @@ export class OwnerVerification {
     });
     return errors;
   }
-  Verify(){ 
-    if(this.ownerForm.invalid){
+  Verify() {
+    if (this.ownerForm.invalid) {
       this.ownerForm.markAllAsTouched();
       return;
     }
-    
-    this.ownerDTO = { ... this.ownerForm.value } as OwnerVerificationDTO;
-    console.log('this.ownerDTO')
-    console.log(this.ownerDTO);
-    
-    // this.OwnerVerificationService.VerifiyOwner(payload ).subscribe({
+
     const formData = new FormData();
-    Object.entries(this.ownerForm.value).forEach(([key,value])=>{
-      formData.append(key, value as any);
-    })
+    const formValue = this.ownerForm.value;
+
+    // Manually append all form values EXCEPT the empty path fields
+    // to work around the backend validation issue.
+    for (const key in formValue) {
+      if (key !== 'DocumentPath' && key !== 'ContractPath') {
+        const value = formValue[key as keyof typeof formValue];
+        if (value !== null && value !== undefined) {
+          formData.append(key, value as any);
+        }
+      }
+    }
+
     this.OwnerVerificationService.VerifiyOwner(formData).subscribe({
-      next:res=>{},
-      error:err=>console.log(err)
+      next: res => {
+        console.log('Verification successful!', res);
+        // You can add a success message or navigate to another page here
+      },
+      error: err => {
+        console.error('Verification failed!', err);
+        // You can add logic here to display the backend error to the user
+      }
     });
   }
 
@@ -139,7 +156,8 @@ export class OwnerVerification {
   get ContractFile(){
     return this.ownerForm.controls["ContractFile"];
   }
-  // get UploadDate(){
-  //   return this.ownerForm.controls["UploadDate"];
-  // }
+   get DocumentFile(){
+    return this.ownerForm.controls["DocumentFile"];
+  }
+  
 }
