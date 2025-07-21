@@ -1,45 +1,67 @@
 <main class="pending-owners-page py-5">
     <div class="container">
-        <h2 class="section-title mb-4">Pending Owner Verification Requests</h2>
+        <h2 class="section-title mb-4 text-center">Pending Owner Verification Requests</h2>
 
         <div *ngIf="!requests || requests.length === 0" class="alert alert-info" role="alert">
             No pending owner verification requests at the moment.
         </div>
 
-        <div *ngIf="requests && requests.length > 0" class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>front Id</th>
-                        <th>back Id</th>
-                        <th>Owner Name</th>
-                        <th>Unit Title</th>
-                        <th>Upload Date</th>
-                        <th>Verification Status</th>
-                        <th>Request Contract</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let request of requests; trackBy: trackById">
+        <div class="row g-4" *ngIf="requests && requests.length > 0">
+            <div class="col-md-6 col-lg-4" *ngFor="let request of requests; trackBy: trackById">
+                <div class="card shadow-sm pending-owner-card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ request.ownerName || 'Unknown Owner' }}</h5>
+                        <span class="badge bg-warning text-dark ms-2">Pending</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3 text-center">
+                            <img *ngIf="request.frontNationalIdDocumentPath" [src]="request.frontNationalIdDocumentPath"
+                                width="100" class="rounded me-2" alt="Front National ID" />
+                            <img *ngIf="request.backNationalIdDocumentPath" [src]="request.backNationalIdDocumentPath"
+                                width="100" class="rounded" alt="Back National ID" />
+                        </div>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item"><strong>Document Type:</strong> {{ request.documentType }}</li>
+                            <li class="list-group-item"><strong>National ID:</strong> {{ request.nationalId }}</li>
+                            <li class="list-group-item"><strong>Bank Details:</strong> {{ request.bankAccountDetails }}
+                            </li>
+                            <li class="list-group-item"><strong>Upload Date:</strong> {{ request.uploadDate |
+                                date:'mediumDate' }}</li>
 
-                        <!-- <td>{{ request.id }}</td> -->
-                        <img [src]="request.frontNationalIdDocumentPath" />
-                        <img [src]="request.backNationalIdDocumentPath" />
-                        <td>{{ request.OwnerName }}</td>
-                        <td>{{ request.title }}</td>
-                        <td>{{ request.uploadDate | date:'mediumDate' }}</td>
-                        <td>{{ request.verificationStatus === 0 ? 'Pending' : 'Unknown' }}</td>
-                        <img [src]="request.contractPath" />
-                        <td>
-                            <button class="btn btn-success btn-sm me-2"
-                                (click)="Respond(request.unitId, 2, request.ownerId)">Approve</button>
-                            <button class="btn btn-danger btn-sm"
-                                (click)="Respond(request.unitId, 3, request.ownerId)">Reject</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </ul>
+                        <div class="mb-3">
+                            <img *ngIf="request.contractPath" [src]="request.contractPath" width="100" class="rounded"
+                                alt="Contract" />
+                        </div>
+                        <div class="mb-3">
+                            <strong>Property:</strong>
+                            <div>{{ request.title }}</div>
+                            <div class="text-muted small">{{ request.description }}</div>
+                            <div class="mt-2">
+                                <span class="badge bg-info me-1">Type: {{ request.unitType }}</span>
+                                <span class="badge bg-secondary me-1">Beds: {{ request.bedrooms }}</span>
+                                <span class="badge bg-secondary me-1">Baths: {{ request.bathrooms }}</span>
+                                <span class="badge bg-secondary me-1">Sleeps: {{ request.sleeps }}</span>
+                                <span class="badge bg-light text-dark me-1">Sea: {{ request.distanceToSea }}m</span>
+                                <span class="badge bg-success me-1">EGP {{ request.basePricePerNight }}</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-muted small">{{ request.address }}, {{ request.villageName }}</span>
+                            </div>
+                            <div class="mt-2">
+                                <span *ngFor="let amenity of request.unitAmenities"
+                                    class="badge bg-light text-dark me-1">{{ amenity }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                        <button class="btn btn-success btn-sm"
+                            (click)="Respond(request.unitId, 2, request.ownerId)">Approve</button>
+                        <button class="btn btn-danger btn-sm"
+                            (click)="Respond(request.unitId, 3, request.ownerId)">Reject</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </main>
