@@ -151,6 +151,17 @@
                     </li>
                 </ul>
             </div>
+            <!-- Amenities -->
+            <div class="form-group">
+                <label>Amenities</label>
+                <div class="amenities-checkboxes">
+                    <div *ngFor="let amenity of amenities" class="form-check">
+                        <input type="checkbox" [value]="amenity.id" (change)="onAmenityChange($event)"
+                            class="form-check-input" [id]="'amenity-' + amenity.id">
+                        <label class="form-check-label" [for]="'amenity-' + amenity.id">{{ amenity.name }}</label>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 </main>

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Verification } from '../../../Services/verification-service';
 import { OwnerVerificationDTO } from '../../../Models/owner-verification';
+import { Amenity } from '../../../Models/Amenity';
 
 
 @Component({
@@ -11,10 +12,15 @@ import { OwnerVerificationDTO } from '../../../Models/owner-verification';
   templateUrl: './owner-verification.html',
   styleUrl: './owner-verification.css'
 })
-export class OwnerVerification {
+export class OwnerVerification implements OnInit{
   constructor(private OwnerVerificationService:Verification) {}
+  selectedAmenityIds: number[] = [];
   ownerDTO!:OwnerVerificationDTO;
-
+  amenities:Amenity[] = [
+    // { id: 1, name: 'Wifi' },
+    // { id: 2, name: 'Pool' },
+    // { id: 3, name: 'Air Conditioning' },
+  ];
   ownerForm = new FormGroup({
     DocumentType :new FormControl(0,[Validators.required]),
     OwnerName:  new FormControl(''),
@@ -50,7 +56,24 @@ export class OwnerVerification {
   // UnitId :new FormControl('',[Validators.required]),
  
   })
-
+  ngOnInit(): void {
+    this.OwnerVerificationService.GetAllAmenities().subscribe({
+      next:res=>{
+        console.log("Amenities loaded =");
+        console.log(res);
+        this.amenities = res as unknown as Amenity[]; },
+      error:e=>console.log(e)
+    });
+  }
+  onAmenityChange(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const id = parseInt(checkbox.value, 10);
+    if (checkbox.checked) {
+      this.selectedAmenityIds.push(id);
+    } else {
+      this.selectedAmenityIds = this.selectedAmenityIds.filter(a => a !== id);
+    }
+  }
   onContractFileChange(event:any){
     let file = event.target.files[0];
     this.ownerForm.patchValue({ContractFile:file},
@@ -99,6 +122,13 @@ export class OwnerVerification {
         }
       }
     }
+
+    this.selectedAmenityIds.forEach(id => {
+      formData.append('AmenityIds', id.toString());
+      console.log('Selected Amenity ID:', id);
+    });
+
+    this.selectedAmenityIds = [];
 
     this.OwnerVerificationService.VerifiyOwner(formData).subscribe({
       next: res => {

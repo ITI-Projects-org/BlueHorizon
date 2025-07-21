@@ -3,6 +3,7 @@ using API.DTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
+using API.DTOs.AmenityDTOs;
 
 namespace API.Mappers
 {
@@ -17,6 +18,7 @@ namespace API.Mappers
             CreateMap<Owner, OwnerWithUnitVerificationDTO>().ReverseMap();
             CreateMap<RegisterDTO,Admin>().ReverseMap();
             CreateMap<Unit, OwnerWithUnitVerificationDTO>().ReverseMap();
+            CreateMap<AmenityDTO, Amenity>().ReverseMap();
         }
     }
 }

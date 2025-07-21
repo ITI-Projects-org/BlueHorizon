@@ -57,13 +57,21 @@ namespace API.Controllers
 
             #region Table VerificationOwnerDocument
             OwnerVerificationDocument doc = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+            ImageUploadResult? FrontImageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.FrontNationalIdDocument);
+            ImageUploadResult? BackImageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.BackNationalIdDocument);
+            if (FrontImageUploadResult.Error != null || FrontImageUploadResult.Error != null)
+                return BadRequest(FrontImageUploadResult.Error.Message);
+            doc.FrontNationalIdDocumentPath = FrontImageUploadResult.Url.ToString();
+            doc.BackNationalIdDocumentPath = BackImageUploadResult.Url.ToString();
+            doc.UploadDate = DateTime.Now;
             _unit.OwnerVerificationDocumentRepository.AddAsync(doc);
+            
             #endregion
 
             #region Verify Unit
             ImageUploadResult imageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.ContractFile);
-            Console.WriteLine(imageUploadResult);
-            if (imageUploadResult.Error != null)
+            
+            if (imageUploadResult.Error != null )
                 return BadRequest(imageUploadResult.Error.Message);
 
             Unit unit = _mapper.Map<Unit>(ownerVerificationDTO);
@@ -72,8 +80,34 @@ namespace API.Controllers
             _unit.UnitRepository.AddAsync(unit);
             //unit.UnitAmenities = ownerVerificationDTO.UnitAmenities;
             #endregion
-          
-            
+
+            #region Add Amenities
+            //if(ownerVerificationDTO.UnitAmenities !=null && ownerVerificationDTO.UnitAmenities.Any())
+            //{
+            //    foreach(var amenity in ownerVerificationDTO.UnitAmenities)
+            //    {
+
+            //    }
+            //}
+            await _unit.SaveAsync();
+
+            if (ownerVerificationDTO.AmenityIds != null && ownerVerificationDTO.AmenityIds.Any())
+            {
+                foreach (var amenityId in ownerVerificationDTO.AmenityIds)
+                {
+                    var unitAmenity = new UnitAmenity
+                    {
+                        UnitId = unit.Id,
+                        AmenityId = amenityId
+                    };
+                    await _unit.UnitAmenityRepository.AddAsync(unitAmenity);
+                }
+                await _unit.SaveAsync();
+            }
+
+
+            #endregion
+
             await _unit.SaveAsync();
             return Ok();
         }

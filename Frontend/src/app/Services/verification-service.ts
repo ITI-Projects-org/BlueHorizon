@@ -10,6 +10,8 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class Verification {
   private verificationURL = "https://localhost:7083/api/Verification"
+  private AmenityURL = "https://localhost:7083/api/Amenity"
+
   private ownerVerificationDTO !:OwnerVerificationDTO;
   constructor(private http:HttpClient, @Inject(PLATFORM_ID) private platformId: Object){}
 
@@ -33,6 +35,9 @@ export class Verification {
     return this.http.post(`${this.verificationURL}/Respond`,ResoondVerificationDTO,{headers:this.headers});
   }
   
+  GetAllAmenities():Observable<{id:number,name:string}>{
+    return this.http.get<{id:number,name:string}>(`${this.AmenityURL}`);
+  }
   private get headers(){
     return new HttpHeaders({
       // "Content-Type":"multipart/form-data",

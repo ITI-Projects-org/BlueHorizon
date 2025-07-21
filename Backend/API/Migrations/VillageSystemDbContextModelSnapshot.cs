@@ -294,12 +294,16 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DocumentPath")
+                    b.Property<string>("BackNationalIdDocumentPath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
+
+                    b.Property<string>("FrontNationalIdDocumentPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalId")
                         .IsRequired()
@@ -465,6 +469,28 @@ namespace API.Migrations
                     b.HasIndex("AmenityId");
 
                     b.ToTable("UnitAmenities");
+                });
+
+            modelBuilder.Entity("API.Models.UnitImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("UnitImages");
                 });
 
             modelBuilder.Entity("API.Models.UnitReview", b =>
@@ -824,6 +850,17 @@ namespace API.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("API.Models.UnitImage", b =>
+                {
+                    b.HasOne("API.Models.Unit", "Unit")
+                        .WithMany("UnitImages")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unit");
+                });
+
             modelBuilder.Entity("API.Models.UnitReview", b =>
                 {
                     b.HasOne("API.Models.Booking", "Booking")
@@ -916,6 +953,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Unit", b =>
                 {
                     b.Navigation("UnitAmenities");
+
+                    b.Navigation("UnitImages");
                 });
 
             modelBuilder.Entity("API.Models.Owner", b =>
