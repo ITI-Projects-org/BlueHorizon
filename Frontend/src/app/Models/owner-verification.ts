@@ -30,6 +30,5 @@ export interface OwnerVerificationDTO {
   Contract :number | string | null;
   ContractPath :string|null;
   ContractFile : File | null;
-  UnitAmenities:string[]|null;
-
+  UnitAmenities:number[]|null;
 }
