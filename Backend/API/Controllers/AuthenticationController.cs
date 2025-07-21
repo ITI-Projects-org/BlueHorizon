@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +10,6 @@ using API.DTOs.AuthenticationDTO;
 using API.Models;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication;
 namespace API.Controllers
 {
     [ApiController]
@@ -26,149 +25,6 @@ namespace API.Controllers
             _mapper = mapper;
             _config = config;
         }
-
-
-        [HttpGet("google-signup/{role}")]
-        public IActionResult GoogleSignup(string role)
-        {
-            var redirectUrl = Url.Action("GoogleSignupCallback", "Authentication");
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
-            properties.Items["role"] = role;
-            return Challenge(properties, "Google");
-        }
-
-        [HttpGet("google-signup-callback")]
-        public async Task<IActionResult> GoogleSignupCallback()
-        {
-            try
-            {
-                var result = await HttpContext.AuthenticateAsync("Google");
-                var desiredRole = result.Properties.Items["role"] ?? "Tenant";
-                if (!result.Succeeded)
-                    return BadRequest("Google authentication failed.");
-
-                var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-                if (email == null)
-                    return BadRequest("No email claim from Google.");
-
-                var name = email.Split("@")[0];
-
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
-                {
-
-                    var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
-                    user = _mapper.Map<Tenant>(dto);
-                    var createResult = await _userManager.CreateAsync(user);
-                    if (!createResult.Succeeded)
-                        return BadRequest(createResult.Errors.Select(e => e.Description));
-                    await _userManager.AddToRoleAsync(user, desiredRole);
-                }
-                else
-                {
-                    return BadRequest("user already exists");
-                }
-
-
-                var userData = new List<Claim>();
-                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                userData.Add(new Claim("username", user.UserName));
-                userData.Add(new Claim(ClaimTypes.Email, user.Email));
-
-
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                    userData.Add(new Claim(ClaimTypes.Role, role));
-
-
-                #region SigningCredentials
-                var key = _config["JwtKey"];
-                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-                #endregion
-
-                JwtSecurityToken tokenObject = new JwtSecurityToken(
-                    claims: userData,
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: signingCredentials
-                    );
-
-                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-                return Ok(new { token });
-            }
-            catch(Exception e)
-            {
-                return BadRequest($"an unexpected error occured: {e}");
-            }
-        }
-
-        [HttpGet("google-login")]
-        public IActionResult GoogleLogin()
-        {
-            var redirectUrl = Url.Action("GoogleLoginCallback", "Authentication");
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
-            return Challenge(properties, "Google");
-        }
-
-        [HttpGet("google-login-callback")]
-        public async Task<IActionResult> GoogleLoginCallback()
-        {
-            try
-            {
-                var result = await HttpContext.AuthenticateAsync("Google");
-
-                if (!result.Succeeded)
-                    return BadRequest("Google authentication failed.");
-
-
-                var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-
-                if (email == null)
-                    return BadRequest("No email claim from Google.");
-
-
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
-                {
-                    return BadRequest("user is not found");
-                }
-
-
-                var userData = new List<Claim>();
-                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                userData.Add(new Claim("username", user.UserName));
-                userData.Add(new Claim(ClaimTypes.Email, user.Email));
-
-
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                    userData.Add(new Claim(ClaimTypes.Role, role));
-
-
-                #region SigningCredentials
-                var key = _config["JwtKey"];
-                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-                #endregion
-
-                JwtSecurityToken tokenObject = new JwtSecurityToken(
-                    claims: userData,
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: signingCredentials
-                    );
-
-                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-                return Ok(new { token });
-            }
-            catch(Exception e)
-            {
-                return BadRequest($"an unexpected error occured: {e}");
-            }
-        }
-
-
         [HttpPost("Register")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO _register)
@@ -231,7 +87,7 @@ namespace API.Controllers
             userData.Add(new Claim("userId", user.Id));
             userData.Add(new Claim(ClaimTypes.NameIdentifier ,user.Id));
             userData.Add(new Claim("username", _login.Username));
-            userData.Add(new Claim(ClaimTypes.Email, user.Email));
+            userData.Add(new Claim("email", user.Email));
 
             // Get user type from discriminator instead of GetType() to avoid proxy issues
             var userType = user is Owner ? "Owner" : user is Tenant ? "Tenant" : "Admin";
@@ -288,3 +144,5 @@ namespace API.Controllers
     }
 
 }
+
+

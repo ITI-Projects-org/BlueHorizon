@@ -3,8 +3,7 @@ using API.Models;
 
 namespace API.DTOs.VerificationDTO
 {
-    public class OwnerWithUnitVerificationDTO
-    {
+    public class OwnerWithUnitVerificationDTO{
         public int? Id { get; set; }
         public string? OwnerId { get; set; }
         public string? OwnerName { get; set; }
@@ -14,7 +13,7 @@ namespace API.DTOs.VerificationDTO
         public DateTime? UploadDate { get; set; } // 
         public string NationalId { get; set; }
         public virtual Unit? Unit { get; set; }
-
+        
 
         public string? VerificationNotes { get; set; }
         public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.NotVerified;
