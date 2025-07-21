@@ -10,7 +10,8 @@
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>Request doc</th>
+                        <th>front Id</th>
+                        <th>back Id</th>
                         <th>Owner Name</th>
                         <th>Unit Title</th>
                         <th>Upload Date</th>
@@ -23,7 +24,8 @@
                     <tr *ngFor="let request of requests; trackBy: trackById">
 
                         <!-- <td>{{ request.id }}</td> -->
-                        <img [src]="request.documentPath" />
+                        <img [src]="request.frontNationalIdDocumentPath" />
+                        <img [src]="request.backNationalIdDocumentPath" />
                         <td>{{ request.OwnerName }}</td>
                         <td>{{ request.title }}</td>
                         <td>{{ request.uploadDate | date:'mediumDate' }}</td>

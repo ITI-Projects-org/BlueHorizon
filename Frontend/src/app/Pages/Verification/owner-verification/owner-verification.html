@@ -11,12 +11,23 @@
                     <div class="col-md-6 mb-3">
 
                         <div class="mb-3">
-                            <label for="DocumentFile" class="form-label">Upload Document File <span
+                            <label for="FrontDocumentFile" class="form-label">Upload Front National Id File <span
                                     class="text-danger">*</span></label>
-                            <input type="file" id="DocumentFile" class="form-control"
-                                (change)="onDocumentFileChange($event)"
-                                [class.is-invalid]="DocumentFile.invalid && DocumentFile.touched">
-                            <div *ngIf="DocumentFile.invalid && DocumentFile.touched" class="invalid-feedback">
+                            <input type="file" id="FrontDocumentFile" class="form-control"
+                                (change)="onFrontDocumentFileChange($event)"
+                                [class.is-invalid]="FrontDocumentFile.invalid && FrontDocumentFile.touched">
+                            <div *ngIf="FrontDocumentFile.invalid && FrontDocumentFile.touched"
+                                class="invalid-feedback">
+                                Document File is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="BackDocumentFile" class="form-label">Upload Back Id Document File <span
+                                    class="text-danger">*</span></label>
+                            <input type="file" id="BackDocumentFile" class="form-control"
+                                (change)="onBackDocumentFileChange($event)"
+                                [class.is-invalid]="BackDocumentFile.invalid && BackDocumentFile.touched">
+                            <div *ngIf="BackDocumentFile.invalid && BackDocumentFile.touched" class="invalid-feedback">
                                 Document File is required.
                             </div>
                         </div>

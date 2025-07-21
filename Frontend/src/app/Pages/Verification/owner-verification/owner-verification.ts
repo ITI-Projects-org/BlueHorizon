@@ -18,8 +18,11 @@ export class OwnerVerification {
   ownerForm = new FormGroup({
     DocumentType :new FormControl(0,[Validators.required]),
     OwnerName:  new FormControl(''),
-    DocumentPath :new FormControl(''),
-    DocumentFile :new FormControl(null),
+    FrontNationalIdDocumentPath :new FormControl(''),
+    BackNationalIdDocumentPath :new FormControl(''),
+    FrontNationalIdDocument :new FormControl(null),
+    BackNationalIdDocument :new FormControl(null),
+    
     NationalId :new FormControl('',[Validators.required]),
     BankAccountDetails :new FormControl('',[Validators.required]),
     Title :new FormControl('',[Validators.required]),
@@ -39,10 +42,10 @@ export class OwnerVerification {
     UnitAmenities:new FormControl([]),
     VerificationStatus  :new FormControl(0,[Validators.required]),
     ContractFile: new FormControl(null),
+    UploadDate :new FormControl(new Date().toISOString()),
   // id :new FormControl('',[Validators.required]),
   // ownerId :new FormControl('',[Validators.required]),
   // ownerName :new FormControl('',[Validators.required]),
-  // UploadDate :new FormControl(Date.now,[Validators.required]),
   // VerificationNotes :new FormControl('',[Validators.required]),
   // UnitId :new FormControl('',[Validators.required]),
  
@@ -52,9 +55,13 @@ export class OwnerVerification {
     let file = event.target.files[0];
     this.ownerForm.patchValue({ContractFile:file},
     )}
-    onDocumentFileChange(event:any){
+    onFrontDocumentFileChange(event:any){
     let file = event.target.files[0];
-    this.ownerForm.patchValue({DocumentFile:file},
+    this.ownerForm.patchValue({FrontNationalIdDocument:file},
+    )}
+    onBackDocumentFileChange(event:any){
+    let file = event.target.files[0];
+    this.ownerForm.patchValue({BackNationalIdDocument:file},
     )}
   
   getFormValidationErrors() {
@@ -108,8 +115,11 @@ export class OwnerVerification {
   get DocumentType(){
     return this.ownerForm.controls["DocumentType"];
   }
-  get DocumentPath(){
-    return this.ownerForm.controls["DocumentPath"];
+  get FrontDocumentPath(){
+    return this.ownerForm.controls["FrontNationalIdDocumentPath"];
+  }
+  get BackDocumentPath(){
+    return this.ownerForm.controls["BackNationalIdDocumentPath"];
   }
   get NationalId(){
     return this.ownerForm.controls["NationalId"];
@@ -156,8 +166,11 @@ export class OwnerVerification {
   get ContractFile(){
     return this.ownerForm.controls["ContractFile"];
   }
-   get DocumentFile(){
-    return this.ownerForm.controls["DocumentFile"];
+   get FrontDocumentFile(){
+    return this.ownerForm.controls["FrontNationalIdDocument"];
+  }
+   get BackDocumentFile(){
+    return this.ownerForm.controls["BackNationalIdDocument"];
   }
   
 }
