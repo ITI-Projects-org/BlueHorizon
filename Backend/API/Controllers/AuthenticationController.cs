@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +11,10 @@ using API.Models;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Identity.Data;
+using API.Services.Interfaces;
 namespace API.Controllers
 {
     [ApiController]
@@ -19,12 +23,14 @@ namespace API.Controllers
     {
         public UserManager<ApplicationUser> _userManager { get; }
         public IMapper _mapper { get; set; }
-        public IConfiguration _config;
-        public AuthenticationController(UserManager<ApplicationUser> userManager, IMapper mapper, IConfiguration config)
+        public IConfiguration _config { get; set; }
+        public IAuthService _authService { get; set; }
+        public AuthenticationController(UserManager<ApplicationUser> userManager, IMapper mapper, IConfiguration config, IAuthService authService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _config = config;
+            _authService = authService;
         }
 
 
@@ -69,33 +75,16 @@ namespace API.Controllers
                     return BadRequest("user already exists");
                 }
 
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmUrl = Url.Action(
+                    "ConfirmEmail",
+                 "Authentication",
+                    new { userId = user.Id, token },
+                    Request.Scheme);
 
-                var userData = new List<Claim>();
-                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                userData.Add(new Claim("username", user.UserName));
-                userData.Add(new Claim(ClaimTypes.Email, user.Email));
+                await _authService.SendEmailConfirmation(user, confirmUrl);
 
-
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                    userData.Add(new Claim(ClaimTypes.Role, role));
-
-
-                #region SigningCredentials
-                var key = _config["JwtKey"];
-                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-                #endregion
-
-                JwtSecurityToken tokenObject = new JwtSecurityToken(
-                    claims: userData,
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: signingCredentials
-                    );
-
-                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-                return Ok(new { token });
+                return Ok(new { Message = "registerd" });
             }
             catch(Exception e)
             {
@@ -134,33 +123,18 @@ namespace API.Controllers
                     return BadRequest("user is not found");
                 }
 
-
-                var userData = new List<Claim>();
-                userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                userData.Add(new Claim("username", user.UserName));
-                userData.Add(new Claim(ClaimTypes.Email, user.Email));
+                if (!await _userManager.IsEmailConfirmedAsync(user))
+                    return BadRequest("You must confirm your email before logging in.");
 
 
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                    userData.Add(new Claim(ClaimTypes.Role, role));
+                var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = refreshExpiry;
+                await _userManager.UpdateAsync(user);
 
-                #region SigningCredentials
-                var key = _config["JwtKey"];
-                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-                var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-                #endregion
+                return Ok(new { accessToken, refreshToken });
 
-                JwtSecurityToken tokenObject = new JwtSecurityToken(
-                    claims: userData,
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: signingCredentials
-                    );
-
-                var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-                return Ok(new { token });
             }
             catch(Exception e)
             {
@@ -187,6 +161,15 @@ namespace API.Controllers
                     if (!result.Succeeded)
                         return BadRequest(result.Errors.Select(e => e.Description));
                    await _userManager.AddToRoleAsync(tenant, _register.Role);
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(tenant);
+                    var confirmUrl = Url.Action(
+                        "ConfirmEmail",
+                     "Authentication",
+                        new { userId = tenant.Id, token },
+                        Request.Scheme);
+
+                    await _authService.SendEmailConfirmation(tenant, confirmUrl);
                 }
                 else if (_register.Role == "Owner")
                 {
@@ -195,6 +178,15 @@ namespace API.Controllers
                     if (!result.Succeeded)
                         return BadRequest(result.Errors.Select(e => e.Description));
                     await _userManager.AddToRoleAsync(owner, _register.Role);
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(owner);
+                    var confirmUrl = Url.Action(
+                        "ConfirmEmail",
+                     "Authentication",
+                        new { userId = owner.Id, token },
+                        Request.Scheme);
+
+                    await _authService.SendEmailConfirmation(owner, confirmUrl);
                 }
                 else if (_register.Role == "Admin")
                 {
@@ -203,10 +195,20 @@ namespace API.Controllers
                     if (!result.Succeeded)
                         return BadRequest(result.Errors.Select(e => e.Description));
                     await _userManager.AddToRoleAsync(admin, _register.Role);
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(admin);
+                    var confirmUrl = Url.Action(
+                        "ConfirmEmail",
+                     "Authentication",
+                        new { userId = admin.Id, token },
+                        Request.Scheme);
+
+                    await _authService.SendEmailConfirmation(admin, confirmUrl);
                 }
 
                 else
                     return BadRequest("Invalid Role");
+
                 return Ok(new { Message = "registerd" });
             }
             catch (Exception err)
@@ -223,49 +225,122 @@ namespace API.Controllers
             if (!ModelState.IsValid) return BadRequest("Not Valid Form Data!");
             var user = await _userManager.FindByEmailAsync(_login.Email);
             if (user == null) return Unauthorized("This Email Doesn't Exists ");
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return BadRequest("You must confirm your email before logging in.");
+
             var IsCorrectPassword = await _userManager.CheckPasswordAsync(user, _login.Password);
             if (!IsCorrectPassword) return Unauthorized("Wrong Email or Password");
 
-            #region Claims
-            var userData = new List<Claim>();
-            userData.Add(new Claim("userId", user.Id));
-            userData.Add(new Claim(ClaimTypes.NameIdentifier ,user.Id));
-            userData.Add(new Claim("username", _login.Username));
-            userData.Add(new Claim(ClaimTypes.Email, user.Email));
+            var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
-            // Get user type from discriminator instead of GetType() to avoid proxy issues
-            var userType = user is Owner ? "Owner" : user is Tenant ? "Tenant" : "Admin";
-            //userData.Add(new Claim(ClaimTypes.Role, userType));
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = refreshExpiry;
+            await _userManager.UpdateAsync(user);
 
-            var roles = await _userManager.GetRolesAsync(user);
-            Console.WriteLine($"User {user.Email} has roles: {string.Join(", ", roles)}"); // Debug line
-
-            foreach (var role in roles)
-                userData.Add(new Claim(ClaimTypes.Role, role));
-
-            // If no roles found, add a default role or log it
-            if (!roles.Any())
-                Console.WriteLine($"Warning: User {user.Email} has no roles assigned!");
-
-
-            #endregion
-            #region SigningCredentials
-            var key = _config["JwtKey"];
-            var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-            var signingCredentials = new SigningCredentials(secreteKey, SecurityAlgorithms.HmacSha256);
-            #endregion
-
-            JwtSecurityToken tokenObject = new JwtSecurityToken(
-                claims: userData,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: signingCredentials
-                );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-            return Ok(new { token, roles = roles.ToList() }); // Return roles in response for debugging
+            return Ok(new { accessToken, refreshToken });
 
         }
 
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDTO req)
+        {
+            var principal = _authService.GetPrincipalFromExpiredToken(req.AccessToken);
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return BadRequest("Invalid access token");
+
+            
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return Unauthorized("User not found");
+
+            
+            if (user.RefreshToken != req.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                return Unauthorized("Invalid or expired refresh token");
+
+            
+            var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = refreshExpiry;
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new { accessToken, refreshToken });
+        }
+
+
+        [HttpGet("confirm-email")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+                return BadRequest("Invalid confirmation request.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+                return BadRequest("Email confirmation failed.");
+
+            // Optionally redirect to a static Angular page
+            //    return Redirect("http://localhost:4200/email-confirmed");
+
+            return Ok("Email confirmed successfully.");
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                return Ok("If the email is registered, a reset link has been sent.");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var resetLink = Url.Action("ResetPassword", "Auth", new
+            {
+                token = token,
+                email = user.Email
+            }, Request.Scheme);
+
+            // Send email with resetLink
+            await _authService.SendResetPassword(user, resetLink);
+
+            return Ok("If the email is registered, a reset link has been sent.");
+        }
+
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return BadRequest("Invalid request.");
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok("Password has been reset successfully.");
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequestDTO model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok("Password changed successfully.");
+        }
 
         [HttpGet("Tenant")]
         [Authorize(Roles = "Tenant")]

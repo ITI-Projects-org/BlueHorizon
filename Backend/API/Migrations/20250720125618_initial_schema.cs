@@ -45,6 +45,8 @@ namespace API.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PhoneNumber = table.Column<int>(type: "int", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     BankAccountDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     VerificationStatus = table.Column<int>(type: "int", nullable: true),

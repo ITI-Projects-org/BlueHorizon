@@ -5,6 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 using API.Mappers;
 using API.Models;
 using API.UnitOfWorks;
+using API.Services.Interfaces;
+using API.Services.Implementation;
+using Microsoft.AspNetCore.Identity.UI.Services;
 //using API.MapperConfig;
 
 namespace API
@@ -38,8 +41,9 @@ namespace API
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
-
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             // Configure the HTTP request pipeline.
             builder.Services.AddAuthentication(options =>
