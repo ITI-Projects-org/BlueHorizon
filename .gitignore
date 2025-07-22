@@ -423,3 +423,11 @@ yarn-error.log*
 # Editor and OS-specific files
 .DS_Store
 Thumbs.db
+/Backend/API/Migrations/20250719133633_initial.cs
+/Backend/API/Migrations/20250719133633_initial.Designer.cs
+/Backend/API/Migrations/20250721153100_v10.cs
+/Backend/API/Migrations/20250721153100_v10.Designer.cs
+/Backend/API/Migrations/20250721230925_v11.cs
+/Backend/API/Migrations/20250721230925_v11.Designer.cs
+/Backend/API/Migrations/20250722112155_initial.cs
+/Backend/API/Migrations/20250722112155_initial.Designer.cs
