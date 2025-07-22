@@ -1,92 +1,71 @@
-<<<<<<< HEAD
 <!-- Custom Modern Lalan-Inspired Login Page -->
 <div class="custom-login-bg">
-    <div class="custom-login-card">
-        <div class="custom-login-left">
-            <div class="custom-login-branding">
-                <img src="/assets/logo-lalan.png" alt="BlueHorizon" class="custom-login-logo" />
-                <h2>Welcome to BlueHorizon</h2>
-                <p>Your gateway to premium real estate.</p>
-            </div>
-            <div class="custom-login-image"></div>
-        </div>
-        <div class="custom-login-right">
-            <div class="custom-login-form-wrapper">
-                <h1 class="custom-login-title">Sign In</h1>
-                <p class="custom-login-subtitle">Access your account to explore properties and more.</p>
-                <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="custom-login-form">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" class="form-control" formControlName="username"
-                            placeholder="Enter your username"
-                            [ngClass]="{'is-invalid': username.invalid && username.touched}">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" class="form-control" formControlName="email"
-                            placeholder="Enter your email" [ngClass]="{'is-invalid': email.invalid && email.touched}">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" class="form-control" formControlName="password"
-                            placeholder="Enter your password"
-                            [ngClass]="{'is-invalid': password.invalid && password.touched}">
-                    </div>
-
-                    <button class="custom-login-btn" type="submit">Login</button>
-                </form>
-                <div class="custom-login-footer">
-                    <span>Don't have an account?</span>
-                    <a routerLink="/register">Sign up</a>
-                </div>
-            </div>
-        </div>
+  <div class="custom-login-card">
+    <div class="custom-login-left">
+      <div class="custom-login-branding">
+        <img
+          src="/assets/logo-lalan.png"
+          alt="BlueHorizon"
+          class="custom-login-logo"
+        />
+        <h2>Welcome to BlueHorizon</h2>
+        <p>Your gateway to premium real estate.</p>
+      </div>
+      <div class="custom-login-image"></div>
     </div>
-</div>
-=======
-<!-- Custom Modern Lalan-Inspired Login Page -->
-<div class="custom-login-bg">
-    <div class="custom-login-card">
-        <div class="custom-login-left">
-            <div class="custom-login-branding">
-                <img src="/assets/logo-lalan.png" alt="BlueHorizon" class="custom-login-logo" />
-                <h2>Welcome to BlueHorizon</h2>
-                <p>Your gateway to premium real estate.</p>
-            </div>
-            <div class="custom-login-image"></div>
-        </div>
-        <div class="custom-login-right">
-            <div class="custom-login-form-wrapper">
-                <h1 class="custom-login-title">Sign In</h1>
-                <p class="custom-login-subtitle">Access your account to explore properties and more.</p>
-                <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="custom-login-form">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" class="form-control" formControlName="username"
-                            placeholder="Enter your username"
-                            [ngClass]="{'is-invalid': username.invalid && username.touched}">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" class="form-control" formControlName="email"
-                            placeholder="Enter your email" [ngClass]="{'is-invalid': email.invalid && email.touched}">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" class="form-control" formControlName="password"
-                            placeholder="Enter your password"
-                            [ngClass]="{'is-invalid': password.invalid && password.touched}">
-                    </div>
+    <div class="custom-login-right">
+      <div class="custom-login-form-wrapper">
+        <h1 class="custom-login-title">Sign In</h1>
+        <p class="custom-login-subtitle">
+          Access your account to explore properties and more.
+        </p>
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onLogin()"
+          class="custom-login-form"
+        >
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              class="form-control"
+              formControlName="username"
+              placeholder="Enter your username"
+              [ngClass]="{'is-invalid': username.invalid && username.touched}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Enter your email"
+              [ngClass]="{'is-invalid': email.invalid && email.touched}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              formControlName="password"
+              placeholder="Enter your password"
+              [ngClass]="{'is-invalid': password.invalid && password.touched}"
+            />
+          </div>
 
-                    <button class="custom-login-btn" type="submit">Login</button>
-                </form>
-                <div class="custom-login-footer">
-                    <span>Don't have an account?</span>
-                    <a routerLink="/register">Sign up</a>
-                </div>
-            </div>
+          <button class="custom-login-btn" type="submit">Login</button>
+        </form>
+        <div class="custom-login-footer">
+          <span>Don't have an account?</span>
+          <a routerLink="/register">Sign up</a>
         </div>
+      </div>
     </div>
+  </div>
 </div>
->>>>>>> cb72b14bdaef95076a0d8c8478c03b994869df8b
 <!-- End Custom Login Page -->
