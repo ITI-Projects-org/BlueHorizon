@@ -1,0 +1,98 @@
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Property By Village</h5>
+                    <ul class="list-unstyled city-list">
+                        <li *ngFor="let v of village">
+                            <a href="#" (click)="filterByCity(v.name)">
+                                <i class="fas fa-chevron-right me-2"></i>{{ v.name }}
+                                ({{ v.count }})
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Property Type</h5>
+                    <ul class="list-unstyled city-list">
+                        <li *ngFor="let type of unitType">
+                            <a href="#" (click)="filterByType(type.name)">
+                                <i class="fas fa-chevron-right me-2"></i>{{ type.name }}
+                                ({{ type.count }})
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            </div>
+
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5>Featured Units</h5>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Sort by:</span>
+<select #sortSelect class="form-select w-auto" (change)="sortBy(sortSelect.value)">
+    <option value="default">Default Sorting</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+</select>
+                    <div class="btn-group ms-3" role="group">
+                        <button type="button" class="btn btn-outline-secondary active"><i class="fas fa-th-large"></i></button>
+                        <button type="button" class="btn btn-outline-secondary"><i class="fas fa-list"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4" *ngFor="let unit of paginatedUnits">
+                    <div class="property-card">
+                        <div class="property-image-container">
+                            <img [src]="unit.image" class="img-fluid property-image" [alt]="unit.title">
+                        </div>
+                        <div class="property-body">
+                            <h6 class="property-title">{{ unit.title }}</h6>
+                            <p class="property-address"><i class="fas fa-map-marker-alt me-1"></i>{{ unit.address }}</p>
+                            <h5 class="property-price">${{ unit.price | number:'1.0-0' }}</h5>
+                            <hr>
+                            <div class="property-details d-flex justify-content-between">
+                                <div>
+                                    <i class="fas fa-bed me-1"></i>Beds: {{ unit.beds }}
+                                </div>
+                                <div>
+                                    <i class="fas fa-bath me-1"></i>Baths: {{ unit.baths }}
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="paginatedUnits.length === 0" class="col-12 text-center text-muted">
+                    No units found matching your criteria.
+                </div>
+            </div>
+
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="#" aria-label="Previous" (click)="previousPage()">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="(i + 1) === currentPage">
+                        <a class="page-link" href="#" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" href="#" aria-label="Next" (click)="nextPage()">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

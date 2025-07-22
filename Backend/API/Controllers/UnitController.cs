@@ -12,7 +12,8 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
-        public async Task<ActionResult> GetAllUnits()
+        [HttpGet("All")]
+        public async Task<ActionResult> GetAll()
         {
 
             var units = await _unitOfWork.UnitRepository.GetAllAsync();
