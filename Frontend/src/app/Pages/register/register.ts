@@ -1,8 +1,12 @@
-<<<<<<< HEAD
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../Services/authentication-service';
 import { HttpClient } from '@angular/common/http';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { RegisterDTO } from '../../Models/register-dto';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -12,17 +16,19 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule], // Add CommonModule for ngClass
   templateUrl: './register.html',
-  styleUrls: ['./register.css']
+  styleUrls: ['./register.css'],
 })
-export class Register implements OnInit{
-
-  constructor(private http:HttpClient, private authenticationService:AuthenticationService){}
+export class Register implements OnInit {
+  constructor(
+    private http: HttpClient,
+    private authenticationService: AuthenticationService
+  ) {}
   registerForm = new FormGroup({
-    email: new FormControl('',[Validators.required,Validators.email]),
-    password: new FormControl('',[Validators.required]),
-    confirmpassword: new FormControl('',[Validators.required]),
-    username: new FormControl('',[Validators.required]),
-    role:new FormControl('Tenant')
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required]),
+    confirmpassword: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required]),
+    role: new FormControl('Tenant'),
   });
 
   ngOnInit(): void {
@@ -30,110 +36,37 @@ export class Register implements OnInit{
     //   next:(res)=>{
     //     console.log(res);
     //   }
-  // });
+    // });
   }
-  
-  registerDTO!:RegisterDTO;
 
-  Register(){
+  registerDTO!: RegisterDTO;
+
+  Register() {
     console.log(this.registerForm.value);
-    this.registerDTO=
-    {
+    this.registerDTO = {
       email: this.email.value,
       username: this.username.value,
       password: this.password.value,
       confirmPassword: this.confirmpassword.value,
-      role : this.role.value,
-    }
+      role: this.role.value,
+    };
     // this.registerDTO = {...this.registerForm.value};
     this.authenticationService.register(this.registerDTO).subscribe();
   }
 
-
   get username() {
-    return this.registerForm.controls['username']
+    return this.registerForm.controls['username'];
   }
-  get password(){
-    return this.registerForm.controls["password"] 
+  get password() {
+    return this.registerForm.controls['password'];
   }
-   get email(){
-    return this.registerForm.controls["email"]
+  get email() {
+    return this.registerForm.controls['email'];
   }
-  get role(){
-    return this.registerForm.controls["role"]
+  get role() {
+    return this.registerForm.controls['role'];
   }
-  get confirmpassword(){
-    return this.registerForm.controls["confirmpassword"]
+  get confirmpassword() {
+    return this.registerForm.controls['confirmpassword'];
   }
-  
 }
-=======
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../Services/authentication-service';
-import { HttpClient } from '@angular/common/http';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RegisterDTO } from '../../Models/register-dto';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-
-@Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule], // Add CommonModule for ngClass
-  templateUrl: './register.html',
-  styleUrls: ['./register.css']
-})
-export class Register implements OnInit{
-
-  constructor(private http:HttpClient, private authenticationService:AuthenticationService){}
-  registerForm = new FormGroup({
-    email: new FormControl('',[Validators.required,Validators.email]),
-    password: new FormControl('',[Validators.required]),
-    confirmpassword: new FormControl('',[Validators.required]),
-    username: new FormControl('',[Validators.required]),
-    role:new FormControl('Tenant')
-  });
-
-  ngOnInit(): void {
-    // this.authenticationService.register().subscribe({
-    //   next:(res)=>{
-    //     console.log(res);
-    //   }
-  // });
-  }
-  
-  registerDTO!:RegisterDTO;
-
-  Register(){
-    console.log(this.registerForm.value);
-    this.registerDTO=
-    {
-      email: this.email.value,
-      username: this.username.value,
-      password: this.password.value,
-      confirmPassword: this.confirmpassword.value,
-      role : this.role.value,
-    }
-    // this.registerDTO = {...this.registerForm.value};
-    this.authenticationService.register(this.registerDTO).subscribe();
-  }
-
-
-  get username() {
-    return this.registerForm.controls['username']
-  }
-  get password(){
-    return this.registerForm.controls["password"] 
-  }
-   get email(){
-    return this.registerForm.controls["email"]
-  }
-  get role(){
-    return this.registerForm.controls["role"]
-  }
-  get confirmpassword(){
-    return this.registerForm.controls["confirmpassword"]
-  }
-  
-}
->>>>>>> cb72b14bdaef95076a0d8c8478c03b994869df8b

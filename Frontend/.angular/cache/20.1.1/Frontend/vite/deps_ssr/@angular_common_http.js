@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
   FetchBackend,
@@ -40,10 +39,9 @@ import {
   withNoXsrfProtection,
   withRequestsMadeViaParent,
   withXsrfConfiguration
-} from "./chunk-XY4WS7HK.js";
-import "./chunk-TSKPDBCN.js";
-import "./chunk-BVORN4MI.js";
-import "./chunk-DMO44UNM.js";
+} from "./chunk-5AX6ZHMD.js";
+import "./chunk-DD3HVSXE.js";
+import "./chunk-R2RNT43C.js";
 import "./chunk-6DU2HRTW.js";
 export {
   FetchBackend,
@@ -87,93 +85,3 @@ export {
   REQUESTS_CONTRIBUTE_TO_STABILITY as ɵREQUESTS_CONTRIBUTE_TO_STABILITY,
   withHttpTransferCache as ɵwithHttpTransferCache
 };
-=======
-import { createRequire } from 'module';const require = createRequire(import.meta.url);
-import {
-  FetchBackend,
-  HTTP_INTERCEPTORS,
-  HTTP_ROOT_INTERCEPTOR_FNS,
-  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
-  HttpBackend,
-  HttpClient,
-  HttpClientJsonpModule,
-  HttpClientModule,
-  HttpClientXsrfModule,
-  HttpContext,
-  HttpContextToken,
-  HttpErrorResponse,
-  HttpEventType,
-  HttpFeatureKind,
-  HttpHandler,
-  HttpHeaderResponse,
-  HttpHeaders,
-  HttpInterceptorHandler,
-  HttpParams,
-  HttpRequest,
-  HttpResponse,
-  HttpResponseBase,
-  HttpStatusCode,
-  HttpUrlEncodingCodec,
-  HttpXhrBackend,
-  HttpXsrfTokenExtractor,
-  JsonpClientBackend,
-  JsonpInterceptor,
-  REQUESTS_CONTRIBUTE_TO_STABILITY,
-  httpResource,
-  provideHttpClient,
-  withFetch,
-  withHttpTransferCache,
-  withInterceptors,
-  withInterceptorsFromDi,
-  withJsonpSupport,
-  withNoXsrfProtection,
-  withRequestsMadeViaParent,
-  withXsrfConfiguration
-} from "./chunk-XY4WS7HK.js";
-import "./chunk-TSKPDBCN.js";
-import "./chunk-BVORN4MI.js";
-import "./chunk-DMO44UNM.js";
-import "./chunk-6DU2HRTW.js";
-export {
-  FetchBackend,
-  HTTP_INTERCEPTORS,
-  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
-  HttpBackend,
-  HttpClient,
-  HttpClientJsonpModule,
-  HttpClientModule,
-  HttpClientXsrfModule,
-  HttpContext,
-  HttpContextToken,
-  HttpErrorResponse,
-  HttpEventType,
-  HttpFeatureKind,
-  HttpHandler,
-  HttpHeaderResponse,
-  HttpHeaders,
-  HttpParams,
-  HttpRequest,
-  HttpResponse,
-  HttpResponseBase,
-  HttpStatusCode,
-  HttpUrlEncodingCodec,
-  HttpXhrBackend,
-  HttpXsrfTokenExtractor,
-  JsonpClientBackend,
-  JsonpInterceptor,
-  httpResource,
-  provideHttpClient,
-  withFetch,
-  withInterceptors,
-  withInterceptorsFromDi,
-  withJsonpSupport,
-  withNoXsrfProtection,
-  withRequestsMadeViaParent,
-  withXsrfConfiguration,
-  HTTP_ROOT_INTERCEPTOR_FNS as ɵHTTP_ROOT_INTERCEPTOR_FNS,
-  HttpInterceptorHandler as ɵHttpInterceptingHandler,
-  HttpInterceptorHandler as ɵHttpInterceptorHandler,
-  REQUESTS_CONTRIBUTE_TO_STABILITY as ɵREQUESTS_CONTRIBUTE_TO_STABILITY,
-  withHttpTransferCache as ɵwithHttpTransferCache
-};
->>>>>>> cb72b14bdaef95076a0d8c8478c03b994869df8b
