@@ -22,7 +22,8 @@ namespace API.Models
         public DbSet<UnitAmenity> UnitAmenities{ get; set; }
         public DbSet<UnitReview> UnitReviews{ get; set; }
         public DbSet<Unit> Units{ get; set; }
-    
+        public DbSet<UnitImage> UnitImages{ get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -170,7 +171,11 @@ namespace API.Models
                 .WithOne(b => b.QRCode)
                 .HasForeignKey<QRCode>(qr => qr.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
-                ;
+                
+            builder.Entity<Unit>()
+                .HasMany(u=>u.UnitImages)
+                .WithOne(ui=>ui.Unit)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }

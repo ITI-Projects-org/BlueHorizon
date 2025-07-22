@@ -1,10 +1,11 @@
 import { RouterOutlet } from '@angular/router';
 import { HttpClient, HttpHeaderResponse, HttpHeaders } from '@angular/common/http';
-import { LoginDTO } from './../Models/login';
-import { Injectable } from '@angular/core';
+import { LoginDTO } from '../Models/loginDTO';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { RegisterDTO } from '../Models/register-dto';
+import { isPlatformBrowser } from '@angular/common';
 
 
 @Injectable({
@@ -15,7 +16,7 @@ export class AuthenticationService {
   registerDTO!:RegisterDTO;
   authUrl: string = 'https://localhost:7083/api/Authentication';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   getUserName(token: string) :string | undefined {
     try {
@@ -38,18 +39,26 @@ export class AuthenticationService {
       return '';
     }
   }
-  login(): Observable<{ token: string }> {
+  login(loginDTO:LoginDTO): Observable<{ token: string }> {
     let observable;
-    
+    // delete this
+    // this.loginDTO = {
+    //   email: 'ElSabagh@gmail.com',
+    //   role: 'Owner',
+    //   password: '123',
+    //   username: 'Mohamed_ElSabagh',
+      
+    // };
+
     return this.http
-      .post<{ token: string }>(`${this.authUrl}/Login`, this.loginDTO)
-      .pipe(tap((res) => {localStorage.setItem('token', res.token);
-        localStorage.setItem('role',this.getRole(res.token)?.toString() ?? '');
-        localStorage.setItem('username',this.getUserName(res.token)?.toString()??'Guest')
-      }
-  
-    
-    ));
+      .post<{ token: string }>(`${this.authUrl}/Login`, loginDTO)
+      .pipe(tap((res) => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('role',this.getRole(res.token)?.toString() ?? '');
+          localStorage.setItem('username',this.getUserName(res.token)?.toString()??'Guest')
+        }
+      }));
   }
   register(registerDTO:RegisterDTO):Observable<any>{
     // this.registerDTO = {
