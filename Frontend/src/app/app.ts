@@ -6,7 +6,7 @@ import { Login } from './Pages/login/login';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
+  // standalone: true,
   imports: [RouterOutlet, Login, Register, ReactiveFormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
