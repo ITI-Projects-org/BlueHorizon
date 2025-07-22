@@ -4,16 +4,16 @@ import {
   ROUTES,
   Router,
   loadChildren
-} from "./chunk-4AXVWC37.js";
+} from "./chunk-TIIUESIY.js";
 import {
   BrowserDomAdapter,
   BrowserModule,
   EVENT_MANAGER_PLUGINS,
   EventManagerPlugin
-} from "./chunk-HSZF6ZS4.js";
+} from "./chunk-IDXTKFYP.js";
 import {
   HTTP_ROOT_INTERCEPTOR_FNS
-} from "./chunk-XY4WS7HK.js";
+} from "./chunk-NIZBKWNH.js";
 import {
   APP_BASE_HREF,
   NullViewportScroller,
@@ -22,10 +22,10 @@ import {
   ViewportScroller,
   getDOM,
   setRootDomAdapter
-} from "./chunk-SL5ZVO4W.js";
+} from "./chunk-XKU7MXBK.js";
 import {
   XhrFactory
-} from "./chunk-TSKPDBCN.js";
+} from "./chunk-DD3HVSXE.js";
 import {
   ALLOW_MULTIPLE_PLATFORMS,
   APP_ID,
@@ -72,7 +72,7 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-BVORN4MI.js";
+} from "./chunk-ETW5SWZ3.js";
 import {
   require_cjs
 } from "./chunk-DMO44UNM.js";
@@ -16811,7 +16811,7 @@ async function renderApplication(bootstrap, options) {
     stopMeasuring(renderAppLabel);
   }
 }
-var VERSION = new Version("20.1.2");
+var VERSION = new Version("20.1.1");
 
 // node_modules/@angular/ssr/third_party/beasties/index.js
 function createNotImplementedError(name) {
@@ -28165,9 +28165,9 @@ export {
 @angular/platform-server/fesm2022/server.mjs:
 @angular/platform-server/fesm2022/platform-server.mjs:
   (**
-   * @license Angular v20.1.2
+   * @license Angular v20.1.1
    * (c) 2010-2025 Google LLC. https://angular.io/
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-5ECEYWE2.js.map
+//# sourceMappingURL=chunk-SHVJMY7J.js.map

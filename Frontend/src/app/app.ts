@@ -6,10 +6,10 @@ import { Login } from './Pages/login/login';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, Login, Register,ReactiveFormsModule],
+  // standalone: true,
+  imports: [RouterOutlet, Login, Register, ReactiveFormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected title = 'VillageFront';

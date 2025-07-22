@@ -7,11 +7,11 @@ import { PendingOwners } from './Pages/Verification/pending-owners/pending-owner
 import { Review } from './Components/review/review';
 
 export const routes: Routes = [
- { path:"",redirectTo:"home", pathMatch:'full'},
- { path:"home",component:Home},
- { path:"login",component:Login },
- { path:"register",component:Register },
- { path:"VerifyOwner",component:OwnerVerification},
- { path:"PendingOwners",component:PendingOwners},
- { path:"addReview",component:Review}
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: Home },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
+  { path: 'VerifyOwner', component: OwnerVerification },
+  { path: 'PendingOwners', component: PendingOwners },
+  { path: 'addReview', component: Review },
 ];

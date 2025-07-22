@@ -1,167 +1,287 @@
 <main class="owner-verification-page py-5">
-    <div class="container">
-        <h2 class="section-title mb-4 text-center">Owner Verification & Property Listing</h2>
+  <div class="container">
+    <h2 class="section-title mb-4 text-center">
+      Owner Verification & Property Listing
+    </h2>
 
-        <form [formGroup]="ownerForm" (ngSubmit)="Verify()" class="verification-form card p-4 shadow-sm">
-            <div class="card-header bg-primary text-white mb-4 rounded">
-                <h5 class="mb-0">Owner Information</h5>
+    <form
+      [formGroup]="ownerForm"
+      (ngSubmit)="Verify()"
+      class="verification-form card p-4 shadow-sm"
+    >
+      <div class="card-header bg-primary text-white mb-4 rounded">
+        <h5 class="mb-0">Owner Information</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="mb-3">
+              <label for="FrontDocumentFile" class="form-label"
+                >Upload Front National Id File
+                <span class="text-danger">*</span></label
+              >
+              <input
+                type="file"
+                id="FrontDocumentFile"
+                class="form-control"
+                (change)="onFrontDocumentFileChange($event)"
+                [class.is-invalid]="FrontDocumentFile.invalid && FrontDocumentFile.touched"
+              />
+              <div
+                *ngIf="FrontDocumentFile.invalid && FrontDocumentFile.touched"
+                class="invalid-feedback"
+              >
+                Document File is required.
+              </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-
-                        <div class="mb-3">
-                            <label for="FrontDocumentFile" class="form-label">Upload Front National Id File <span
-                                    class="text-danger">*</span></label>
-                            <input type="file" id="FrontDocumentFile" class="form-control"
-                                (change)="onFrontDocumentFileChange($event)"
-                                [class.is-invalid]="FrontDocumentFile.invalid && FrontDocumentFile.touched">
-                            <div *ngIf="FrontDocumentFile.invalid && FrontDocumentFile.touched"
-                                class="invalid-feedback">
-                                Document File is required.
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="BackDocumentFile" class="form-label">Upload Back Id Document File <span
-                                    class="text-danger">*</span></label>
-                            <input type="file" id="BackDocumentFile" class="form-control"
-                                (change)="onBackDocumentFileChange($event)"
-                                [class.is-invalid]="BackDocumentFile.invalid && BackDocumentFile.touched">
-                            <div *ngIf="BackDocumentFile.invalid && BackDocumentFile.touched" class="invalid-feedback">
-                                Document File is required.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="NationalId" class="form-label">National ID <span
-                                class="text-danger">*</span></label>
-                        <input type="text" id="NationalId" formControlName="NationalId" class="form-control"
-                            [class.is-invalid]="NationalId.invalid && NationalId.touched"
-                            placeholder="Enter National ID">
-                        <div *ngIf="NationalId.invalid && NationalId.touched" class="invalid-feedback">
-                            National ID is required.
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="BankAccountDetails" class="form-label">Bank Account Details <span
-                            class="text-danger">*</span></label>
-                    <textarea id="BankAccountDetails" formControlName="BankAccountDetails" class="form-control" rows="3"
-                        [class.is-invalid]="BankAccountDetails.invalid && BankAccountDetails.touched"
-                        placeholder="Provide bank name, account number, etc."></textarea>
-                    <div *ngIf="BankAccountDetails.invalid && BankAccountDetails.touched" class="invalid-feedback">
-                        Bank Account Details are required.
-                    </div>
-                </div>
+            <div class="mb-3">
+              <label for="BackDocumentFile" class="form-label"
+                >Upload Back Id Document File
+                <span class="text-danger">*</span></label
+              >
+              <input
+                type="file"
+                id="BackDocumentFile"
+                class="form-control"
+                (change)="onBackDocumentFileChange($event)"
+                [class.is-invalid]="BackDocumentFile.invalid && BackDocumentFile.touched"
+              />
+              <div
+                *ngIf="BackDocumentFile.invalid && BackDocumentFile.touched"
+                class="invalid-feedback"
+              >
+                Document File is required.
+              </div>
             </div>
-
-            <div class="card-header bg-primary text-white mb-4 mt-4 rounded">
-                <h5 class="mb-0">Property Details</h5>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="NationalId" class="form-label"
+              >National ID <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              id="NationalId"
+              formControlName="NationalId"
+              class="form-control"
+              [class.is-invalid]="NationalId.invalid && NationalId.touched"
+              placeholder="Enter National ID"
+            />
+            <div
+              *ngIf="NationalId.invalid && NationalId.touched"
+              class="invalid-feedback"
+            >
+              National ID is required.
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="Title" class="form-label">Property Title <span class="text-danger">*</span></label>
-                    <input type="text" id="Title" formControlName="Title" class="form-control"
-                        [class.is-invalid]="Title.invalid && Title.touched"
-                        placeholder="e.g., Modern Apartment in Zamalek">
-                    <div *ngIf="Title.invalid && Title.touched" class="invalid-feedback">
-                        Property Title is required.
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="Description" class="form-label">Description</label>
-                    <textarea id="Description" formControlName="Description" class="form-control" rows="5"
-                        placeholder="Provide a detailed description of your property..."></textarea>
-                </div>
-                <div class="row">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="BankAccountDetails" class="form-label"
+            >Bank Account Details <span class="text-danger">*</span></label
+          >
+          <textarea
+            id="BankAccountDetails"
+            formControlName="BankAccountDetails"
+            class="form-control"
+            rows="3"
+            [class.is-invalid]="BankAccountDetails.invalid && BankAccountDetails.touched"
+            placeholder="Provide bank name, account number, etc."
+          ></textarea>
+          <div
+            *ngIf="BankAccountDetails.invalid && BankAccountDetails.touched"
+            class="invalid-feedback"
+          >
+            Bank Account Details are required.
+          </div>
+        </div>
+      </div>
 
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label for="Bedrooms" class="form-label">Bedrooms</label>
-                    <input type="number" id="Bedrooms" formControlName="Bedrooms" class="form-control"
-                        placeholder="Number of bedrooms">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label for="Bathrooms" class="form-label">Bathrooms</label>
-                    <input type="number" id="Bathrooms" formControlName="Bathrooms" class="form-control"
-                        placeholder="Number of bathrooms">
-                </div>
+      <div class="card-header bg-primary text-white mb-4 mt-4 rounded">
+        <h5 class="mb-0">Property Details</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="Title" class="form-label"
+            >Property Title <span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="Title"
+            formControlName="Title"
+            class="form-control"
+            [class.is-invalid]="Title.invalid && Title.touched"
+            placeholder="e.g., Modern Apartment in Zamalek"
+          />
+          <div *ngIf="Title.invalid && Title.touched" class="invalid-feedback">
+            Property Title is required.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="Description" class="form-label">Description</label>
+          <textarea
+            id="Description"
+            formControlName="Description"
+            class="form-control"
+            rows="5"
+            placeholder="Provide a detailed description of your property..."
+          ></textarea>
+        </div>
+        <div class="row"></div>
+        <div class="col-md-4 mb-3">
+          <label for="Bedrooms" class="form-label">Bedrooms</label>
+          <input
+            type="number"
+            id="Bedrooms"
+            formControlName="Bedrooms"
+            class="form-control"
+            placeholder="Number of bedrooms"
+          />
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="Bathrooms" class="form-label">Bathrooms</label>
+          <input
+            type="number"
+            id="Bathrooms"
+            formControlName="Bathrooms"
+            class="form-control"
+            placeholder="Number of bathrooms"
+          />
+        </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="Sleeps" class="form-label">Sleeps</label>
-                        <input type="number" id="Sleeps" formControlName="Sleeps" class="form-control"
-                            placeholder="Max guests">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="DistanceToSea" class="form-label">Distance to Sea (meters)</label>
-                        <input type="number" id="DistanceToSea" formControlName="DistanceToSea" class="form-control"
-                            placeholder="Distance in meters">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="BasePricePerNight" class="form-label">Base Price Per Night (EGP)</label>
-                        <input type="number" id="BasePricePerNight" formControlName="BasePricePerNight"
-                            class="form-control" placeholder="Price per night">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="Address" class="form-label">Address <span class="text-danger">*</span></label>
-                    <input type="text" id="Address" formControlName="Address" class="form-control"
-                        [class.is-invalid]="Address.invalid && Address.touched"
-                        placeholder="Street address, city, country">
-                    <div *ngIf="Address.invalid && Address.touched" class="invalid-feedback">
-                        Address is required.
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="VillageName" class="form-label">Village Name (if applicable) <span
-                            class="text-danger">*</span></label>
-                    <input type="text" id="VillageName" formControlName="VillageName" class="form-control"
-                        [class.is-invalid]="VillageName.invalid && VillageName.touched"
-                        placeholder="e.g., Marassi, Bo Islands">
-                    <div *ngIf="VillageName.invalid && VillageName.touched" class="invalid-feedback">
-                        Village Name is required.
-                    </div>
-                </div>
-                <div class="mb-3">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="Sleeps" class="form-label">Sleeps</label>
+            <input
+              type="number"
+              id="Sleeps"
+              formControlName="Sleeps"
+              class="form-control"
+              placeholder="Max guests"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="DistanceToSea" class="form-label"
+              >Distance to Sea (meters)</label
+            >
+            <input
+              type="number"
+              id="DistanceToSea"
+              formControlName="DistanceToSea"
+              class="form-control"
+              placeholder="Distance in meters"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="BasePricePerNight" class="form-label"
+              >Base Price Per Night (EGP)</label
+            >
+            <input
+              type="number"
+              id="BasePricePerNight"
+              formControlName="BasePricePerNight"
+              class="form-control"
+              placeholder="Price per night"
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="Address" class="form-label"
+            >Address <span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="Address"
+            formControlName="Address"
+            class="form-control"
+            [class.is-invalid]="Address.invalid && Address.touched"
+            placeholder="Street address, city, country"
+          />
+          <div
+            *ngIf="Address.invalid && Address.touched"
+            class="invalid-feedback"
+          >
+            Address is required.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="VillageName" class="form-label"
+            >Village Name (if applicable)
+            <span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="VillageName"
+            formControlName="VillageName"
+            class="form-control"
+            [class.is-invalid]="VillageName.invalid && VillageName.touched"
+            placeholder="e.g., Marassi, Bo Islands"
+          />
+          <div
+            *ngIf="VillageName.invalid && VillageName.touched"
+            class="invalid-feedback"
+          >
+            Village Name is required.
+          </div>
+        </div>
+        <div class="mb-3"></div>
+        <div class="mb-3">
+          <label for="ContractFile" class="form-label"
+            >Upload Contract File <span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="ContractFile"
+            class="form-control"
+            (change)="onContractFileChange($event)"
+            [class.is-invalid]="ContractFile.invalid && ContractFile.touched"
+          />
+          <div
+            *ngIf="ContractFile.invalid && ContractFile.touched"
+            class="invalid-feedback"
+          >
+            Contract File is required.
+          </div>
+        </div>
+      </div>
 
-                </div>
-                <div class="mb-3">
-                    <label for="ContractFile" class="form-label">Upload Contract File <span
-                            class="text-danger">*</span></label>
-                    <input type="file" id="ContractFile" class="form-control" (change)="onContractFileChange($event)"
-                        [class.is-invalid]="ContractFile.invalid && ContractFile.touched">
-                    <div *ngIf="ContractFile.invalid && ContractFile.touched" class="invalid-feedback">
-                        Contract File is required.
-                    </div>
-                </div>
-            </div>
+      <div class="d-grid mt-4">
+        <button
+          type="submit"
+          class="btn btn-success btn-lg"
+          [disabled]="ownerForm.invalid"
+        >
+          <i class="fas fa-check-circle me-2"></i>Submit for Verification
+        </button>
+      </div>
 
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-success btn-lg" [disabled]="ownerForm.invalid">
-                    <i class="fas fa-check-circle me-2"></i>Submit for Verification
-                </button>
-            </div>
-
-            <div *ngIf="ownerForm.invalid && ownerForm.touched" class="alert alert-danger mt-3">
-                <strong>Please correct the following errors:</strong>
-                <ul>
-                    <li *ngFor="let error of getFormValidationErrors()">
-                        {{ error.control | titlecase }}: {{ error.error }}
-                    </li>
-                </ul>
-            </div>
-            <!-- Amenities -->
-            <div class="form-group">
-                <label>Amenities</label>
-                <div class="amenities-checkboxes">
-                    <div *ngFor="let amenity of amenities" class="form-check">
-                        <input type="checkbox" [value]="amenity.id" (change)="onAmenityChange($event)"
-                            class="form-check-input" [id]="'amenity-' + amenity.id">
-                        <label class="form-check-label" [for]="'amenity-' + amenity.id">{{ amenity.name }}</label>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+      <div
+        *ngIf="ownerForm.invalid && ownerForm.touched"
+        class="alert alert-danger mt-3"
+      >
+        <strong>Please correct the following errors:</strong>
+        <ul>
+          <li *ngFor="let error of getFormValidationErrors()">
+            {{ error.control | titlecase }}: {{ error.error }}
+          </li>
+        </ul>
+      </div>
+      <!-- Amenities -->
+      <div class="form-group">
+        <label>Amenities</label>
+        <div class="amenities-checkboxes">
+          <div *ngFor="let amenity of amenities" class="form-check">
+            <input
+              type="checkbox"
+              [value]="amenity.id"
+              (change)="onAmenityChange($event)"
+              class="form-check-input"
+              [id]="'amenity-' + amenity.id"
+            />
+            <label class="form-check-label" [for]="'amenity-' + amenity.id"
+              >{{ amenity.name }}</label
+            >
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </main>

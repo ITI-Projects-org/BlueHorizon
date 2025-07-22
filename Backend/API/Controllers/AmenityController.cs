@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using API.Models;
 using API.DTOs.AmenityDTOs;
 using API.Repositories.Interfaces;
@@ -19,7 +19,7 @@ namespace API.Controllers
             _mapper = mapper;
             _unit = unit;
         }
-
+        [HttpGet]
         public async Task<IActionResult> GetAllAmenities()
         {
 

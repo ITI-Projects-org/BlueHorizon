@@ -18,7 +18,7 @@ export class Home {
       address: 'Zamalek, Cairo',
       bedrooms: 2,
       bathrooms: 2,
-      price: 120000
+      price: 120000,
     },
     {
       id: 2,
@@ -27,7 +27,7 @@ export class Home {
       address: '6th of October, Giza',
       bedrooms: 4,
       bathrooms: 3,
-      price: 350000
+      price: 350000,
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ export class Home {
       address: 'North Coast',
       bedrooms: 3,
       bathrooms: 2,
-      price: 200000
-    }
+      price: 200000,
+    },
   ];
-} 
+}

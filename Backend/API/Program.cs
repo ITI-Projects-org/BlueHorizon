@@ -46,44 +46,55 @@ namespace API
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
-            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 
             // Configure the HTTP request pipeline.
-            builder.Services.AddAuthentication(op => op.DefaultAuthenticateScheme="myschema")
-            .AddJwtBearer("myschema", option =>
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "myschema";          // for Authenticate, Challenge, Forbid
+                options.DefaultAuthenticateScheme = "myschema";
+                options.DefaultChallengeScheme = "myschema";
+            })
+            .AddJwtBearer("myschema", options =>
             {
                 var key = builder.Configuration["JwtKey"]!;
-                var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-
-                option.TokenValidationParameters = new TokenValidationParameters()
+                var secretKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateAudience = false,
                     ValidateIssuer = false,
-                    IssuerSigningKey = secreteKey
+                    ValidateAudience = false,
+                    IssuerSigningKey = secretKey
                 };
-            }  
-            );
+            })
+            .AddGoogle("Google", options =>
+            {
+                options.ClientId = builder.Configuration["GoogleKeys:ClientId"];
+                options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;
+            });
 
             builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        builder => builder
-            .WithOrigins("http://localhost:4200") // <-- your frontend URL
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
-});
+            {
+                options.AddPolicy("AllowFrontend",
+                    builder => builder
+                        .WithOrigins("http://localhost:4200") // <-- your frontend URL
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+            });
 
             var app = builder.Build();
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "v1"));
             }
-            
+
             app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
-            app.UseAuthentication();    
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
