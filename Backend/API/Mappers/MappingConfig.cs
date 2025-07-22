@@ -20,6 +20,7 @@ namespace API.Mappers
             CreateMap<Unit, OwnerWithUnitVerificationDTO>().ReverseMap();
             CreateMap<AmenityDTO, Amenity>().ReverseMap();
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();
+            CreateMap<QRDTO,QRCode>().ReverseMap();
         }
     }
 }

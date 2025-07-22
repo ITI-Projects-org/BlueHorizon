@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(VillageSystemDbContext))]
-    [Migration("20250721153100_v10")]
-    partial class v10
+    [Migration("20250722143841_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,6 +109,12 @@ namespace API.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
@@ -474,6 +480,28 @@ namespace API.Migrations
                     b.ToTable("UnitAmenities");
                 });
 
+            modelBuilder.Entity("API.Models.UnitImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("UnitImages");
+                });
+
             modelBuilder.Entity("API.Models.UnitReview", b =>
                 {
                     b.Property<int>("Id")
@@ -831,6 +859,17 @@ namespace API.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("API.Models.UnitImage", b =>
+                {
+                    b.HasOne("API.Models.Unit", "Unit")
+                        .WithMany("UnitImages")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unit");
+                });
+
             modelBuilder.Entity("API.Models.UnitReview", b =>
                 {
                     b.HasOne("API.Models.Booking", "Booking")
@@ -923,6 +962,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Unit", b =>
                 {
                     b.Navigation("UnitAmenities");
+
+                    b.Navigation("UnitImages");
                 });
 
             modelBuilder.Entity("API.Models.Owner", b =>

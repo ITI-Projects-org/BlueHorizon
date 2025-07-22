@@ -10,7 +10,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AmenityController : Controller
+    public class AmenityController : ControllerBase
     {
         public IMapper _mapper { get; }
         public IUnitOfWork _unit { get; }
