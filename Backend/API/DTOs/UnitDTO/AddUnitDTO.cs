@@ -1,6 +1,6 @@
 ﻿using API.Models;
 
-namespace API.DTOs.UnitsDTOs
+namespace API.DTOs.UnitDTO
 {
     public class AddUnitDTO
     {

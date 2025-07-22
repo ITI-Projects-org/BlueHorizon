@@ -1,6 +1,6 @@
-﻿using Village_System.Models;
+﻿using API.Models;
 
-namespace Village_System.DTOs.UnitDTO
+namespace API.DTOs.UnitDTO
 {
     public class UnitDetailsDTO
     {

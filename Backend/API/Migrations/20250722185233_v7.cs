@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitializeSchema : Migration
+    public partial class v7 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,7 +195,7 @@ namespace API.Migrations
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -298,8 +298,10 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sender = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Reciever = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Sender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SenderUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Reciever = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecieverUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     BookingId = table.Column<int>(type: "int", nullable: false),
                     MessageContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -309,23 +311,21 @@ namespace API.Migrations
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Reciever",
-                        column: x => x.Reciever,
+                        name: "FK_Messages_AspNetUsers_RecieverUserId",
+                        column: x => x.RecieverUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Sender",
-                        column: x => x.Sender,
+                        name: "FK_Messages_AspNetUsers_SenderUserId",
+                        column: x => x.SenderUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Messages_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -536,14 +536,14 @@ namespace API.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Reciever",
+                name: "IX_Messages_RecieverUserId",
                 table: "Messages",
-                column: "Reciever");
+                column: "RecieverUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Sender",
+                name: "IX_Messages_SenderUserId",
                 table: "Messages",
-                column: "Sender");
+                column: "SenderUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OwnerReviews_BookingId",

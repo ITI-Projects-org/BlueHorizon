@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(BlueHorizonDbContext))]
-    [Migration("20250717215523_InitializeSchema")]
-    partial class InitializeSchema
+    [Migration("20250722185233_v7")]
+    partial class v7
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -226,10 +226,16 @@ namespace API.Migrations
 
                     b.Property<string>("Reciever")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecieverUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Sender")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("TimeStamp")
@@ -239,9 +245,9 @@ namespace API.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("Reciever");
+                    b.HasIndex("RecieverUserId");
 
-                    b.HasIndex("Sender");
+                    b.HasIndex("SenderUserId");
 
                     b.ToTable("Messages");
                 });
@@ -715,20 +721,16 @@ namespace API.Migrations
                     b.HasOne("API.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Models.ApplicationUser", "RecieverUser")
                         .WithMany()
-                        .HasForeignKey("Reciever")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("RecieverUserId");
 
                     b.HasOne("API.Models.ApplicationUser", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("Sender")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("SenderUserId");
 
                     b.Navigation("Booking");
 
@@ -769,7 +771,7 @@ namespace API.Migrations
                     b.HasOne("API.Models.Owner", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Owner");

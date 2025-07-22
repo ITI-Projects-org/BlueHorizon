@@ -1,10 +1,12 @@
 ﻿using API.Models;
 
-namespace API.DTOs.UnitsDTOs
+namespace API.DTOs.UnitDTO
 {
-    public class UnitDetailsDTO
+    public class UnitDTO
     {
-        public string OwnerName { get; set; }
+        public int Id { get; set; }
+        public string OwnerId { get; set; }
+        public string Owner { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Village_System.Models;
+﻿using API.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Village_System.DTOs.UnitDTO
+namespace API.DTOs.UnitDTO
 {
     public class UpdateDetailsDTO
     {

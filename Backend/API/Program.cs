@@ -2,17 +2,11 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-<<<<<<< HEAD:Village_System/Program.cs
-using Village_System.Mappers;
-using Village_System.Models;
-using Village_System.UnitOfWorks;
-//using Village_System.MapperConfig;
-=======
+
 using API.Mappers;
 using API.Models;
 using API.UnitOfWorks;
 //using API.MapperConfig;
->>>>>>> af77d17b32456f3cc70f92311a0f5263eecd7dee:Backend/API/Program.cs
 
 namespace API
 {
@@ -43,11 +37,8 @@ namespace API
             })
                 .AddEntityFrameworkStores<BlueHorizonDbContext>()
                 .AddDefaultTokenProviders();
-<<<<<<< HEAD:Village_System/Program.cs
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();  
-=======
 
->>>>>>> af77d17b32456f3cc70f92311a0f5263eecd7dee:Backend/API/Program.cs
+
             builder.Services.AddOpenApi();
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
@@ -86,12 +77,9 @@ namespace API
             {
                 app.MapOpenApi();
             }
-<<<<<<< HEAD:Village_System/Program.cs
             app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
-=======
 
             app.UseCors("AllowFrontend");
->>>>>>> af77d17b32456f3cc70f92311a0f5263eecd7dee:Backend/API/Program.cs
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
