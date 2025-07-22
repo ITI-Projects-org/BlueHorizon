@@ -21,23 +21,27 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Owner")]
-        [HttpPost]
+
+        //[Authorize(Roles = "Owner")]
+        [HttpPost("AddUnit")]
         public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
+                //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                //if (string.IsNullOrEmpty(userId))
+                //    return Unauthorized();
 
                 var unit = _mapper.Map<Unit>(unitDto);
-                unit.OwnerId = userId;
+                unit.OwnerId = "02deee19-b2a4-4b3e-98ab-43c85bea94db";
 
-                // Handle contract document upload
+                unit.VerificationStatus = VerificationStatus.Pending;
+                unit.CreationDate = DateTime.Now;
+
+                //Handle contract document upload
                 if (unitDto.ContractDocument != null)
                 {
-                    var fileName = $"unit_contract_{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
                     var filePath = Path.Combine("Uploads", "Contracts", fileName);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
@@ -47,6 +51,7 @@ namespace API.Controllers
                     }
                     unit.ContractPath = filePath;
                 }
+
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
@@ -66,12 +71,85 @@ namespace API.Controllers
                     await _unitOfWork.SaveAsync();
                 }
 
-                return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unit);
+                unit.VerificationStatus = VerificationStatus.Pending;
+
+                return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unitDto);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
+        #region Real Add Unit 
+        [HttpPost("VerifyUnit/{id:int}")]
+        //[Authorize(Roles = "Owner")]
+
+        public async Task<IActionResult> VerifyUnit( int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            _mapper.Map<Unit>(unit);
+            unit.Id = id;
+            if (unit != null)
+            {
+                unit.VerificationStatus = VerificationStatus.Verified;
+                _unitOfWork.UnitRepository.UpdateByIdAsync(unit.Id, unit);
+                _unitOfWork.SaveAsync();
+                return CreatedAtAction(nameof(VerifyUnit), new { id = unit.Id }, _mapper.Map<UnitDetailsDTO>(unit));
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+
+
+        }
+        #endregion
+
+        #region Unit Details
+        // Get By Id
+        [HttpGet("GetUnitById/{id}")]
+        public async Task<IActionResult> GetUnitById(int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (unit == null)
+            {
+                return Content("Unit Not Found");
+            }
+            return Ok(_mapper.Map<UnitDetailsDTO>(unit));
+        }
+        #endregion
+
+        #region  Update Unit
+
+        [HttpPut("UpdateUnit/{id}")]
+        public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
+        {
+
+            if (unitDto == null || !ModelState.IsValid)
+            {
+                return BadRequest("Unit data is null");
+            }
+            var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (existingUnit == null)
+            {
+                return NotFound("Unit Not Found");
+            }
+            var unit = _mapper.Map<Unit>(unitDto);
+            try
+            {
+                _unitOfWork.UnitRepository.UpdateByIdAsync(id, unit);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error updating unit: {ex.Message}");
+            }
+            return Ok("Unit Updated Successfully");
+        }
+
+        #endregion
+
     }
 }
