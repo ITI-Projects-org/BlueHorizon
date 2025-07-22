@@ -1,6 +1,0 @@
-@Village_System_HostAddress = http://localhost:5059
-
-GET {{Village_System_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
