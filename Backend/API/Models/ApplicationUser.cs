@@ -7,5 +7,7 @@ namespace API.Models
     {
         public DateTime RegistrationDate { get; set; }
         public int PhoneNumber { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
     }
 }
