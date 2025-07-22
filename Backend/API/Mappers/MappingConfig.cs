@@ -19,6 +19,7 @@ namespace API.Mappers
             CreateMap<RegisterDTO,Admin>().ReverseMap();
             CreateMap<Unit, OwnerWithUnitVerificationDTO>().ReverseMap();
             CreateMap<AmenityDTO, Amenity>().ReverseMap();
+            CreateMap<ReviewDTO, UnitReview>().ReverseMap();
         }
     }
 }

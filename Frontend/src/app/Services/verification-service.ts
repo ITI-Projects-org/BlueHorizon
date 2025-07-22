@@ -17,10 +17,10 @@ export class Verification {
 
  
   VerifiyOwner(data: FormData) {
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      'Bearer ' + localStorage.getItem('token')
-    );
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + localStorage.getItem('token')
+      );
     // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
     return this.http.post(this.verificationURL + '/AddRequest', data, {
       headers: headers,
