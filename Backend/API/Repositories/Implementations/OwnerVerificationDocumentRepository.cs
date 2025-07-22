@@ -42,7 +42,7 @@ namespace API.Repositories.Implementations
         //            DocumentPath = o.OwnerVerification.DocumentPath,
         //            UploadDate = o.OwnerVerification.UploadDate,
         //            VerificationNotes = o.Owner.VerificationNotes,
-        //            OwnerName = o.Owner.UserName,
+                //    OwnerName = o.Owner.UserName,
         //            UnitId = o.Unit.Id,
         //            Address = o.Unit.Address,
         //            UnitType = o.Unit.UnitType,
@@ -74,9 +74,13 @@ namespace API.Repositories.Implementations
                 .Where(doc => doc.OwnerId == o.Id)
                 .Select(doc => doc.DocumentType)
                 .FirstOrDefault(),
-            DocumentPath = _context.OwnerVerificationDocuments
+            FrontNationalIdDocumentPath = _context.OwnerVerificationDocuments
                 .Where(doc => doc.OwnerId == o.Id)
-                .Select(doc => doc.DocumentPath)
+                .Select(doc => doc.FrontNationalIdDocumentPath)
+                .FirstOrDefault() ?? string.Empty,
+            BackNationalIdDocumentPath = _context.OwnerVerificationDocuments
+                .Where(doc => doc.OwnerId == o.Id)
+                .Select(doc => doc.BackNationalIdDocumentPath)
                 .FirstOrDefault() ?? string.Empty,
             UploadDate = _context.OwnerVerificationDocuments
                 .Where(doc => doc.OwnerId == o.Id)

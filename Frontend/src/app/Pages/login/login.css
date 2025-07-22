@@ -1,0 +1,184 @@
+.custom-login-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #e9f0fa 0%, #f5f6fa 100%);
+}
+.custom-login-card {
+  display: flex;
+  width: 900px;
+  min-height: 540px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 12px 48px rgba(60, 72, 88, 0.18);
+  overflow: hidden;
+  animation: customFadeIn 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+@media (max-width: 900px) {
+  .custom-login-card {
+    flex-direction: column;
+    width: 98vw;
+    min-width: 0;
+  }
+  .custom-login-left,
+  .custom-login-right {
+    min-width: 0;
+    width: 100%;
+  }
+}
+.custom-login-left {
+  background: linear-gradient(120deg, #1a3353 60%, #2d4a7a 100%);
+  color: #fff;
+  width: 44%;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2.5rem 2rem 2rem 2rem;
+}
+.custom-login-branding {
+  z-index: 2;
+  text-align: center;
+}
+.custom-login-logo {
+  height: 54px;
+  width: auto;
+  margin-bottom: 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.1);
+}
+.custom-login-branding h2 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+.custom-login-branding p {
+  font-size: 1.08rem;
+  color: #e9e9f6;
+  margin-bottom: 1.5rem;
+}
+.custom-login-image {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120px;
+  background: url("/assets/real-estate-login.jpg") no-repeat center center/cover;
+  opacity: 0.18;
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 0;
+  z-index: 1;
+}
+.custom-login-right {
+  width: 56%;
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+}
+.custom-login-form-wrapper {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.custom-login-title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  color: #1a3353;
+  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+  letter-spacing: -1px;
+  text-align: left;
+}
+.custom-login-subtitle {
+  color: #6c757d;
+  font-size: 1.08rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+.custom-login-form .form-group {
+  margin-bottom: 1.15rem;
+}
+.custom-login-form label {
+  font-weight: 600;
+  color: #1a3353;
+  margin-bottom: 0.25rem;
+  display: block;
+  font-size: 1rem;
+}
+.custom-login-form .form-control {
+  border-radius: 7px;
+  border: 1.5px solid #e3e6ed;
+  padding: 0.85rem 1rem;
+  font-size: 1.08rem;
+  background: #f8fafc;
+  color: #1a3353;
+  transition: border-color 0.2s;
+  box-shadow: none;
+}
+.custom-login-form .form-control:focus {
+  border-color: #1a3353;
+  outline: none;
+}
+.custom-login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.custom-login-forgot {
+  color: #2d4a7a;
+  font-size: 0.98rem;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.custom-login-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #1a3353 60%, #2d4a7a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 1.08rem;
+  padding: 0.95rem 0;
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.04);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.custom-login-btn:hover {
+  background: linear-gradient(90deg, #2d4a7a 60%, #1a3353 100%);
+  box-shadow: 0 4px 16px rgba(60, 72, 88, 0.1);
+}
+.custom-login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #6c757d;
+  font-size: 1.01rem;
+}
+.custom-login-footer a {
+  color: #1a3353;
+  font-weight: 700;
+  margin-left: 0.25rem;
+  text-decoration: underline;
+}
+.is-invalid {
+  border-color: #e74c3c !important;
+}
+@keyframes customFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}

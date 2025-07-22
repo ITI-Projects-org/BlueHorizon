@@ -3,7 +3,7 @@ import {
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
 
-// node_modules/Zone.js/fesm2015/zone.js
+// node_modules/zone.js/fesm2015/zone.js
 var global = globalThis;
 function __symbol__(name) {
   const symbolPrefix = global["__Zone_symbol_prefix"] || "__zone_symbol__";
@@ -2384,11 +2384,11 @@ patchCommon(Zone$1);
 patchBrowser(Zone$1);
 /*! Bundled license information:
 
-Zone.js/fesm2015/zone.js:
+zone.js/fesm2015/zone.js:
   (**
    * @license Angular v<unknown>
    * (c) 2010-2025 Google LLC. https://angular.io/
    * License: MIT
    *)
 */
-//# sourceMappingURL=Zone__js.js.map
+//# sourceMappingURL=zone__js.js.map

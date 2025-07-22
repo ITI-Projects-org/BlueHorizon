@@ -29,5 +29,6 @@ namespace API.Models
         public VerificationStatus VerificationStatus { get; set; }
         public DocumentType Contract{ get; set; }
         public string ContractPath { get; set; }
+        public virtual ICollection<UnitImage> UnitImages { get; set; }
     }
 }

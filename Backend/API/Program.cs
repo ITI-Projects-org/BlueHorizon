@@ -8,6 +8,8 @@ using API.UnitOfWorks;
 using API.Services.Interfaces;
 using API.Services.Implementation;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using API.Repositories.Interfaces;
+using API.Repositories.Implementations;
 //using API.MapperConfig;
 
 namespace API
@@ -19,7 +21,7 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddControllers();
             builder.Services.AddDbContext<VillageSystemDbContext>(options => 
             options.UseLazyLoadingProxies()
@@ -44,6 +46,8 @@ namespace API
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
+
 
             // Configure the HTTP request pipeline.
             builder.Services.AddAuthentication(options =>
@@ -75,7 +79,7 @@ namespace API
             {
                 options.AddPolicy("AllowFrontend",
                     builder => builder
-                        .WithOrigins("http://localhost:4200", "https://localhost:7083")
+                        .WithOrigins("http://localhost:4200") // <-- your frontend URL
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
@@ -91,7 +95,7 @@ namespace API
             app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseAuthentication();    
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();

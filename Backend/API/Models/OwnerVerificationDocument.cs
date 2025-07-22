@@ -14,7 +14,9 @@ namespace API.Models
         public string OwnerId { get; set; }
         public virtual Owner Owner { get; set; }
         public DocumentType DocumentType { get; set; }
-        public string DocumentPath { get; set; }
+        public string FrontNationalIdDocumentPath { get; set; }
+        public string BackNationalIdDocumentPath { get; set; }
+        
         public DateTime UploadDate { get; set; }
         public string NationalId { get; set; }
 

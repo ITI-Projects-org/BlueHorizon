@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Identity.Data;
 using API.Services.Interfaces;
+using System.Net;
 namespace API.Controllers
 {
     [ApiController]
@@ -298,13 +299,17 @@ namespace API.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var resetLink = Url.Action("ResetPassword", "Auth", new
-            {
-                token = token,
-                email = user.Email
-            }, Request.Scheme);
+            
+            var clientUrl = _config["ClientApp:BaseUrl"]!;              
 
-            // Send email with resetLink
+            
+            var encodedToken = WebUtility.UrlEncode(token);
+            var encodedEmail = WebUtility.UrlEncode(user.Email!);
+
+            
+            var resetLink = $"{clientUrl}/reset-password?token={encodedToken}&email={encodedEmail}";
+
+            
             await _authService.SendResetPassword(user, resetLink);
 
             return Ok("If the email is registered, a reset link has been sent.");
@@ -363,3 +368,5 @@ namespace API.Controllers
     }
 
 }
+
+
