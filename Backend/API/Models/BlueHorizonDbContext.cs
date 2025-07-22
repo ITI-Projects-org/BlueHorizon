@@ -36,6 +36,7 @@ namespace API.Models
             builder.Entity<Owner>()
                 .HasMany(o => o.Units)
                 .WithOne(u => u.Owner)
+                .HasForeignKey(u => u.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

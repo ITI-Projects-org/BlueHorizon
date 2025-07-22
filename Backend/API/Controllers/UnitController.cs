@@ -22,36 +22,36 @@ namespace API.Controllers
         }
 
 
-        [Authorize(Roles = "Owner")]
-        [HttpPost]
+        //[Authorize(Roles = "Owner")]
+        [HttpPost("AddUnit")]
         public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
+                //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                //if (string.IsNullOrEmpty(userId))
+                //    return Unauthorized();
 
                 var unit = _mapper.Map<Unit>(unitDto);
-                unit.OwnerId = userId;
+                unit.OwnerId = "02deee19-b2a4-4b3e-98ab-43c85bea94db";
 
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
 
+                //Handle contract document upload
+                if (unitDto.ContractDocument != null)
+                {
+                    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                    var filePath = Path.Combine("Uploads", "Contracts", fileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-                // Handle contract document upload
-                //if (unitDto.ContractDocument != null)
-                //{
-                //    var fileName = $"unit_contract_user:{userId}{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await unitDto.ContractDocument.CopyToAsync(stream);
+                    }
+                    unit.ContractPath = filePath;
+                }
 
-                //    using (var stream = new FileStream(filePath, FileMode.Create))
-                //    {
-                //        await unitDto.ContractDocument.CopyToAsync(stream);
-                //    }
-                //    unit.ContractPath = filePath;
-                //}
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
@@ -109,7 +109,7 @@ namespace API.Controllers
 
         #region Unit Details
         // Get By Id
-        [HttpGet("{id}")]
+        [HttpGet("GetUnitById/{id}")]
         public async Task<IActionResult> GetUnitById(int id)
         {
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
@@ -123,7 +123,7 @@ namespace API.Controllers
 
         #region  Update Unit
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateUnit/{id}")]
         public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
         {
 
