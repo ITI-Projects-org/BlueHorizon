@@ -2,7 +2,7 @@
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.MessageDTO;
-using API.DTOs.UnitsDTOs;
+using API.DTOs.UnitDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
 using AutoMapper;

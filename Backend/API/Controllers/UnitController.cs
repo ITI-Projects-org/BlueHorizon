@@ -4,6 +4,7 @@ using API.DTOs.UnitDTO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -22,9 +23,8 @@ namespace API.Controllers
 
         }
 
-        //Delete unit
         [HttpDelete]
-        [Authorize(Roles = "Owner")]
+        //[Authorize(Roles = "Owner")]
         public async Task<IActionResult> DeleteById(int id)
         {
             try
@@ -49,9 +49,6 @@ namespace API.Controllers
             }
 
         }
-
-
-        #region Unit Details
 
         readonly IUnitOfWork _unitOfWork;
         readonly IMapper _mapper;
@@ -120,7 +117,6 @@ namespace API.Controllers
                 return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
-        #endregion
 
         [HttpPost("VerifyUnit/{id:int}")]
         //[Authorize(Roles = "Owner")]
@@ -156,7 +152,6 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-
         public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
         {
 
