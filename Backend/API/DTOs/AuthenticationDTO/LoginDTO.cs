@@ -7,7 +7,7 @@ namespace API.DTOs.AuthenticationDTO
     {
         [Required(ErrorMessage = "First Name is required")]
         public string Email { get; set; }
-        public string Password{ get; set; }
+        public string Password { get; set; }
         // public string Role { get; set; }
     }
 }

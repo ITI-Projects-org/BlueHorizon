@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using API.DTOs;
 using API.Models;
 using API.UnitOfWorks;
@@ -21,11 +22,11 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Tenant")]
+        [Authorize(Roles = "Tenant")]
         public async Task<IActionResult> AddReview([FromBody] ReviewDTO reviewDTO)
         {
             reviewDTO.TenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            reviewDTO.TenantId = "14fdfcb4-6ca5-405d-a018-0533504b8826";
+            // reviewDTO.TenantId = "14fdfcb4-6ca5-405d-a018-0533504b8826";
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (reviewDTO == null)
@@ -47,40 +48,41 @@ namespace API.Controllers
             await _unit.SaveAsync();
 
             var unit = await _unit.UnitRepository.GetByIdAsync(review.UnitId);
-            unit.AverageUnitRating = (float) _unit.UnitReviewRepository.CalculateAverageRating(review.UnitId);
+            unit.AverageUnitRating = (float)_unit.UnitReviewRepository.CalculateAverageRating(review.UnitId);
             booking.UnitReviewed = true;
             await _unit.SaveAsync();
             return Ok(new { Message = "Review Added Succesfully ✅" });
         }
-        [HttpGet]
+        [HttpGet("GetAllUnitReviews")]
         [Authorize(Roles = "Tenant,Owner,Admin")]
-        public async Task<IActionResult> GetAllReviews(int id)
+        public async Task<IActionResult> GetAllReviews(int unitId)
         {
-            IEnumerable<UnitReview> x = await _unit.UnitReviewRepository.GetAllAsync();
-            return Ok(x);
+            IEnumerable<UnitReview> unitReviews = await _unit.UnitReviewRepository.GetAllUnitReviews(unitId);
+            IEnumerable<ReviewDTO>? unitreviesDto =  _mapper.Map<List<ReviewDTO>>(unitReviews);
+            return Ok(unitreviesDto);
         }
-        
+
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Tenant,Admin")]
-        public async Task<IActionResult> DeleteReview(int id) {
+        [Authorize(Roles = "Tenant,Admin")]
+        public async Task<IActionResult> DeleteReview(int id)
+        {
 
             UnitReview? review = await _unit.UnitReviewRepository.GetByIdAsync(id);
-            
+
             if (review == null)
-                return BadRequest(new { Message ="No Review Found!"});
-            
+                return BadRequest(new { Message = "No Review Found!" });
+
             var TenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            TenantId = "14fdfcb4-6ca5-405d-a018-0533504b8826";
             if (TenantId != review.TenantId)
                 return Unauthorized("You aren't Authoried to Delete This Review!");
-            
+
             int UnitId = review.UnitId;
             _unit.UnitReviewRepository.DeleteByIdAsync(id);
             await _unit.SaveAsync();
 
-            var unit= await _unit.UnitRepository.GetByIdAsync(UnitId);
-            unit.AverageUnitRating = (float) _unit.UnitReviewRepository.CalculateAverageRating(UnitId);
-            Booking booking  = await  _unit.BookingRepository.GetByIdAsync(review.BookingId);
+            var unit = await _unit.UnitRepository.GetByIdAsync(UnitId);
+            unit.AverageUnitRating = (float)_unit.UnitReviewRepository.CalculateAverageRating(UnitId);
+            Booking booking = await _unit.BookingRepository.GetByIdAsync(review.BookingId);
             booking.UnitReviewed = false;
 
             await _unit.SaveAsync();
