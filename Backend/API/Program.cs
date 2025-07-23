@@ -1,18 +1,14 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+﻿using API.Hubs;
 using API.Mappers;
 using API.Models;
-using API.UnitOfWorks;
-using API.Services.Interfaces;
 using API.Services.Implementation;
+using API.Services.Interfaces;
+using API.UnitOfWorks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using API.Repositories.Interfaces;
-using API.Repositories.Implementations;
-using API.Hubs;
-using Microsoft.Extensions.Options;
-//using API.MapperConfig;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API
 {
@@ -72,20 +68,21 @@ namespace API
                     IssuerSigningKey = secretKey
                 };
 
-            option.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-            {
-                OnMessageReceived = context =>
+                options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
                 {
-                    var accessToken = context.Request.Query["access_token"];
-
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        path.StartsWithSegments("/chathub"))
+                    OnMessageReceived = context =>
                     {
-                        context.Token = accessToken;
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/chathub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
                     }
-                    return Task.CompletedTask;
-                }
+                };
             })
             .AddGoogle("Google", options =>
             {
@@ -94,7 +91,7 @@ namespace API
                 options.CallbackPath = "/signin-google";
                 options.SaveTokens = true;
             });
-
+            
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",

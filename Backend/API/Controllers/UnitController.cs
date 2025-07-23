@@ -3,7 +3,6 @@ using API.UnitOfWorks;
 using API.DTOs.UnitsDTOs;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace API.Controllers
@@ -20,7 +19,6 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
 
         //[Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
@@ -49,7 +47,7 @@ namespace API.Controllers
                     {
                         await unitDto.ContractDocument.CopyToAsync(stream);
                     }
-                    unit.ContractFilePath = filePath;
+                    unit.ContractPath = filePath;
                 }
 
 
@@ -81,11 +79,9 @@ namespace API.Controllers
             }
         }
 
-        #region Real Add Unit 
         [HttpPost("VerifyUnit/{id:int}")]
         //[Authorize(Roles = "Owner")]
-
-        public async Task<IActionResult> VerifyUnit( int id)
+        public async Task<IActionResult> VerifyUnit(int id)
         {
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             _mapper.Map<Unit>(unit);
@@ -101,13 +97,8 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
-
-
         }
-        #endregion
 
-        #region Unit Details
         // Get By Id
         [HttpGet("GetUnitById/{id}")]
         public async Task<IActionResult> GetUnitById(int id)
@@ -119,9 +110,6 @@ namespace API.Controllers
             }
             return Ok(_mapper.Map<UnitDetailsDTO>(unit));
         }
-        #endregion
-
-        #region  Update Unit
 
         [HttpPut("UpdateUnit/{id}")]
         public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
@@ -149,9 +137,7 @@ namespace API.Controllers
             return Ok("Unit Updated Successfully");
         }
 
-        #endregion
         [HttpPut("DeleteUnit/{id}")]
-
         public async Task<IActionResult> DeleteUnit(int id)
         {
             _unitOfWork.UnitRepository.DeleteByIdAsync(id);

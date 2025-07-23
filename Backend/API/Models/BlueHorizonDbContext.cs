@@ -21,7 +21,7 @@ namespace API.Models
         public DbSet<UnitAmenity> UnitAmenities { get; set; }
         public DbSet<UnitReview> UnitReviews { get; set; }
         public DbSet<Unit> Units { get; set; }
-        public DbSet<UnitImage> UnitImages { get; set; }
+        public DbSet<UnitImages> UnitImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -138,7 +138,7 @@ namespace API.Models
             builder.Entity<Message>()
                 .HasOne(m => m.ReceiverUser)
                 .WithMany()
-                .HasForeignKey(m => m.RecieverId)
+                .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //builder.Entity<Message>()
