@@ -5,7 +5,7 @@ namespace API.DTOs.AuthenticationDTO
 {
     public class RegisterDTO
     {
-        [Required(ErrorMessage = "First Name is required")]
+        [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }

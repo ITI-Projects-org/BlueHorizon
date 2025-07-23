@@ -1,3 +1,4 @@
+
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Azure;
@@ -6,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using API.DTOs.VerificationDTO;
 using API.Models;
 using API.UnitOfWorks;
+using API.Repositories.Implementations;
+using API.Repositories.Interfaces;
+using CloudinaryDotNet.Actions;
 
 namespace API.Controllers
 {
@@ -16,11 +20,13 @@ namespace API.Controllers
     {
         public IMapper _mapper { get; }
         public IUnitOfWork _unit { get; }
+        public IPhotoService _photoService { get; }
 
-        public VerificationController(IMapper mapper, IUnitOfWork unit)
+        public VerificationController(IMapper mapper, IUnitOfWork unit, IPhotoService photoService)
         {
             _mapper = mapper;
             _unit = unit;
+            _photoService = photoService;
         }
         //public IActionResult Index()
         //{
@@ -28,7 +34,7 @@ namespace API.Controllers
         //}
         [HttpPost("AddRequest")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> OwnerVerificationRequest([FromBody]OwnerWithUnitVerificationDTO ownerVerificationDTO){
+        public async Task<IActionResult> OwnerVerificationRequest([FromForm]OwnerWithUnitVerificationDTO ownerVerificationDTO){
             #region Verify Owner
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -51,17 +57,61 @@ namespace API.Controllers
 
             #region Table VerificationOwnerDocument
             OwnerVerificationDocument doc = _mapper.Map<OwnerVerificationDocument>(ownerVerificationDTO);
+            ImageUploadResult? FrontImageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.FrontNationalIdDocument);
+            ImageUploadResult? BackImageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.BackNationalIdDocument);
+            if (FrontImageUploadResult.Error != null || FrontImageUploadResult.Error != null)
+                return BadRequest(FrontImageUploadResult.Error.Message);
+            doc.FrontNationalIdDocumentPath = FrontImageUploadResult.Url.ToString();
+            doc.BackNationalIdDocumentPath = BackImageUploadResult.Url.ToString();
+            doc.UploadDate = DateTime.Now;
             _unit.OwnerVerificationDocumentRepository.AddAsync(doc);
+            
             #endregion
 
             #region Verify Unit
+            ImageUploadResult imageUploadResult = await _photoService.AddPhotoAsync(ownerVerificationDTO.ContractFile);
+            
+            if (imageUploadResult.Error != null )
+                return BadRequest(imageUploadResult.Error.Message);
+
             Unit unit = _mapper.Map<Unit>(ownerVerificationDTO);
+            unit.ContractPath = imageUploadResult.Url.ToString();
+            
             _unit.UnitRepository.AddAsync(unit);
             //unit.UnitAmenities = ownerVerificationDTO.UnitAmenities;
             #endregion
+
+            #region Add Amenities
+            //if(ownerVerificationDTO.UnitAmenities !=null && ownerVerificationDTO.UnitAmenities.Any())
+            //{
+            //    foreach(var amenity in ownerVerificationDTO.UnitAmenities)
+            //    {
+
+            //    }
+            //}
+            await _unit.SaveAsync();
+
+            if (ownerVerificationDTO.AmenityIds != null && ownerVerificationDTO.AmenityIds.Any())
+            {
+                foreach (var amenityId in ownerVerificationDTO.AmenityIds)
+                {
+                    var unitAmenity = new UnitAmenity
+                    {
+                        UnitId = unit.Id,
+                        AmenityId = amenityId
+                    };
+                    await _unit.UnitAmenityRepository.AddAsync(unitAmenity);
+                }
+                await _unit.SaveAsync();
+            }
+
+
+            #endregion
+
             await _unit.SaveAsync();
             return Ok();
         }
+
         [HttpGet("Requests")]
         [Authorize(Roles ="Admin")]
         
@@ -70,8 +120,8 @@ namespace API.Controllers
         var allVerificationRequests = await _unit.OwnerVerificationDocumentRepository.GetAllAsync();
             if (allVerificationRequests == null || !allVerificationRequests.Any())
                 return Ok(new { Message = "No Requests Found" });
-            Task<IEnumerable<OwnerWithUnitVerificationDTO>>? OwnersUnitsWaitingForVerification 
-                = _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
+            IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification 
+                =await  _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
             
             return Ok(OwnersUnitsWaitingForVerification);
         }
@@ -89,3 +139,4 @@ namespace API.Controllers
 
     }
 }
+

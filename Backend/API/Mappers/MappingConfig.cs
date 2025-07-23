@@ -2,7 +2,7 @@
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
-using API.DTOs.UnitsDTOs;
+using API.DTOs.AmenityDTOs;
 
 namespace API.Mappers
 {
@@ -36,6 +36,9 @@ namespace API.Mappers
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
             #endregion
 
+            CreateMap<AmenityDTO, Amenity>().ReverseMap();
+            CreateMap<ReviewDTO, UnitReview>().ReverseMap();
+            CreateMap<QRDTO,QRCode>().ReverseMap();
         }
     }
 }

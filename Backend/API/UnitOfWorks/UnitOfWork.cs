@@ -16,7 +16,6 @@ namespace API.UnitOfWorks
         public IAccessPermissionRepository AccessPermissionRepository
         {
             get
-
             {
                 if (accessPermissionRepository == null)
                 {
