@@ -1,6 +1,9 @@
 import { ReactiveFormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Navbar } from './Layout/navbar/navbar';
+import { Footer } from "./Layout/footer/footer";
 import { Register } from './Pages/register/register';
 import { Login } from './Pages/login/login';
 
@@ -11,10 +14,10 @@ import { Chat } from './components/chat/chat';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Login, Register, ReactiveFormsModule, AddUnit, Chat, FormsModule],
+  imports: [RouterOutlet, Footer, Navbar Login, Register, ReactiveFormsModule, AddUnit, Chat, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
-  protected title = 'VillageFront';
+  protected readonly title = signal('Frontend');
 }

@@ -1,6 +1,6 @@
-﻿using API.Models;
+using API.Models;
 using API.UnitOfWorks;
-using API.DTOs.UnitsDTOs;
+using API.DTOs.UnitDTO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,6 +11,48 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
+        [HttpGet("All")]
+        public async Task<ActionResult> GetAll()
+        {
+
+            var units = await _unitOfWork.UnitRepository.GetAllAsync();
+
+
+            return Ok(_mapper.Map<List<UnitDTO>>(units));
+
+        }
+
+        //Delete unit
+        [HttpDelete]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                var existingUnit = await _unitOfWork.UnitRepository.GetUnitWithDetailsAsync(id);
+                if (existingUnit == null)
+                {
+                    return NotFound("This Unit Does not exist");
+                }
+                //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                //if (existingUnit.OwnerId != currentUserId)
+                //{
+                //    return Forbid("You Cannot Delete This Unit.");
+                //}
+                 _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+
+                return Ok(new { Message = "Unit Deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+
+        #region Unit Details
+
         readonly IUnitOfWork _unitOfWork;
         readonly IMapper _mapper;
 
@@ -78,6 +120,7 @@ namespace API.Controllers
                 return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+        #endregion
 
         [HttpPost("VerifyUnit/{id:int}")]
         //[Authorize(Roles = "Owner")]
@@ -103,6 +146,7 @@ namespace API.Controllers
         [HttpGet("GetUnitById/{id}")]
         public async Task<IActionResult> GetUnitById(int id)
         {
+
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             if (unit == null)
             {
@@ -111,7 +155,8 @@ namespace API.Controllers
             return Ok(_mapper.Map<UnitDetailsDTO>(unit));
         }
 
-        [HttpPut("UpdateUnit/{id}")]
+        [HttpPut("{id}")]
+
         public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
         {
 
@@ -119,11 +164,13 @@ namespace API.Controllers
             {
                 return BadRequest("Unit data is null");
             }
+
             var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             if (existingUnit == null)
             {
                 return NotFound("Unit Not Found");
             }
+
             var unit = _mapper.Map<Unit>(unitDto);
             try
             {
@@ -146,3 +193,4 @@ namespace API.Controllers
         }
     }
 }
+

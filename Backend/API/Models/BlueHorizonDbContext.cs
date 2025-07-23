@@ -25,7 +25,10 @@ namespace API.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+
+
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
@@ -66,11 +69,9 @@ namespace API.Models
             builder.Entity<Booking>()
                 .Property(b => b.TotalPrice)
                 .HasPrecision(10, 2);
-
             builder.Entity<Booking>()
                 .Property(b => b.PlatformComission)
                 .HasPrecision(10, 2);
-
             builder.Entity<Booking>()
                 .Property(b => b.OwnerPayoutAmount)
                 .HasPrecision(10, 2);
@@ -164,7 +165,6 @@ namespace API.Models
                 .HasOne(ua => ua.Amenity)
                 .WithMany(a => a.UnitAmenities)
                 .OnDelete(DeleteBehavior.Restrict);
-
             builder.Entity<QRCode>()
                 .HasOne(QRCode => QRCode.Booking)
                 .WithOne(b => b.QRCode)

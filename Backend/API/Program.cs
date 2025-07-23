@@ -39,6 +39,7 @@ namespace API
                 .AddEntityFrameworkStores<BlueHorizonDbContext>()
                 .AddDefaultTokenProviders();
 
+
             builder.Services.AddOpenApi();
             builder.Services.AddSignalR();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
@@ -109,6 +110,7 @@ namespace API
                 app.MapOpenApi();
                 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "v1"));
             }
+            app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
 
             app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();

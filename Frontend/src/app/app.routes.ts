@@ -7,6 +7,7 @@ import { OwnerVerification } from './Pages/Verification/owner-verification/owner
 import { PendingOwners } from './Pages/Verification/pending-owners/pending-owners';
 import { Review } from './Components/review/review';
 import { EmailConfirmation } from './Pages/email-confirmation/email-confirmation';
+import { Units } from './Pages/units/units';
 
 import { CreateQr } from './Components/create-qr/create-qr';
 
@@ -39,4 +40,5 @@ export const routes: Routes = [
     { path: '**', redirectTo: 'login' }
   { path: 'addReview', component: Review },
   { path: 'createQr', component:  CreateQr},
+    { path: '', component: Units },
 ];
