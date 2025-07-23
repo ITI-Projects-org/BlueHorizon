@@ -1,0 +1,25 @@
+<div class="chat-container">
+  <h2>Welcome to BlueHorizon Chat</h2>
+
+  <div class="message-box">
+    <div *ngFor="let msg of messages">
+      <strong>{{ msg.from }}:</strong> {{ msg.content }}
+    </div>
+  </div>
+
+  <div class="input-section">
+    <input
+      [(ngModel)]="toUserId"
+      placeholder="Enter receiver user ID"
+      class="user-id-input"
+    />
+
+    <input
+      [(ngModel)]="messageText"
+      placeholder="Type your message..."
+      class="message-input"
+    />
+
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>

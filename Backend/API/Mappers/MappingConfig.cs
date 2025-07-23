@@ -2,6 +2,8 @@
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
+using API.DTOs.UnitsDTOs;
+using API.DTOs.MessageDTO;
 using API.DTOs.AmenityDTOs;
 
 namespace API.Mappers
@@ -35,6 +37,12 @@ namespace API.Mappers
                 .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
             #endregion
+            CreateMap<Message, MessageDto>()
+                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName))
+                .ForMember(dest => dest.ReceiverUsername, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
+                //.ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => src.SenderUser.PhotoUrl))
+                //.ForMember(dest => dest.ReceiverPhotoUrl, opt => opt.MapFrom(src => src.ReceiverUser.PhotoUrl))
+                .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp));
 
             CreateMap<AmenityDTO, Amenity>().ReverseMap();
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();

@@ -4,11 +4,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using API.DTOs.AuthenticationDTO;
 using API.Models;
-using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Cryptography;
@@ -206,7 +204,6 @@ namespace API.Controllers
 
                     await _authService.SendEmailConfirmation(admin, confirmUrl);
                 }
-
                 else
                     return BadRequest(new { msg = "Invalid Role" });
 
@@ -353,6 +350,7 @@ namespace API.Controllers
         {
             return Ok("Authorized Tenant");
         }
+
         [HttpGet("Owner")]
         [Authorize(Roles = "Owner")]
         public IActionResult Owner()

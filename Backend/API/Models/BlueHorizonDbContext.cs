@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Models
@@ -29,12 +30,16 @@ namespace API.Models
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
 
+            //Message Fluent API
+            builder.Entity<Message>().Property(m => m.SenderId).IsRequired();
+            builder.Entity<Message>().Property(m => m.ReceiverId).IsRequired();
+            builder.Entity<Message>().Property(m => m.MessageContent).IsRequired();
+
+
             builder.Entity<Unit>()
             .HasMany(u => u.UnitAmenities)
             .WithOne(ua => ua.Unit)
             .OnDelete(DeleteBehavior.Cascade);
-
-
 
             // builder.Entity<Owner>()
             //     .HasMany(o => o.Units)
@@ -46,7 +51,6 @@ namespace API.Models
                 .WithMany(o => o.Units)
                 .HasForeignKey(u => u.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
-
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
@@ -132,16 +136,16 @@ namespace API.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()
-                .HasOne(m => m.RecieverUser)
+                .HasOne(m => m.ReceiverUser)
                 .WithMany()
                 .HasForeignKey(m => m.RecieverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Message>()
-                .HasOne(m => m.Booking)
-                .WithMany()
-                .HasForeignKey(m => m.BookingId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Message>()
+            //    .HasOne(m => m.Booking)
+            //    .WithMany()
+            //    .HasForeignKey(m => m.BookingId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // OwnerVerificationDocument relationships
             builder.Entity<OwnerVerificationDocument>()

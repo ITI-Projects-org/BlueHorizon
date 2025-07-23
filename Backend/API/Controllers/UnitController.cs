@@ -28,12 +28,12 @@ namespace API.Controllers
         {
             try
             {
-                //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                //if (string.IsNullOrEmpty(userId))
-                //    return Unauthorized();
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized();
 
                 var unit = _mapper.Map<Unit>(unitDto);
-                unit.OwnerId = "02deee19-b2a4-4b3e-98ab-43c85bea94db";
+                unit.OwnerId = userId;
 
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
@@ -49,7 +49,7 @@ namespace API.Controllers
                     {
                         await unitDto.ContractDocument.CopyToAsync(stream);
                     }
-                    unit.ContractPath = filePath;
+                    unit.ContractFilePath = filePath;
                 }
 
 
@@ -150,6 +150,13 @@ namespace API.Controllers
         }
 
         #endregion
+        [HttpPut("DeleteUnit/{id}")]
 
+        public async Task<IActionResult> DeleteUnit(int id)
+        {
+            _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+            await _unitOfWork.SaveAsync();
+            return Ok();
+        }
     }
 }
