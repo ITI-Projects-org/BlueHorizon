@@ -54,7 +54,7 @@ namespace API.Controllers
             return Ok(new { Message = "Review Added Succesfully ✅" });
         }
         [HttpGet("GetAllUnitReviews")]
-        //[Authorize(Roles = "Tenant,Owner,Admin")]
+        [Authorize(Roles = "Tenant,Owner,Admin")]
         public async Task<IActionResult> GetAllReviews(int unitId)
         {
             IEnumerable<UnitReview> unitReviews = await _unit.UnitReviewRepository.GetAllUnitReviews(unitId);

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { QrServise } from '../../Services/qr-servise';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-create-qr',
@@ -8,18 +9,39 @@ import { QrServise } from '../../Services/qr-servise';
   styleUrl: './create-qr.css'
 })
 export class CreateQr {
-  constructor(private qrService:QrServise){}
-  createQR(){
-    try{
+  constructor(private qrService:QrServise, 
+    private sanitizer: DomSanitizer,
+    private cdr:ChangeDetectorRef
+){}
+  qrCodeUrl: SafeUrl | null = null;
+  isLoading = true;
+  errorMessage: string | null = null;
+  
+  getQr(qrId:number){
+    const getSub = this.qrService.getQrCode(qrId).subscribe({
+            next:imageBlob=>{
+              const objectUrl = URL.createObjectURL(imageBlob);
+              this.qrCodeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+              this.isLoading = false; 
+              this.cdr.detectChanges();   
+            }})
+  }
+
+  createQR(){ 
     console.log("btn clicked")
     this.qrService.createQr()
       .subscribe({
-        next:e=>console.log(e),
-        error:e=>console.log(e)
+        next:response=>{
+          const getSub = this.qrService.getQrCode(response.qrId).subscribe({
+            next:imageBlob=>{
+              const objectUrl = URL.createObjectURL(imageBlob);
+              this.qrCodeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+              this.isLoading = false;   
+              this.cdr.detectChanges();   
+
+            }
+          })
+        } 
       })
-}
-  catch(e){
-    console.log(e) 
-  }  
   }
 }

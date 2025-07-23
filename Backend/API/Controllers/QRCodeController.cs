@@ -20,7 +20,7 @@ public class QrCodeController : ControllerBase
         }
 
     [HttpPost("create")]
-    //[Authorize(Roles ="Tenant")]
+    //[Authorize(Roles ="Owner")]
     public async Task<IActionResult> CreateQr([FromBody] QRDTO qrdto)
     {
         QRCode qr = _mapper.Map<QRCode>(qrdto);
@@ -45,8 +45,9 @@ public class QrCodeController : ControllerBase
         await _unit.QRCodeRepository.AddAsync(qr);
         await _unit.SaveAsync();
 
-        return File(qrCodeImage, "image/png");
-        //return Ok(new { Message="image/png" });
+        //return File(qrCodeImage, "image/png");
+
+        return CreatedAtAction(nameof(GetQRCodeById),new { QrId= qr.Id}, new {Message="Qr created successfully", QrId=qr.Id});
     }
 
     [HttpGet("{QrId}")]

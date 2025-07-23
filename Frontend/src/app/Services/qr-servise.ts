@@ -26,18 +26,22 @@ constructor(  private http :HttpClient,@Inject(PLATFORM_ID) private platformId: 
     })
   }
 
-  createQr():Observable<any>{
+  createQr():Observable<{message:string, qrId:number}>{
+    console.log('from podt in  service')
     let Qrdto:QrCodeDto={
-      BookingId : 1,
-      // expirationDate : "",
+      BookingId : 2,
       TenantNationalId : "2341",
       VillageName : "Mousa Cost",
       UnitAddress : "Alex",
       OwnerName : "mark  Owner",
       TenantName : "tenant name",
-      
     };
     console.log(`${this.QrURL}/create`)
-    return this.http.post<any>(`${this.QrURL}/create`,Qrdto, {headers:this.headers});
+    return this.http.post<{message:string, qrId:number}>(`${this.QrURL}/create`,Qrdto, {headers:this.headers});
+  }
+  getQrCode(qrId:number):Observable<Blob>{
+    console.log('from get in  service')
+
+    return this.http.get(`${this.QrURL}/${qrId}`, { headers: this.headers, responseType:"blob"});
   }
 }
