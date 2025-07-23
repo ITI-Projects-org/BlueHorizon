@@ -1,3 +1,4 @@
+import { QrCodeDto } from './Models/qr-code-dto';
 import { Routes } from '@angular/router';
 import { Home } from './Pages/home/home';
 import { Login } from './Pages/login/login';
@@ -6,6 +7,7 @@ import { OwnerVerification } from './Pages/Verification/owner-verification/owner
 import { PendingOwners } from './Pages/Verification/pending-owners/pending-owners';
 import { Review } from './Components/review/review';
 import { EmailConfirmation } from './Pages/email-confirmation/email-confirmation';
+import { CreateQr } from './Components/create-qr/create-qr';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -16,4 +18,5 @@ export const routes: Routes = [
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
   { path: 'addReview', component: Review },
+  { path: 'createQr', component:  CreateQr},
 ];
