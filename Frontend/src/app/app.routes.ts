@@ -8,6 +8,8 @@ import { Review } from './Components/review/review';
 import { EmailConfirmation } from './Pages/email-confirmation/email-confirmation';
 import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
+import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
+import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -16,7 +18,9 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'email-confirmed', component: EmailConfirmation },
   { path: 'google-signup', component: GoogleSignup },
+  { path: 'google-signup-fail', component: GoogleSignupFail },
   { path: 'google-login-success', component: GoogleLoginSuccess },
+  { path: 'google-login-fail', component: GoogleLoginFail },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
   { path: 'addReview', component: Review },
