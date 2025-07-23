@@ -85,7 +85,7 @@ namespace API.Controllers
 
                 await _authService.SendEmailConfirmation(user, confirmUrl);
 
-                return Ok(new { msg = "registerd" });
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
             }
             catch(Exception e)
             {
@@ -285,7 +285,7 @@ namespace API.Controllers
                 return BadRequest(new { msg = "Email confirmation failed." });
 
             // Optionally redirect to a static Angular page
-                return Redirect("http://localhost:4200/email-confirmed");
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/email-confirmed");
 
             //return Ok(new { msg = "Email confirmed successfully." });
         }

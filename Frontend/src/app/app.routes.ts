@@ -6,6 +6,7 @@ import { OwnerVerification } from './Pages/Verification/owner-verification/owner
 import { PendingOwners } from './Pages/Verification/pending-owners/pending-owners';
 import { Review } from './Components/review/review';
 import { EmailConfirmation } from './Pages/email-confirmation/email-confirmation';
+import { GoogleSignup } from './Pages/google-signup/google-signup';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'email-confirmed', component: EmailConfirmation },
+  { path: 'google-signup', component: GoogleSignup },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
   { path: 'addReview', component: Review },

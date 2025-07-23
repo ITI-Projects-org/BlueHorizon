@@ -1,1 +1,59 @@
 @import "../login/login.css";
+
+/* Google Signup Styles */
+.custom-google-signup {
+  margin-top: 1.5rem;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.divider span {
+  background: white;
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+.google-signup-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #db4437;
+  background: white;
+  color: #db4437;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.google-signup-btn:hover {
+  background: #db4437;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(219, 68, 55, 0.3);
+}
+
+.google-signup-btn i {
+  font-size: 1.1rem;
+}
