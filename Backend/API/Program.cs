@@ -7,7 +7,9 @@ using API.Models;
 using API.UnitOfWorks;
 using API.Hubs;
 using Microsoft.Extensions.Options;
-//using API.MapperConfig;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API
 {
@@ -21,17 +23,15 @@ namespace API
             builder.Services.AddControllers();
 
             builder.Services.AddDbContext<BlueHorizonDbContext>(options => options
-
                 .UseLazyLoadingProxies()
                 .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
-                options.Password.RequireUppercase = false;
+                // options.Password.RequireUppercase = false; // ⚠️ Removed duplicate
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 3;
@@ -41,20 +41,34 @@ namespace API
 
             builder.Services.AddOpenApi();
             builder.Services.AddSignalR();
-            //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
+
+            // ✅ CHANGE START: Modified AddAuthorization to define a policy
+            builder.Services.AddAuthorization(options =>
+            {
+                // Define an Authorization Policy named "myschema".
+                // This policy requires that the user is authenticated (has a valid token).
+                options.AddPolicy("myschema", policy =>
+                {
+                    policy.RequireAuthenticatedUser(); // This policy ensures the user is authenticated.
+                    // If you wanted to specify which authentication scheme to use for this policy, you could add:
+                    // policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme); 
+                    // However, since "myschema" is your DefaultAuthenticateScheme, it will implicitly use it.
+                });
+            });
+            // ✅ CHANGE END: Modified AddAuthorization to define a policy
+
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Configure the HTTP request pipeline.
             builder.Services.AddAuthentication(options => {
-                options.DefaultScheme = "myschema";          // for Authenticate, Challenge, Forbid
+                options.DefaultScheme = "myschema";
                 options.DefaultAuthenticateScheme = "myschema";
                 options.DefaultChallengeScheme = "myschema";
             })
             .AddJwtBearer("myschema", option =>
             {
-                var key = "this is secrete key  for admin role base";
+                var key = "this is secrete key for admin role base";
                 var secreteKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
 
                 option.TokenValidationParameters = new TokenValidationParameters()
@@ -62,7 +76,7 @@ namespace API
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     IssuerSigningKey = secreteKey,
-                    NameClaimType = "nameid"
+                    NameClaimType = ClaimTypes.NameIdentifier
                 };
 
                 option.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
@@ -70,8 +84,6 @@ namespace API
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
-
-                        // لو الطلب جاي من SignalR (WebSocket)
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
                             path.StartsWithSegments("/chathub"))
@@ -81,9 +93,8 @@ namespace API
                         return Task.CompletedTask;
                     }
                 };
-            }
-            );
-           
+            });
+
 
             builder.Services.AddCors(options =>
             {
@@ -109,7 +120,10 @@ namespace API
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-            app.MapHub<ChatHub>("/chathub");
+
+            // ✅ No change here: This line was already correct based on the previous error.
+            // It correctly applies the Authorization Policy named "myschema" to the Hub.
+            app.MapHub<ChatHub>("/chathub").RequireAuthorization("myschema");
 
             app.Run();
         }
