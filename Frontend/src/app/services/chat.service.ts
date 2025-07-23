@@ -1,72 +1,72 @@
+// src/app/services/chat.service.ts (ASSUMED CURRENT STATE)
+
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { AuthService } from './auth.service'; // تأكد إن المسار ده صح لملف الـ AuthService بتاعك
+import { HttpClient } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
+
+// Assuming your Message interface is defined somewhere accessible,
+// like in a shared `models.ts` or directly in `chat.component.ts`
+import { Message } from '../components/chat/chat'; // ✅ Make sure to import your Message interface
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
   private hubConnection!: signalR.HubConnection;
+  private messageSubject = new Subject<Message>(); // ✅ Changed Subject type to Message
 
-  constructor(private authService: AuthService) {}
+  // Property to expose the messages as an Observable
+  public messages$: Observable<Message> = this.messageSubject.asObservable();
 
-  public startConnection(): void {
-    // 1. استخراج الـ JWT Token من الـ AuthService
-    const token = this.authService.getToken();
+  constructor(private http: HttpClient) { }
+
+  public startConnection = () => {
+    // Get the token from local storage
+    const token = localStorage.getItem('token');
     if (!token) {
-      console.error("Authentication token not found. Cannot start SignalR connection.");
-      return; // وقف الاتصال لو مفيش توكن
+      console.error("No token found. Cannot start SignalR connection.");
+      return;
     }
 
-    // 2. بناء الـ HubConnection
-    // - تأكد إن الـ URL (https://localhost:7083/chathub) هو نفسه اللي الباك إند شغال عليه (HTTP/HTTPS والـ Port)
-    // - التوكن بيتبعت كـ Query Parameter بإسم 'access_token'
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7083/chathub?access_token=${token}`, {
-        // إذا كنت بتستخدم الـ token فقط في الـ Query String، فـ `withCredentials: true` قد لا تكون ضرورية
-        // ولكن إضافتها ما بتضرش لو فيه Cookies أو Auth Headers تانية محتاج تبعتها
-        // withCredentials: true
+      .withUrl('https://localhost:7083/chathub', { // Use your actual API URL here
+        accessTokenFactory: () => token // Provide the token for authentication
       })
-      .withAutomaticReconnect() // إعادة الاتصال تلقائياً عند فقدان الاتصال
+      .withAutomaticReconnect()
       .build();
 
-    // 3. بدء الاتصال والتعامل مع النتائج (نجاح أو فشل)
     this.hubConnection
       .start()
-      .then(() => {
-        console.log('✅ SignalR Connected');
-        // هنا ممكن تضيف أي منطق تاني بعد الاتصال بنجاح، زي الانضمام لغرفة دردشة معينة
-      })
-      .catch(err => {
-        console.error('❌ SignalR Error: Failed to start connection', err);
-        // ممكن تعرض رسالة للمستخدم أو تحاول تبدأ الاتصال تاني بعد فترة
-      });
+      .then(() => console.log('SignalR Connection started!'))
+      .catch(err => console.error('Error while starting SignalR connection: ' + err));
+
+    // ✅ IMPORTANT: Update the .on method to expect a single 'Message' object
+    this.hubConnection.on('ReceiveMessage', (message: Message) => {
+      console.log("ChatService received message:", message);
+      this.messageSubject.next(message); // Emit the full message object
+    });
   }
 
-  /**
-   * دالة للاشتراك في رسائل الاستقبال من السيرفر.
-   * السيرفر هينادي "ReceiveMessage" وهيبعت user و message.
-   * @param callback الدالة اللي هتتنفذ لما تيجي رسالة جديدة.
-   */
-  public onReceiveMessage(callback: (user: string, message: string) => void): void {
-    // بتستقبل رسائل اسمها 'ReceiveMessage' من الـ Hub
-    this.hubConnection.on('ReceiveMessage', callback);
+  // ✅ Updated the signature to expect a single Message object
+  public onReceiveMessage = (callback: (message: Message) => void) => {
+    this.messageSubject.subscribe(callback);
   }
 
-  /**
-   * دالة لإرسال رسالة خاصة لمستخدم معين.
-   * بتنادي الدالة "SendMessageToUser" في الـ Hub على السيرفر.
-   * @param toUserId الـ ID بتاع المستخدم المستهدف.
-   * @param message نص الرسالة.
-   */
-  public sendPrivateMessage(toUserId: string, message: string): void {
-    // لازم اسم الدالة يكون متطابق تماماً مع اسم الدالة في الـ Hub بالباك إند (SendMessageToUser)
-    this.hubConnection.invoke('SendMessageToUser', toUserId, message)
-      .catch(err => console.error('❌ Send Error: Failed to send message', err));
+  public sendPrivateMessage = (receiverId: string, messageContent: string) => {
+    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+      this.hubConnection.invoke('SendMessageToUser', receiverId, messageContent)
+        .catch(err => console.error('Error invoking SendMessageToUser: ' + err));
+    } else {
+      console.error('SignalR connection not established. Cannot send message.');
+    }
   }
 
-  // ممكن تضيف دوال تانية هنا للتعامل مع أحداث SignalR زي onclose, onreconnecting, onreconnected
-  public onConnectionClosed(callback: (error?: Error) => void): void {
-    this.hubConnection.onclose(callback);
+  public stopConnection = () => {
+    if (this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
+      this.hubConnection.stop()
+        .then(() => console.log('SignalR Connection stopped.'))
+        .catch(err => console.error('Error while stopping SignalR connection: ' + err));
+    }
   }
 }
