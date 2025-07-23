@@ -50,11 +50,19 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
                 var desiredRole = result.Properties.Items["role"] ?? "Tenant";
                 if (!result.Succeeded)
-                    return BadRequest(new { msg = "Google authentication failed" });
+                {
+                    var msg = "Google signup failed";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                }
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
                 if (email == null)
-                    return BadRequest(new {msg = "No email claim from Google." });
+                {
+                    var msg = "No email by that name was found from Google";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                }
 
                 var name = email.Split("@")[0];
 
@@ -66,12 +74,18 @@ namespace API.Controllers
                     user = _mapper.Map<Tenant>(dto);
                     var createResult = await _userManager.CreateAsync(user);
                     if (!createResult.Succeeded)
-                        return BadRequest(createResult.Errors.Select(e => e.Description));
+                    {
+                        var msg = "an error occured while creating your account";
+                        var encodedMsg = WebUtility.UrlEncode(msg);
+                        return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                    }
                     await _userManager.AddToRoleAsync(user, desiredRole);
                 }
                 else
                 {
-                    return BadRequest(new { msg = "user already exists" });
+                    var msg = "this user already exists";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
                 }
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -83,11 +97,13 @@ namespace API.Controllers
 
                 await _authService.SendEmailConfirmation(user, confirmUrl);
 
-                return Ok(new { msg = "registerd" });
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
             }
             catch(Exception e)
             {
-                return BadRequest(new {msg = $"an unexpected error occured: {e}" });
+                var msg = "an unexpected error occured";
+                var encodedMsg = WebUtility.UrlEncode(msg);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
             }
         }
 
@@ -107,24 +123,36 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
 
                 if (!result.Succeeded)
-                    return BadRequest(new { msg = "Google authentication failed."});
+                {
+                    var msg = "Google login failed.";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
 
                 if (email == null)
-                    return BadRequest(new { msg= "No email claim from Google."});
-
+                {
+                    var msg = "No email by that name was found from Google";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
                 {
-                    return BadRequest(new { msg = "user is not found" });
+                    var msg = "user is not found";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
                 }
 
                 if (!await _userManager.IsEmailConfirmedAsync(user))
-                    return BadRequest(new { msg = "You must confirm your email before logging in."});
-
+                {
+                    var msg = "You must confirm your email before logging in.";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
                 var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
@@ -132,12 +160,16 @@ namespace API.Controllers
                 user.RefreshTokenExpiryTime = refreshExpiry;
                 await _userManager.UpdateAsync(user);
 
-                return Ok(new { accessToken, refreshToken });
+                var encodedAccessToken = WebUtility.UrlEncode(accessToken);
+                var encodedRefreshToken = WebUtility.UrlEncode(refreshToken);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-success?accessToken={encodedAccessToken}&refreshToken={encodedRefreshToken}");
 
             }
             catch(Exception e)
             {
-                return BadRequest(new { msg = $"an unexpected error occured: {e}" });
+                var msg = "an unexpected error occured";
+                var encodedMsg = WebUtility.UrlEncode(msg);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
             }
         }
 
@@ -282,7 +314,7 @@ namespace API.Controllers
                 return BadRequest(new { msg = "Email confirmation failed." });
 
             // Optionally redirect to a static Angular page
-                return Redirect("http://localhost:4200/email-confirmed");
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/email-confirmed");
 
             //return Ok(new { msg = "Email confirmed successfully." });
         }

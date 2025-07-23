@@ -202,6 +202,22 @@ export class AuthenticationService {
       );
   }
 
+  handleGoogleLoginCallback(accessToken: string, refreshToken: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('role', this.getRole(accessToken)?.toString() ?? '');
+      localStorage.setItem(
+        'username',
+        this.getUserName(accessToken)?.toString() ?? 'Guest'
+      );
+      localStorage.setItem(
+        'userId',
+        this.getUserId(accessToken)?.toString() ?? ''
+      );
+    }
+  }
+
   register(registerDTO: RegisterDTO): Observable<any> {
     // this.registerDTO = {
     //   email: 'ElSabagh2@gmail.com',

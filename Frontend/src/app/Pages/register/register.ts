@@ -81,6 +81,10 @@ export class Register {
     });
   }
 
+  googleSignup(role: string) {
+    this.authenticationService.googleSignup(role as 'Tenant' | 'Owner');
+  }
+
   private passwordsMatch(group: FormGroup) {
     const pass = group.get('password')?.value;
     const confirm = group.get('confirmpassword')?.value;

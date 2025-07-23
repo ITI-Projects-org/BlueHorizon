@@ -65,6 +65,10 @@ export class Login {
     });
   }
 
+  OnGoogleLogin() {
+    this.authenticationService.googleLogin();
+  }
+
   get password() {
     return this.loginForm.controls['password'];
   }
