@@ -1,5 +1,8 @@
-﻿using API.Models;
+﻿using System.Threading.Tasks;
+using API.DTOs;
+using API.Models;
 using API.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories.Implementations
 {
@@ -9,6 +12,11 @@ namespace API.Repositories.Implementations
         {
         }
 
+        public async Task<IEnumerable<UnitReview>> GetAllUnitReviews(int UnitId)
+        {
+            return await _context.UnitReviews
+            .Where(ur => ur.UnitId == UnitId).ToListAsync();
+        }
 
         double IUnitReviewRepository.CalculateAverageRating(int unitId)
         {
@@ -20,20 +28,7 @@ namespace API.Repositories.Implementations
 
         }
 
-        async Task UpdateAverageRating(int unitId)
-        {
 
-            //    var newRating = IUnitRepository.CalculateAverageRating(unitId);
-            //    Unit unit= await GetByIdAsync(unitId);
-            //    if (unit != null) { return ; }
-
-            //    _context.Units.Update(await GetByIdAsync(unitId));
-        }
-
-        Task IUnitReviewRepository.UpdateAverageRating(int unitId)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }
