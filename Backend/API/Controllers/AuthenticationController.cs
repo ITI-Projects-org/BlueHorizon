@@ -134,7 +134,9 @@ namespace API.Controllers
                 user.RefreshTokenExpiryTime = refreshExpiry;
                 await _userManager.UpdateAsync(user);
 
-                return Ok(new { accessToken, refreshToken });
+                var encodedAccessToken = WebUtility.UrlEncode(accessToken);
+                var encodedRefreshToken = WebUtility.UrlEncode(refreshToken);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-success?accessToken={encodedAccessToken}&refreshToken={encodedRefreshToken}");
 
             }
             catch(Exception e)

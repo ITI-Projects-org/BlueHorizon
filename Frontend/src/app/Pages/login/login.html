@@ -55,6 +55,22 @@
             Login
           </button>
         </form>
+
+        <!-- Google login Section -->
+        <div class="custom-google-signup">
+          <div class="divider">
+            <span>Or continue with</span>
+          </div>
+          <button
+            type="button"
+            class="google-signup-btn"
+            (click)="OnGoogleLogin()"
+          >
+            <i class="bi bi-google"></i>
+            login with Google
+          </button>
+        </div>
+
         <div class="custom-login-footer">
           <span>Don't have an account?</span>
           <a routerLink="/register">Sign up</a>
