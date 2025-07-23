@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class initialschema : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,6 +44,7 @@ namespace API.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
                     UserType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     BankAccountDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     VerificationStatus = table.Column<int>(type: "int", nullable: true),
@@ -57,7 +58,6 @@ namespace API.Migrations
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -293,13 +293,33 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UnitImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UnitID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnitImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UnitImages_Units_UnitID",
+                        column: x => x.UnitID,
+                        principalTable: "Units",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sender = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Reciever = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BookingId = table.Column<int>(type: "int", nullable: false),
                     MessageContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -309,14 +329,14 @@ namespace API.Migrations
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Reciever",
-                        column: x => x.Reciever,
+                        name: "FK_Messages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_Sender",
-                        column: x => x.Sender,
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -536,14 +556,14 @@ namespace API.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Reciever",
+                name: "IX_Messages_ReceiverId",
                 table: "Messages",
-                column: "Reciever");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_Sender",
+                name: "IX_Messages_SenderId",
                 table: "Messages",
-                column: "Sender");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OwnerReviews_BookingId",
@@ -580,6 +600,11 @@ namespace API.Migrations
                 name: "IX_UnitAmenities_AmenityId",
                 table: "UnitAmenities",
                 column: "AmenityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnitImages_UnitID",
+                table: "UnitImages",
+                column: "UnitID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnitReviews_BookingId",
@@ -637,6 +662,9 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "UnitAmenities");
+
+            migrationBuilder.DropTable(
+                name: "UnitImages");
 
             migrationBuilder.DropTable(
                 name: "UnitReviews");

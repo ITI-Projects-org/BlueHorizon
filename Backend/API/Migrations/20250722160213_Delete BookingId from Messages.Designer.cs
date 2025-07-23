@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(BlueHorizonDbContext))]
-    [Migration("20250720124246_initial schema")]
-    partial class initialschema
+    [Migration("20250722160213_Delete BookingId from Messages")]
+    partial class DeleteBookingIdfromMessages
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,8 +104,8 @@ namespace API.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -214,9 +214,6 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
@@ -224,11 +221,11 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Reciever")
+                    b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Sender")
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -237,11 +234,9 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
+                    b.HasIndex("ReceiverId");
 
-                    b.HasIndex("Reciever");
-
-                    b.HasIndex("Sender");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -413,7 +408,7 @@ namespace API.Migrations
                     b.Property<int>("Contract")
                         .HasColumnType("int");
 
-                    b.Property<string>("ContractPath")
+                    b.Property<string>("ContractFilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -468,6 +463,28 @@ namespace API.Migrations
                     b.HasIndex("AmenityId");
 
                     b.ToTable("UnitAmenities");
+                });
+
+            modelBuilder.Entity("API.Models.UnitImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnitID");
+
+                    b.ToTable("UnitImages");
                 });
 
             modelBuilder.Entity("API.Models.UnitReview", b =>
@@ -712,27 +729,19 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Message", b =>
                 {
-                    b.HasOne("API.Models.Booking", "Booking")
+                    b.HasOne("API.Models.ApplicationUser", "ReceiverUser")
                         .WithMany()
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.ApplicationUser", "RecieverUser")
-                        .WithMany()
-                        .HasForeignKey("Reciever")
+                        .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("API.Models.ApplicationUser", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("Sender")
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Booking");
-
-                    b.Navigation("RecieverUser");
+                    b.Navigation("ReceiverUser");
 
                     b.Navigation("SenderUser");
                 });
@@ -823,6 +832,17 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Amenity");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("API.Models.UnitImages", b =>
+                {
+                    b.HasOne("API.Models.Unit", "Unit")
+                        .WithMany("Images")
+                        .HasForeignKey("UnitID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Unit");
                 });
@@ -918,6 +938,8 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Unit", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("UnitAmenities");
                 });
 

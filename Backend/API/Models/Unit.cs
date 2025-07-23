@@ -27,6 +27,8 @@ namespace API.Models
         public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
         public VerificationStatus VerificationStatus { get; set; }//NotVerified=0 ,Pending=1, Verified=2, Rejected=3
         public DocumentType Contract{ get; set; }// OwnershipContract, NationaId_Front, NationaId_Back 
-        public string ContractPath { get; set; }
+        public string ContractFilePath { get; set; }
+        public virtual ICollection<UnitImages>? Images { get; set; }
+
     }
 }

@@ -45,7 +45,7 @@ namespace API.Repositories.Implementations
                 UnitId = o.Unit.Id,
                 Address = o.Unit.Address,
                 UnitType = o.Unit.UnitType,
-                ContractPath = o.Unit.ContractPath,
+                ContractPath = o.Unit.ContractFilePath,
                 Contract = o.Unit.Contract
             }).ToList();
             return result;

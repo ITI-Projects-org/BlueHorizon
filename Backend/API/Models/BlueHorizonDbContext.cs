@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Models
@@ -20,6 +21,7 @@ namespace API.Models
         public DbSet<UnitAmenity> UnitAmenities { get; set; }
         public DbSet<UnitReview> UnitReviews { get; set; }
         public DbSet<Unit> Units { get; set; }
+        public DbSet<UnitImages> UnitImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,6 +29,17 @@ namespace API.Models
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
+
+            //Message Fluent API
+            builder.Entity<Message>().Property(m => m.SenderId).IsRequired();
+            builder.Entity<Message>().Property(m => m.ReceiverId).IsRequired();
+            builder.Entity<Message>().Property(m => m.MessageContent).IsRequired();
+
+            builder.Entity<UnitImages>()
+            .HasOne(ui => ui.Unit)
+            .WithMany(u => u.Images)
+            .HasForeignKey(ui => ui.UnitID)
+            .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Unit>()
             .HasMany(u => u.UnitAmenities)
@@ -115,27 +128,27 @@ namespace API.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-         
+
 
 
             // Message relationships
             builder.Entity<Message>()
                 .HasOne(m => m.SenderUser)
                 .WithMany()
-                .HasForeignKey(m => m.Sender)
+                .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()
-                .HasOne(m => m.RecieverUser)
+                .HasOne(m => m.ReceiverUser)
                 .WithMany()
-                .HasForeignKey(m => m.Reciever)
+                .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Message>()
-                .HasOne(m => m.Booking)
-                .WithMany()
-                .HasForeignKey(m => m.BookingId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Message>()
+            //    .HasOne(m => m.Booking)
+            //    .WithMany()
+            //    .HasForeignKey(m => m.BookingId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // OwnerVerificationDocument relationships
             builder.Entity<OwnerVerificationDocument>()

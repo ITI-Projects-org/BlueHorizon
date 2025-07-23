@@ -1,10 +1,12 @@
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using API.Mappers;
 using API.Models;
 using API.UnitOfWorks;
+using API.Hubs;
+using Microsoft.Extensions.Options;
 //using API.MapperConfig;
 
 namespace API
@@ -38,13 +40,18 @@ namespace API
                 .AddDefaultTokenProviders();
 
             builder.Services.AddOpenApi();
+            builder.Services.AddSignalR();
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Configure the HTTP request pipeline.
-            builder.Services.AddAuthentication(op => op.DefaultAuthenticateScheme = "myschema")
+            builder.Services.AddAuthentication(options => {
+                options.DefaultScheme = "myschema";          // for Authenticate, Challenge, Forbid
+                options.DefaultAuthenticateScheme = "myschema";
+                options.DefaultChallengeScheme = "myschema";
+            })
             .AddJwtBearer("myschema", option =>
             {
                 var key = "this is secrete key  for admin role base";
@@ -54,21 +61,42 @@ namespace API
                 {
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    IssuerSigningKey = secreteKey
+                    IssuerSigningKey = secreteKey,
+                    NameClaimType = "nameid"
+                };
+
+                option.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // لو الطلب جاي من SignalR (WebSocket)
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/chathub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             }
             );
+           
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
                     builder =>
                     {
-                        builder.AllowAnyOrigin();
+                        builder.WithOrigins("http://localhost:4200", "https://localhost:4200");
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
+                        builder.AllowCredentials();
                     });
-                    });
+            });
+
 
             var app = builder.Build();
             if (app.Environment.IsDevelopment())
@@ -81,6 +109,8 @@ namespace API
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<ChatHub>("/chathub");
+
             app.Run();
         }
     }
