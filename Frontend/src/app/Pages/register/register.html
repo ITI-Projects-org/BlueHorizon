@@ -67,6 +67,12 @@
               placeholder="Confirm your password"
               [ngClass]="{'is-invalid':confirmpassword.invalid && confirmpassword.touched}"
             />
+            <div
+              *ngIf="registerForm.hasError('mismatch') && confirmpassword.touched"
+              class="invalid-feedback"
+            >
+              Passwords do not match.
+            </div>
           </div>
           <div class="form-group">
             <label for="role">Role</label>
@@ -76,7 +82,13 @@
               <option value="Admin">Admin</option>
             </select>
           </div>
-          <button class="custom-login-btn" type="submit">Register</button>
+          <button
+            class="custom-login-btn"
+            [disabled]="registerForm.invalid"
+            type="submit"
+          >
+            Register
+          </button>
         </form>
         <div class="custom-login-footer">
           <span>Already have an account?</span>
@@ -86,4 +98,13 @@
     </div>
   </div>
 </div>
-<!-- End Custom Register Page -->
+
+<!-- Spinner Component -->
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-scale-multiple"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>

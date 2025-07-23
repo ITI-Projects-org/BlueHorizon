@@ -52,11 +52,11 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
                 var desiredRole = result.Properties.Items["role"] ?? "Tenant";
                 if (!result.Succeeded)
-                    return BadRequest("Google authentication failed.");
+                    return BadRequest(new { msg = "Google authentication failed" });
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
                 if (email == null)
-                    return BadRequest("No email claim from Google.");
+                    return BadRequest(new {msg = "No email claim from Google." });
 
                 var name = email.Split("@")[0];
 
@@ -73,7 +73,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                    return BadRequest("user already exists");
+                    return BadRequest(new { msg = "user already exists" });
                 }
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -85,11 +85,11 @@ namespace API.Controllers
 
                 await _authService.SendEmailConfirmation(user, confirmUrl);
 
-                return Ok(new { Message = "registerd" });
+                return Ok(new { msg = "registerd" });
             }
             catch(Exception e)
             {
-                return BadRequest($"an unexpected error occured: {e}");
+                return BadRequest(new {msg = $"an unexpected error occured: {e}" });
             }
         }
 
@@ -109,23 +109,23 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
 
                 if (!result.Succeeded)
-                    return BadRequest("Google authentication failed.");
+                    return BadRequest(new { msg = "Google authentication failed."});
 
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
 
                 if (email == null)
-                    return BadRequest("No email claim from Google.");
+                    return BadRequest(new { msg= "No email claim from Google."});
 
 
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
                 {
-                    return BadRequest("user is not found");
+                    return BadRequest(new { msg = "user is not found" });
                 }
 
                 if (!await _userManager.IsEmailConfirmedAsync(user))
-                    return BadRequest("You must confirm your email before logging in.");
+                    return BadRequest(new { msg = "You must confirm your email before logging in."});
 
 
                 var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
@@ -139,7 +139,7 @@ namespace API.Controllers
             }
             catch(Exception e)
             {
-                return BadRequest($"an unexpected error occured: {e}");
+                return BadRequest(new { msg = $"an unexpected error occured: {e}" });
             }
         }
 
@@ -151,7 +151,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Not Valid Form Data!");
             var user = await _userManager.FindByEmailAsync(_register.Email);
-            if (user != null) return BadRequest("This Email Exists before");
+            if (user != null) return BadRequest(new { msg = "This Email already Exists" });
 
             try
             {
@@ -208,30 +208,30 @@ namespace API.Controllers
                 }
 
                 else
-                    return BadRequest("Invalid Role");
+                    return BadRequest(new { msg = "Invalid Role" });
 
-                return Ok(new { Message = "registerd" });
+                return Ok(new { msg = "registerd" });
             }
             catch (Exception err)
             {
                 Console.WriteLine(err);
             };
 
-            return BadRequest("Cannot Register");
+            return BadRequest(new { msg = "Cannot Register" });
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO _login)
         {
-            if (!ModelState.IsValid) return BadRequest("Not Valid Form Data!");
+            if (!ModelState.IsValid) return BadRequest(new { msg = "Not Valid Form Data!" });
             var user = await _userManager.FindByEmailAsync(_login.Email);
-            if (user == null) return Unauthorized("This Email Doesn't Exists ");
+            if (user == null) return Unauthorized(new { msg = "This Email Doesn't Exists " });
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return BadRequest("You must confirm your email before logging in.");
+                return BadRequest(new { msg = "You must confirm your email before logging in." });
 
             var IsCorrectPassword = await _userManager.CheckPasswordAsync(user, _login.Password);
-            if (!IsCorrectPassword) return Unauthorized("Wrong Email or Password");
+            if (!IsCorrectPassword) return Unauthorized(new { msg = "Wrong Email or Password" });
 
             var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
@@ -248,15 +248,15 @@ namespace API.Controllers
         {
             var principal = _authService.GetPrincipalFromExpiredToken(req.AccessToken);
             var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return BadRequest("Invalid access token");
+            if (userId == null) return BadRequest(new { msg = "Invalid access token" });
 
             
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return Unauthorized("User not found");
+            if (user == null) return Unauthorized(new { msg = "User not found" });
 
             
-            if (user.RefreshToken != req.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                return Unauthorized("Invalid or expired refresh token");
+            if (user.RefreshToken != req.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                return Unauthorized(new { msg = "Invalid or expired refresh token" });
 
             
             var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
@@ -274,20 +274,20 @@ namespace API.Controllers
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
-                return BadRequest("Invalid confirmation request.");
+                return BadRequest(new { msg = "Invalid confirmation request." });
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return NotFound("User not found.");
+                return NotFound(new { msg = "User not found." });
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
-                return BadRequest("Email confirmation failed.");
+                return BadRequest(new { msg = "Email confirmation failed." });
 
             // Optionally redirect to a static Angular page
-            //    return Redirect("http://localhost:4200/email-confirmed");
+                return Redirect("http://localhost:4200/email-confirmed");
 
-            return Ok("Email confirmed successfully.");
+            //return Ok(new { msg = "Email confirmed successfully." });
         }
 
         [HttpPost("forgot-password")]
@@ -295,7 +295,7 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                return Ok("If the email is registered, a reset link has been sent.");
+                return Ok(new { msg = "If the email is registered, a reset link has been sent." });
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -312,7 +312,7 @@ namespace API.Controllers
             
             await _authService.SendResetPassword(user, resetLink);
 
-            return Ok("If the email is registered, a reset link has been sent.");
+            return Ok(new { msg = "If the email is registered, a reset link has been sent." });
         }
 
 
@@ -321,14 +321,14 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return BadRequest("Invalid request.");
+                return BadRequest(new { msg = "Invalid request." });
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok("Password has been reset successfully.");
+            return Ok(new { msg = "Password has been reset successfully." });
         }
 
         [Authorize]
@@ -344,7 +344,7 @@ namespace API.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok("Password changed successfully.");
+            return Ok(new { msg = "Password changed successfully." });
         }
 
         [HttpGet("Tenant")]

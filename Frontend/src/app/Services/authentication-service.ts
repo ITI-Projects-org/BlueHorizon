@@ -10,6 +10,9 @@ import { Observable, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { RegisterDTO } from '../Models/register-dto';
 import { isPlatformBrowser } from '@angular/common';
+import { ForgetPasswordRequest } from '../Models/forget-password-request';
+import { ResetPasswordRequestDTO } from '../Models/reset-password-request-dto';
+import { ChangePasswordRequestDTO } from '../Models/change-password-request-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +54,117 @@ export class AuthenticationService {
       return '';
     }
   }
-  login(loginDTO: LoginDTO): Observable<{ token: string }> {
+
+  getUserId(token: string): string | undefined {
+    try {
+      const decoded: any = jwtDecode(token);
+      const userIdClaim =
+        decoded['userId'] ||
+        decoded[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+        ];
+      return userIdClaim?.toString();
+    } catch {
+      return '';
+    }
+  }
+
+  getAccessToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('accessToken');
+    }
+    return null;
+  }
+
+  getRefreshToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('refreshToken');
+    }
+    return null;
+  }
+
+  clearTokens(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('role');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userId');
+    }
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getAccessToken();
+  }
+  // Check if token is expired
+  isTokenExpired(token: string): boolean {
+    try {
+      const decoded: any = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch {
+      return true; // If we can't decode, consider it expired
+    }
+  }
+
+  googleSignup(role: 'Tenant' | 'Owner'): void {
+    window.location.href = `${this.authUrl}/google-signup/${role}`;
+  }
+
+  googleLogin(): void {
+    window.location.href = `${this.authUrl}/google-login`;
+  }
+
+  forgotPassword(request: ForgetPasswordRequest): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/forgot-password`, request);
+  }
+
+  resetPassword(request: ResetPasswordRequestDTO): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/reset-password`, request);
+  }
+
+  changePassword(request: ChangePasswordRequestDTO): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/change-password`, request);
+  }
+
+  // Refresh token method
+  refreshToken(): Observable<{ accessToken: string; refreshToken: string }> {
+    const refreshToken = this.getRefreshToken();
+    const accessToken = this.getAccessToken();
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    return this.http
+      .post<{ accessToken: string; refreshToken: string }>(
+        `${this.authUrl}/refresh-token`,
+        { accessToken, refreshToken }
+      )
+      .pipe(
+        tap((res) => {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('accessToken', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            localStorage.setItem(
+              'role',
+              this.getRole(res.accessToken)?.toString() ?? ''
+            );
+            localStorage.setItem(
+              'username',
+              this.getUserName(res.accessToken)?.toString() ?? 'Guest'
+            );
+            localStorage.setItem(
+              'userId',
+              this.getUserId(res.accessToken)?.toString() ?? ''
+            );
+          }
+        })
+      );
+  }
+
+  login(
+    loginDTO: LoginDTO
+  ): Observable<{ accessToken: string; refreshToken: string }> {
     let observable;
     // delete this
     // this.loginDTO = {
@@ -63,23 +176,32 @@ export class AuthenticationService {
     // };
 
     return this.http
-      .post<{ token: string }>(`${this.authUrl}/Login`, loginDTO)
+      .post<{ accessToken: string; refreshToken: string }>(
+        `${this.authUrl}/Login`,
+        loginDTO
+      )
       .pipe(
         tap((res) => {
           if (isPlatformBrowser(this.platformId)) {
-            localStorage.setItem('token', res.token);
+            localStorage.setItem('accessToken', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
             localStorage.setItem(
               'role',
-              this.getRole(res.token)?.toString() ?? ''
+              this.getRole(res.accessToken)?.toString() ?? ''
             );
             localStorage.setItem(
               'username',
-              this.getUserName(res.token)?.toString() ?? 'Guest'
+              this.getUserName(res.accessToken)?.toString() ?? 'Guest'
+            );
+            localStorage.setItem(
+              'userId',
+              this.getUserId(res.accessToken)?.toString() ?? ''
             );
           }
         })
       );
   }
+
   register(registerDTO: RegisterDTO): Observable<any> {
     // this.registerDTO = {
     //   email: 'ElSabagh2@gmail.com',
