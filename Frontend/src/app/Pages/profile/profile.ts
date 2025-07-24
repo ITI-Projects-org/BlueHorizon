@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../Services/authentication-service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-profile',
   imports: [NgxSpinnerModule],
@@ -13,7 +14,8 @@ export class Profile implements OnInit {
   username: string = '';
   constructor(
     private authService: AuthenticationService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
@@ -45,5 +47,9 @@ export class Profile implements OnInit {
         console.log(error);
       },
     });
+  }
+
+  changePassowrd() {
+    this.router.navigateByUrl('/change-password');
   }
 }

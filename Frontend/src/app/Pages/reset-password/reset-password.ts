@@ -73,7 +73,8 @@ export class ResetPassword implements OnInit {
         this.spinner.hide();
         Swal.fire({
           title: 'Reset Password Failed',
-          text: error.error?.msg || 'An error occurred during registration',
+          text:
+            error.error?.msg || 'An error occurred during resetting password',
           icon: 'error',
           draggable: true,
         });

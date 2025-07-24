@@ -16,6 +16,7 @@ import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail'
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
+import { ChangePassword } from './Pages/change-password/change-password';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'google-login-fail', component: GoogleLoginFail },
   { path: 'profile', component: Profile },
   { path: 'reset-password', component: ResetPassword },
+  { path: 'change-password', component: ChangePassword },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
   { path: 'addReview', component: Review },
