@@ -1,4 +1,4 @@
-export interface Iunit {
+export interface IUnit {
   id: number;
   title: string;
   image: string;

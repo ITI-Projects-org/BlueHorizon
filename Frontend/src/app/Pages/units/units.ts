@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http'; // فقط استيراد HttpClient
 import { RouterModule } from '@angular/router';
-import { Unit } from '../../Models/unit';
+import { IUnit } from '../../Models/iunit';
 
 @Component({
   selector: 'app-units',
@@ -12,8 +12,8 @@ import { Unit } from '../../Models/unit';
   styleUrl: './units.css',
 })
 export class Units implements OnInit {
-  units: Unit[] = []; // ستبدأ فارغة ويتم ملؤها من الـ API
-  paginatedUnits: Unit[] = []; // الوحدات المعروضة في الصفحة الحالية
+  units: IUnit[] = []; // ستبدأ فارغة ويتم ملؤها من الـ API
+  paginatedUnits: IUnit[] = []; // الوحدات المعروضة في الصفحة الحالية
 
   // Pagination properties
   pageSize: number = 6;
@@ -46,7 +46,7 @@ export class Units implements OnInit {
     // استبدل هذا الرابط برابط الـ API الفعلي الخاص بك
     const apiUrl = 'YOUR_API_ENDPOINT_HERE/units'; // مثال: 'https://api.example.com/units'
 
-    this.http.get<Unit[]>(apiUrl).subscribe({
+    this.http.get<IUnit[]>(apiUrl).subscribe({
       next: (data) => {
         this.units = data;
         this.calculatePagination(); // حساب الصفحات بعد جلب البيانات
