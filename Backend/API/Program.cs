@@ -1,6 +1,8 @@
 ﻿using API.Hubs;
 using API.Mappers;
 using API.Models;
+using API.Repositories.Implementations;
+using API.Repositories.Interfaces;
 using API.Services.Implementation;
 using API.Services.Interfaces;
 using API.UnitOfWorks;
@@ -46,6 +48,7 @@ namespace API
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
