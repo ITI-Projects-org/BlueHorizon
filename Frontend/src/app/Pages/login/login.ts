@@ -39,7 +39,6 @@ export class Login {
       password: this.password.value,
       // role: this.role.value,
     };
-    console.log(this.loginDTO);
     this.spinner.show();
     this.authenticationService.login(this.loginDTO).subscribe({
       next: () => {

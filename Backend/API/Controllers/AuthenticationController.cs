@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Identity.Data;
 using API.Services.Interfaces;
 using System.Net;
+using API.DTOs.Profile;
 namespace API.Controllers
 {
     [ApiController]
@@ -353,7 +354,7 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return BadRequest(new { msg = "Invalid request." });
+                return BadRequest(new { msg = "Invalid reset request." });
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
@@ -377,6 +378,24 @@ namespace API.Controllers
                 return BadRequest(result.Errors);
 
             return Ok(new { msg = "Password changed successfully." });
+        }
+
+        [Authorize]
+        [HttpGet("Profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+                return Unauthorized();
+
+            ProfileDTO profileDTO = new ProfileDTO
+            {
+                Email = user.Email,
+                Username = user.UserName
+            };
+
+            return Ok(profileDTO);
         }
 
         [HttpGet("Tenant")]

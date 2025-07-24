@@ -14,6 +14,8 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
+import { Profile } from './Pages/profile/profile';
+import { ResetPassword } from './Pages/reset-password/reset-password';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -25,8 +27,10 @@ export const routes: Routes = [
   { path: 'google-signup-fail', component: GoogleSignupFail },
   { path: 'google-login-success', component: GoogleLoginSuccess },
   { path: 'google-login-fail', component: GoogleLoginFail },
+  { path: 'profile', component: Profile },
+  { path: 'reset-password', component: ResetPassword },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
   { path: 'addReview', component: Review },
-  { path: 'createQr', component:  CreateQr},
+  { path: 'createQr', component: CreateQr },
 ];
