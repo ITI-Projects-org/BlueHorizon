@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+
 namespace API.Controllers
 {
     [ApiController]
@@ -26,7 +27,6 @@ namespace API.Controllers
             _config = config;
             _authService = authService;
         }
-
 
         [HttpGet("google-signup/{role}")]
         public IActionResult GoogleSignup(string role)
@@ -86,7 +86,7 @@ namespace API.Controllers
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var confirmUrl = Url.Action(
                     "ConfirmEmail",
-                 "Authentication",
+                    "Authentication",
                     new { userId = user.Id, token },
                     Request.Scheme);
 
@@ -94,7 +94,7 @@ namespace API.Controllers
 
                 return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var msg = $"an unexpected error occured {e.Message}";
                 var encodedMsg = WebUtility.UrlEncode(msg);
@@ -160,7 +160,7 @@ namespace API.Controllers
                 return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-success?accessToken={encodedAccessToken}&refreshToken={encodedRefreshToken}");
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var msg = "an unexpected error occured";
                 var encodedMsg = WebUtility.UrlEncode(msg);
@@ -168,9 +168,7 @@ namespace API.Controllers
             }
         }
 
-
         [HttpPost("Register")]
-
         public async Task<IActionResult> Register([FromBody] RegisterDTO _register)
         {
             if (!ModelState.IsValid)
@@ -186,12 +184,12 @@ namespace API.Controllers
                     var result = await _userManager.CreateAsync(tenant, _register.Password);
                     if (!result.Succeeded)
                         return BadRequest(result.Errors.Select(e => e.Description));
-                   await _userManager.AddToRoleAsync(tenant, _register.Role);
+                    await _userManager.AddToRoleAsync(tenant, _register.Role);
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(tenant);
                     var confirmUrl = Url.Action(
                         "ConfirmEmail",
-                     "Authentication",
+                        "Authentication",
                         new { userId = tenant.Id, token },
                         Request.Scheme);
 
@@ -208,7 +206,7 @@ namespace API.Controllers
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(owner);
                     var confirmUrl = Url.Action(
                         "ConfirmEmail",
-                     "Authentication",
+                        "Authentication",
                         new { userId = owner.Id, token },
                         Request.Scheme);
 
@@ -225,7 +223,7 @@ namespace API.Controllers
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(admin);
                     var confirmUrl = Url.Action(
                         "ConfirmEmail",
-                     "Authentication",
+                        "Authentication",
                         new { userId = admin.Id, token },
                         Request.Scheme);
 
@@ -239,7 +237,8 @@ namespace API.Controllers
             catch (Exception err)
             {
                 Console.WriteLine(err);
-            };
+            }
+            ;
 
             return BadRequest(new { msg = "Cannot Register" });
         }
@@ -264,7 +263,6 @@ namespace API.Controllers
             await _userManager.UpdateAsync(user);
 
             return Ok(new { accessToken, refreshToken });
-
         }
 
         [HttpPost("refresh-token")]
@@ -274,15 +272,15 @@ namespace API.Controllers
             var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return BadRequest(new { msg = "Invalid access token" });
 
-            
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return Unauthorized(new { msg = "User not found" });
 
-            
+
             if (user.RefreshToken != req.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
                 return Unauthorized(new { msg = "Invalid or expired refresh token" });
 
-            
+
             var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
             user.RefreshToken = refreshToken;
@@ -291,7 +289,6 @@ namespace API.Controllers
 
             return Ok(new { accessToken, refreshToken });
         }
-
 
         [HttpGet("confirm-email")]
         [AllowAnonymous]
@@ -309,7 +306,7 @@ namespace API.Controllers
                 return BadRequest(new { msg = "Email confirmation failed." });
 
             // Optionally redirect to a static Angular page
-                return Redirect($"{_config["ClientApp:BaseUrl"]}/email-confirmed");
+            return Redirect($"{_config["ClientApp:BaseUrl"]}/email-confirmed");
 
             //return Ok(new { msg = "Email confirmed successfully." });
         }
@@ -323,22 +320,21 @@ namespace API.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            
-            var clientUrl = _config["ClientApp:BaseUrl"]!;              
 
-            
+            var clientUrl = _config["ClientApp:BaseUrl"]!;
+
+
             var encodedToken = WebUtility.UrlEncode(token);
             var encodedEmail = WebUtility.UrlEncode(user.Email!);
 
-            
+
             var resetLink = $"{clientUrl}/reset-password?token={encodedToken}&email={encodedEmail}";
 
-            
+
             await _authService.SendResetPassword(user, resetLink);
 
             return Ok(new { msg = "If the email is registered, a reset link has been sent." });
         }
-
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDTO model)
@@ -384,6 +380,7 @@ namespace API.Controllers
         {
             return Ok("Authorized Owner");
         }
+
         [HttpGet("Admin")]
         [Authorize(Roles = "Admin")]
         public IActionResult Admin()
@@ -391,7 +388,6 @@ namespace API.Controllers
             return Ok("Authorized Admin");
         }
     }
-
 }
 
 
