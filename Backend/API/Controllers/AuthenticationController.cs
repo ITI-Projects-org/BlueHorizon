@@ -1,19 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using API.DTOs.AuthenticationDTO;
+﻿using API.DTOs.AuthenticationDTO;
 using API.Models;
+using API.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
-using API.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 namespace API.Controllers
 {
     [ApiController]
@@ -101,7 +96,7 @@ namespace API.Controllers
             }
             catch(Exception e)
             {
-                var msg = "an unexpected error occured";
+                var msg = $"an unexpected error occured {e.Message}";
                 var encodedMsg = WebUtility.UrlEncode(msg);
                 return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
             }

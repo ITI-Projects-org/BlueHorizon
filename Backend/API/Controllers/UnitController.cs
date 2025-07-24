@@ -24,7 +24,7 @@ namespace API.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Owner")]
+        [Authorize(Roles = "Owner")]
         public async Task<IActionResult> DeleteById(int id)
         {
             try
@@ -59,7 +59,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Owner")]
+        [Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
         public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
         {
@@ -118,8 +118,8 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpPost("VerifyUnit/{id:int}")]
-        //[Authorize(Roles = "Owner")]
         public async Task<IActionResult> VerifyUnit(int id)
         {
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
