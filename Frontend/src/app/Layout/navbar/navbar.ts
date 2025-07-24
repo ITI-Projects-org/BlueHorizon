@@ -2,6 +2,7 @@ import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestro
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SearchService , SearchCriteria} from '../../services/searchService';
 
 @Component({
   selector: 'app-navbar',
@@ -11,6 +12,13 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./navbar.css']
 })
 export class Navbar implements AfterViewInit, OnDestroy {
+  searchTerm: string | null = null;
+  selectedVillage: string | null = null;
+  selectedType: string | null = null;
+  selectedBedrooms: string | null = null;
+  selectedBathrooms: string | null = null;
+  constructor(private SearchService: SearchService) {}
+
   @ViewChild('mainNavbar') mainNavbar!: ElementRef;
   @ViewChild('heroSection') heroSection!: ElementRef;
   
@@ -96,4 +104,17 @@ export class Navbar implements AfterViewInit, OnDestroy {
       this.maxPrice = null;
     }
   }
+  onSearch() {
+  const searchCriteria: Partial<SearchCriteria> = {
+    title: this.searchTerm || null,
+    selectedBedrooms: this.selectedBedrooms || null,
+    selectedBathrooms: this.selectedBathrooms || null,
+    minPrice: this.minPrice,
+    maxPrice: this.maxPrice,
+    selectedVillage: this.selectedVillage || null,
+    selectedType: this.selectedType || null
+  };
+
+this.SearchService.updateSearchCriteria(searchCriteria);
+}
 }

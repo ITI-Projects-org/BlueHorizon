@@ -109,7 +109,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.search-form {
+.form-select {
   display: flex;
   gap: 15px;
   margin-bottom: 15px;

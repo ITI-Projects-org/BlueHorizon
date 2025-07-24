@@ -5,7 +5,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Property By Village</h5>
                     <ul class="list-unstyled city-list">
-                        <li *ngFor="let v of village">
+                        <li *ngFor="let v of villageOptions">
                             <a href="#" (click)="filterByCity(v.name)">
                                 <i class="fas fa-chevron-right me-2"></i>{{ v.name }}
                                 ({{ v.count }})
@@ -14,12 +14,21 @@
                     </ul>
                 </div>
             </div>
-
+<!-- <div class="units-container">
+  <h2>Units</h2>
+  <div *ngIf="isLoading">Loading units...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <ul *ngIf="!isLoading && !error">
+    <li *ngFor="let unit of allUnits">
+      {{ unit.title }}
+    </li>
+  </ul>
+</div> -->
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Property Type</h5>
                     <ul class="list-unstyled city-list">
-                        <li *ngFor="let type of unitType">
+                        <li *ngFor="let type of unitTypeOptions">
                             <a href="#" (click)="filterByType(type.name)">
                                 <i class="fas fa-chevron-right me-2"></i>{{ type.name }}
                                 ({{ type.count }})
@@ -36,7 +45,7 @@
                 <h5>Featured Units</h5>
                 <div class="d-flex align-items-center">
                     <span class="me-2">Sort by:</span>
-<select #sortSelect class="form-select w-auto" (change)="sortBy(sortSelect.value)">
+<select #sortSelect class="form-select w-auto" (change)="sortByOption(sortSelect.value)">
     <option value="default">Default Sorting</option>
     <option value="price-asc">Price: Low to High</option>
     <option value="price-desc">Price: High to Low</option>
@@ -52,19 +61,19 @@
                 <div class="col-md-6 mb-4" *ngFor="let unit of paginatedUnits">
                     <div class="property-card">
                         <div class="property-image-container">
-                            <img [src]="unit.image" class="img-fluid property-image" [alt]="unit.title">
+                            <img [src]="unit.imagePath" class="img-fluid property-image" [alt]="unit.title">
                         </div>
                         <div class="property-body">
                             <h6 class="property-title">{{ unit.title }}</h6>
                             <p class="property-address"><i class="fas fa-map-marker-alt me-1"></i>{{ unit.address }}</p>
-                            <h5 class="property-price">${{ unit.price | number:'1.0-0' }}</h5>
+                            <h5 class="property-price">{{ unit. basePricePerNight | number:'1.0-0' }}</h5>
                             <hr>
                             <div class="property-details d-flex justify-content-between">
                                 <div>
-                                    <i class="fas fa-bed me-1"></i>Beds: {{ unit.beds }}
+                                    <i class="fas fa-bed me-1"></i>Beds: {{ unit.bedrooms }}
                                 </div>
                                 <div>
-                                    <i class="fas fa-bath me-1"></i>Baths: {{ unit.baths }}
+                                    <i class="fas fa-bath me-1"></i>Baths: {{ unit.bathrooms }}
                                 </div>
                                
                             </div>
