@@ -50,10 +50,9 @@ namespace API
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 
-            // Configure the HTTP request pipeline.
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "myschema";          // for Authenticate, Challenge, Forbid
+                options.DefaultScheme = "myschema";          
                 options.DefaultAuthenticateScheme = "myschema";
                 options.DefaultChallengeScheme = "myschema";
             })
@@ -119,8 +118,6 @@ namespace API
             app.UseAuthorization();
             app.MapControllers();
 
-            // ✅ No change here: This line was already correct based on the previous error.
-            // It correctly applies the Authorization Policy named "myschema" to the Hub.
             app.MapHub<ChatHub>("/chathub").RequireAuthorization("myschema");
 
             app.Run();
