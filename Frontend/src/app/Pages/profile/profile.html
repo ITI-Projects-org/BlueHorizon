@@ -1,0 +1,74 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center py-4">
+          <i class="bi bi-person-circle display-4 mb-3"></i>
+          <h3 class="mb-0">User Profile</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="d-flex align-items-center mb-3 p-3 bg-light rounded">
+                <i class="bi bi-person-fill text-primary fs-4 me-3"></i>
+                <div>
+                  <small class="text-muted text-uppercase fw-bold"
+                    >Username</small
+                  >
+                  <p class="mb-0 fs-5 fw-semibold">
+                    {{username || 'Not available'}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex align-items-center p-3 bg-light rounded">
+                <i class="bi bi-envelope-fill text-primary fs-4 me-3"></i>
+                <div>
+                  <small class="text-muted text-uppercase fw-bold"
+                    >Email Address</small
+                  >
+                  <p class="mb-0 fs-5 fw-semibold">
+                    {{email || 'Not available'}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mb-3">
+            <button
+              class="btn btn-outline-warning btn-lg"
+              (click)="forgotPassowrd()"
+            >
+              <i class="bi bi-key-fill me-2"></i>
+              Reset Password
+            </button>
+          </div>
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-outline-primary btn-lg"
+              (click)="changePassowrd()"
+            >
+              <i class="bi bi-shield-lock-fill me-2"></i>
+              Change Password
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner Component -->
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-scale-multiple"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>

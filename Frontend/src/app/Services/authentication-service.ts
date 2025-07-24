@@ -13,6 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { ForgetPasswordRequest } from '../Models/forget-password-request';
 import { ResetPasswordRequestDTO } from '../Models/reset-password-request-dto';
 import { ChangePasswordRequestDTO } from '../Models/change-password-request-dto';
+import { ProfileDTO } from '../Models/profile-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -235,5 +236,9 @@ export class AuthenticationService {
           console.log(res);
         })
       );
+  }
+
+  getProfile(): Observable<ProfileDTO> {
+    return this.http.get<ProfileDTO>(`${this.authUrl}/Profile`);
   }
 }

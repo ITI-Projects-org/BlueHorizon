@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Identity.Data;
 using API.Services.Interfaces;
 using System.Net;
+using API.DTOs.Profile;
 namespace API.Controllers
 {
     [ApiController]
@@ -52,11 +53,19 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
                 var desiredRole = result.Properties.Items["role"] ?? "Tenant";
                 if (!result.Succeeded)
-                    return BadRequest(new { msg = "Google authentication failed" });
+                {
+                    var msg = "Google signup failed";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                }
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
                 if (email == null)
-                    return BadRequest(new {msg = "No email claim from Google." });
+                {
+                    var msg = "No email by that name was found from Google";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                }
 
                 var name = email.Split("@")[0];
 
@@ -68,12 +77,18 @@ namespace API.Controllers
                     user = _mapper.Map<Tenant>(dto);
                     var createResult = await _userManager.CreateAsync(user);
                     if (!createResult.Succeeded)
-                        return BadRequest(createResult.Errors.Select(e => e.Description));
+                    {
+                        var msg = "an error occured while creating your account";
+                        var encodedMsg = WebUtility.UrlEncode(msg);
+                        return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                    }
                     await _userManager.AddToRoleAsync(user, desiredRole);
                 }
                 else
                 {
-                    return BadRequest(new { msg = "user already exists" });
+                    var msg = "this user already exists";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
                 }
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -89,7 +104,9 @@ namespace API.Controllers
             }
             catch(Exception e)
             {
-                return BadRequest(new {msg = $"an unexpected error occured: {e}" });
+                var msg = "an unexpected error occured";
+                var encodedMsg = WebUtility.UrlEncode(msg);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
             }
         }
 
@@ -109,24 +126,36 @@ namespace API.Controllers
                 var result = await HttpContext.AuthenticateAsync("Google");
 
                 if (!result.Succeeded)
-                    return BadRequest(new { msg = "Google authentication failed."});
+                {
+                    var msg = "Google login failed.";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
 
                 var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
 
                 if (email == null)
-                    return BadRequest(new { msg= "No email claim from Google."});
-
+                {
+                    var msg = "No email by that name was found from Google";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
                 {
-                    return BadRequest(new { msg = "user is not found" });
+                    var msg = "user is not found";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
                 }
 
                 if (!await _userManager.IsEmailConfirmedAsync(user))
-                    return BadRequest(new { msg = "You must confirm your email before logging in."});
-
+                {
+                    var msg = "You must confirm your email before logging in.";
+                    var encodedMsg = WebUtility.UrlEncode(msg);
+                    return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
+                }
 
                 var (accessToken, refreshToken, refreshExpiry) = await _authService.GenerateTokens(user);
 
@@ -141,7 +170,9 @@ namespace API.Controllers
             }
             catch(Exception e)
             {
-                return BadRequest(new { msg = $"an unexpected error occured: {e}" });
+                var msg = "an unexpected error occured";
+                var encodedMsg = WebUtility.UrlEncode(msg);
+                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-login-fail?msg={encodedMsg}");
             }
         }
 
@@ -323,7 +354,7 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return BadRequest(new { msg = "Invalid request." });
+                return BadRequest(new { msg = "Invalid reset request." });
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
@@ -347,6 +378,24 @@ namespace API.Controllers
                 return BadRequest(result.Errors);
 
             return Ok(new { msg = "Password changed successfully." });
+        }
+
+        [Authorize]
+        [HttpGet("Profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+                return Unauthorized();
+
+            ProfileDTO profileDTO = new ProfileDTO
+            {
+                Email = user.Email,
+                Username = user.UserName
+            };
+
+            return Ok(profileDTO);
         }
 
         [HttpGet("Tenant")]

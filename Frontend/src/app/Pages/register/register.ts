@@ -10,14 +10,14 @@ import {
 } from '@angular/forms';
 import { RegisterDTO } from '../../Models/register-dto';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule], // Add NgxSpinnerModule
+  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule, RouterLink], // Add NgxSpinnerModule
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
 })
@@ -46,7 +46,6 @@ export class Register {
   registerDTO!: RegisterDTO;
 
   Register() {
-    console.log(this.registerForm.value);
     this.registerDTO = {
       email: this.email.value,
       username: this.username.value,
