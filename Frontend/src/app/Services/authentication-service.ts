@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http';
 import { LoginDTO } from '../Models/loginDTO';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { RegisterDTO } from '../Models/register-dto';
 import { isPlatformBrowser } from '@angular/common';
@@ -102,9 +102,55 @@ export class AuthenticationService {
     try {
       const decoded: any = jwtDecode(token);
       const currentTime = Date.now() / 1000;
-      return decoded.exp < currentTime;
+      // Add a 30-second buffer to refresh token before it actually expires
+      return decoded.exp < currentTime + 30;
     } catch {
       return true; // If we can't decode, consider it expired
+    }
+  }
+
+  // Check if token will expire soon (within 5 minutes)
+  isTokenExpiringSoon(token: string): boolean {
+    try {
+      const decoded: any = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      // Check if token expires within 5 minutes (300 seconds)
+      return decoded.exp < currentTime + 300;
+    } catch {
+      return true;
+    }
+  }
+
+  // Debug method to log token expiration info
+  logTokenInfo(): void {
+    const token = this.getAccessToken();
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        const expiryTime = decoded.exp;
+        const timeUntilExpiry = expiryTime - currentTime;
+
+        console.log('Token Info:');
+        console.log(
+          'Current time:',
+          new Date(currentTime * 1000).toLocaleString()
+        );
+        console.log(
+          'Token expires at:',
+          new Date(expiryTime * 1000).toLocaleString()
+        );
+        console.log(
+          'Time until expiry (minutes):',
+          Math.floor(timeUntilExpiry / 60)
+        );
+        console.log('Token expired:', this.isTokenExpired(token));
+        console.log('Token expiring soon:', this.isTokenExpiringSoon(token));
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    } else {
+      console.log('No access token found');
     }
   }
 
@@ -132,9 +178,12 @@ export class AuthenticationService {
   refreshToken(): Observable<{ accessToken: string; refreshToken: string }> {
     const refreshToken = this.getRefreshToken();
     const accessToken = this.getAccessToken();
+
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
+
+    console.log('Attempting to refresh token...');
 
     return this.http
       .post<{ accessToken: string; refreshToken: string }>(
@@ -143,6 +192,7 @@ export class AuthenticationService {
       )
       .pipe(
         tap((res) => {
+          console.log('Token refresh successful');
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('accessToken', res.accessToken);
             localStorage.setItem('refreshToken', res.refreshToken);
@@ -159,6 +209,11 @@ export class AuthenticationService {
               this.getUserId(res.accessToken)?.toString() ?? ''
             );
           }
+        }),
+        catchError((error) => {
+          console.error('Token refresh failed:', error);
+          this.clearTokens();
+          throw error;
         })
       );
   }

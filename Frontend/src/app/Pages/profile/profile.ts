@@ -18,13 +18,19 @@ export class Profile implements OnInit {
     private router: Router
   ) {}
   ngOnInit(): void {
+    // Add debug info
+    this.authService.logTokenInfo();
+
     this.authService.getProfile().subscribe({
       next: (res) => {
+        console.log('Profile loaded successfully:', res);
         this.email = res.email;
         this.username = res.username;
       },
       error: (e) => {
-        console.log(e);
+        console.error('Profile loading failed:', e);
+        console.log('Response status:', e.status);
+        console.log('Response message:', e.message);
       },
     });
   }
