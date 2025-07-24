@@ -44,4 +44,34 @@ export class CreateQr {
         } 
       })
   }
+
+  // ------------------------
+  // ------------------------
+  // ------------------------
+  // ---------CLOUD----------
+  // ------------------------
+  // ------------------------
+  imgPath!:string;
+  CreateQrCloud(){
+    console.log('from post cloud .ts')
+    this.qrService.createQrCloud()
+      .subscribe({
+        next:response=>{console.log(response)
+          this.imgPath = response.imgPath;
+          this.cdr .detectChanges();
+
+        } 
+
+      })
+  }
+   getQrCloud(qrId:number){
+    console.log('from get cloud .ts')
+    
+    const getSub = this.qrService.getQrCodeCloud(qrId).subscribe({
+            next:res=>{
+               this.imgPath = res.imgPath;
+               this.cdr .detectChanges();
+               this.cdr.detectChanges();   
+            }})
+  }
 }

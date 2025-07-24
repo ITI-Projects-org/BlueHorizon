@@ -23,22 +23,22 @@ namespace API
             // Add services to the container.
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<VillageSystemDbContext>(options => 
+            builder.Services.AddDbContext<VillageSystemDbContext>(options =>
             options.UseLazyLoadingProxies()
             .UseSqlServer(builder.Configuration.GetConnectionString("cs")));
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.Password.RequireUppercase= false;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
-                options.Password.RequireUppercase=false;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase= false;
-                options.Password.RequiredLength= 3;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 3;
             })
                 .AddEntityFrameworkStores<VillageSystemDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             builder.Services.AddOpenApi();
             //builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingConfig>());
@@ -46,6 +46,7 @@ namespace API
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 
             // Configure the HTTP request pipeline.
