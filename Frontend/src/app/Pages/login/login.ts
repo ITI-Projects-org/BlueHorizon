@@ -11,6 +11,7 @@ import { LoginDTO } from '../../Models/loginDTO';
 import { AuthenticationService } from './../../Services/authentication-service';
 import Swal from 'sweetalert';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { Verification } from '../../Services/verification-service';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule, RouterModule, NgxSpinnerModule],
@@ -21,7 +22,8 @@ export class Login {
   constructor(
     private authenticationService: AuthenticationService,
     private spinner: NgxSpinnerService,
-    private router: Router
+    private router: Router,
+    private verificationService:Verification
   ) {}
 
   loginDTO!: LoginDTO;
@@ -30,7 +32,6 @@ export class Login {
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
   });
-
   onLogin() {
     // console.log(this.loginForm.value)
     this.loginDTO = {
@@ -48,7 +49,23 @@ export class Login {
           text: 'You logged in successfully!',
           icon: 'success',
         }).then(() => {
-          this.router.navigateByUrl('/home');
+          
+          const role = this.authenticationService.getRole(localStorage.getItem('accessToken') ?? "")
+          let  verified;
+          this.verificationService.isVerified().subscribe({
+            next:res=>{ console.log(res.isVerified);
+              verified = res.isVerified;
+            
+          console.log("from login.ts" + verified)
+          // console.log(verified)
+
+          if(role === 'Owner' && !verified)
+            this.router.navigateByUrl('/VerifyOwner');
+          else 
+            this.router.navigateByUrl('/home');
+            // ++ guard
+            }
+          })
         });
       },
       error: (error) => {
