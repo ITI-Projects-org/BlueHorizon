@@ -1,5 +1,4 @@
-﻿// API/Controllers/AuthenticationController.cs
-
+﻿
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -10,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using API.DTOs.AuthenticationDTO;
 using API.Models;
 using AutoMapper;
-// ... (أي using آخر موجود عندك)
 
 namespace API.Controllers
 {
@@ -88,11 +86,9 @@ namespace API.Controllers
                 return Unauthorized("Invalid Email or Password");
             }
 
-            // ✅ هذا الجزء صحيح بالفعل: تقوم بإضافة ClaimTypes.NameIdentifier
-            // وهذا هو الـ Claim الذي يبحث عنه SignalR لتعيين Context.UserIdentifier.
             var userData = new List<Claim>();
-            userData.Add(new Claim("userId", user.Id)); // Claim إضافي بالـ ID، يمكن استخدامه في Frontend
-            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id)); // ✅ الـ Claim الأساسي الذي يحتاجه SignalR (ويمثل "nameid")
+            userData.Add(new Claim("userId", user.Id)); 
+            userData.Add(new Claim(ClaimTypes.NameIdentifier, user.Id)); 
             userData.Add(new Claim("username", user.UserName));
             userData.Add(new Claim("email", user.Email));
 
@@ -106,7 +102,7 @@ namespace API.Controllers
 
             JwtSecurityToken tokenObject = new JwtSecurityToken(
                 claims: userData,
-                expires: DateTime.Now.AddDays(10000), // يفضل تقليل هذه المدة في الإنتاج
+                expires: DateTime.Now.AddDays(10000), 
                 signingCredentials: signingCredentials
             );
 

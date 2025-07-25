@@ -6,13 +6,11 @@ namespace API.Models
     {
         public int Id { get; set; }
 
-        // Sender
         public string SenderId { get; set; }
 
         [ForeignKey(nameof(SenderId))]
         public virtual ApplicationUser SenderUser { get; set; }
 
-        // Receiver
         public string ReceiverId { get; set; }
 
         [ForeignKey(nameof(ReceiverId))]

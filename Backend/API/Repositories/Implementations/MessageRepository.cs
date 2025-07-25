@@ -23,12 +23,10 @@
 
         public async Task<List<Message>> GetInboxAsync(string currentUserId)
         {
-            // Step 1: استعلام بسيط يجيب كل الرسائل
             var allMessages = await _context.Messages
                 .Where(m => m.ReceiverId == currentUserId || m.SenderId == currentUserId)
                 .ToListAsync();
 
-            // Step 2: التجميع يتم في الذاكرة (in-memory)
             var latestMessages = allMessages
                 .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
                 .Select(g => g.OrderByDescending(m => m.TimeStamp).FirstOrDefault())

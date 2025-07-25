@@ -9,7 +9,6 @@ import { Iunit } from '../models/iunit';
 export class Unit {
   baseurl: string = 'https://localhost:7083/api/Unit';
   constructor(private http: HttpClient) {
-    // Initialization logic for the Unit service
   }
   AddUnit(formData: FormData):Observable<Iunit> {
     return this.http.post<Iunit>(`${this.baseurl}/AddUnit`,formData);

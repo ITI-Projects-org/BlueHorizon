@@ -1,28 +1,21 @@
-// src/app/services/chat.service.ts (ASSUMED CURRENT STATE)
-
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
-// Assuming your Message interface is defined somewhere accessible,
-// like in a shared `models.ts` or directly in `chat.component.ts`
-import { Message } from '../components/chat/chat'; // ✅ Make sure to import your Message interface
-
+import { Message } from '../components/chat/chat';
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
   private hubConnection!: signalR.HubConnection;
-  private messageSubject = new Subject<Message>(); // ✅ Changed Subject type to Message
+  private messageSubject = new Subject<Message>();
 
-  // Property to expose the messages as an Observable
   public messages$: Observable<Message> = this.messageSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
   public startConnection = () => {
-    // Get the token from local storage
     const token = localStorage.getItem('token');
     if (!token) {
       console.error("No token found. Cannot start SignalR connection.");
@@ -30,8 +23,8 @@ export class ChatService {
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7083/chathub', { // Use your actual API URL here
-        accessTokenFactory: () => token // Provide the token for authentication
+    .withUrl('https://localhost:7083/chathub', {
+        accessTokenFactory: () => token
       })
       .withAutomaticReconnect()
       .build();
@@ -41,14 +34,12 @@ export class ChatService {
       .then(() => console.log('SignalR Connection started!'))
       .catch(err => console.error('Error while starting SignalR connection: ' + err));
 
-    // ✅ IMPORTANT: Update the .on method to expect a single 'Message' object
     this.hubConnection.on('ReceiveMessage', (message: Message) => {
       console.log("ChatService received message:", message);
-      this.messageSubject.next(message); // Emit the full message object
+      this.messageSubject.next(message);
     });
   }
 
-  // ✅ Updated the signature to expect a single Message object
   public onReceiveMessage = (callback: (message: Message) => void) => {
     this.messageSubject.subscribe(callback);
   }

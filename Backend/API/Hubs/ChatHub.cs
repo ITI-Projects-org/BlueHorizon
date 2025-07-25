@@ -1,66 +1,55 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using System.Linq;
-using API.UnitOfWorks; // ✅ تم إضافة هذا الـ using
-using API.Models;     // ✅ تم إضافة هذا الـ using لـ Message Model
+using API.UnitOfWorks;
+using API.Models;
 using System;
-using Microsoft.AspNetCore.Authorization;         // ✅ تم إضافة هذا الـ using لـ DateTime.Now
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Hubs
 {
     [Authorize]
     public class ChatHub : Hub
     {
-        // ✅ حقن (Dependency Injection) لـ IUnitOfWork
         private readonly IUnitOfWork _unitOfWork;
 
-        // ✅ Constructor لاستقبال الـ IUnitOfWork المحقون
         public ChatHub(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        // دالة إرسال رسالة لمستخدم معيّن
-        public async Task SendMessageToUser(string receiverId, string messageContent) // ✅ تم تغيير اسم المتغير لـ messageContent عشان ميتعارضش مع الـ Message Model
+        public async Task SendMessageToUser(string receiverId, string messageContent)
         {
             var senderId = Context.UserIdentifier;
             Console.WriteLine($"[ChatHub] SendMessageToUser received: SenderId = '{senderId}', ReceiverId = '{receiverId}', MessageContent = '{messageContent}'");
 
             if (senderId != null)
             {
-                // 1. ✅ حفظ الرسالة في قاعدة البيانات
                 var message = new Message
                 {
                     SenderId = senderId,
                     ReceiverId = receiverId,
                     MessageContent = messageContent,
-                    TimeStamp = DateTime.Now, // ✅ استخدام DateTime.UtcNow لأفضل ممارسة (التاريخ العالمي)
-                    IsRead = false // الرسالة لسه متبعتتش، فـ IsRead تكون False في البداية
+                    TimeStamp = DateTime.Now,
+                    IsRead = false
                 };
 
-                await _unitOfWork.MessageRepository.AddAsync(message); // إضافة الرسالة للـ Repository
-                await _unitOfWork.SaveAsync(); // حفظ التغييرات في قاعدة البيانات
+                await _unitOfWork.MessageRepository.AddAsync(message);
+                await _unitOfWork.SaveAsync();
                 Console.WriteLine($"[ChatHub] Message saved to database: From '{senderId}' to '{receiverId}'");
 
-                // 2. ✅ إرسال الرسالة فوراً لمستخدم واحد (المستقبل)
-                // ممكن تبعت الـ message object كله لو الـ Frontend بتاعك بيتعامل معاه
-                // أو تبعت الـ senderId والـ messageContent زي ما كنت عامل
+
                 var clientProxy = Clients.User(receiverId);
                 if (clientProxy == null)
                 {
                     Console.WriteLine($"[ChatHub] WARNING: Receiver '{receiverId}' not found or not currently connected to this Hub instance. Message saved but not sent in real-time.");
-                    // ممكن هنا نضيف لوج آخر أو آلية إعادة محاولة إرسال
                 }
                 else
                 {
-                    // ✅ إرسال الرسالة للـ Frontend.
-                    // الأفضل إنك ترجع الـ message object اللي تم حفظه، عشان الـ Frontend ياخد الـ TimeStamp والـ ID
-                    // أو ممكن تبعت اللي كنت بتبعته: SendAsync("ReceiveMessage", senderId, messageContent)
-                    // لكن لو الـ Frontend بيستقبل DTO، يبقى نرجع DTO:
-                    // بما إن الـ Hub ملوش Mapper، هنبعت الـ properties اللي محتاجينها.
+
                     await clientProxy.SendAsync("ReceiveMessage", new
                     {
-                        Id = message.Id, // ID الرسالة من الداتا بيز
+                        Id = message.Id,
                         SenderId = message.SenderId,
                         ReceiverId = message.ReceiverId,
                         MessageContent = message.MessageContent,
