@@ -42,6 +42,7 @@ export const routes: Routes = [
   //    This ensures users don't land on a blank page if they type a wrong URL.
   { path: 'addReview', component: Review },
   { path: 'createQr', component: CreateQr },
+  { path: 'units', component: Units },
   { path: '**', redirectTo: 'login' },
-  { path: '', component: Units },
+  { path: '', redirectTo: 'units', pathMatch: 'full' },
 ];
