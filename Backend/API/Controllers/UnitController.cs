@@ -1,10 +1,10 @@
-﻿using API.Models;
+using API.Models;
 using API.UnitOfWorks;
-using API.DTOs.UnitsDTOs;
+using API.DTOs.UnitDTO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -12,6 +12,44 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
+        [HttpGet("All")]
+        public async Task<ActionResult> GetAll()
+        {
+
+            var units = await _unitOfWork.UnitRepository.GetAllAsync();
+
+
+            return Ok(_mapper.Map<List<UnitDTO>>(units));
+
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                var existingUnit = await _unitOfWork.UnitRepository.GetUnitWithDetailsAsync(id);
+                if (existingUnit == null)
+                {
+                    return NotFound("This Unit Does not exist");
+                }
+                //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                //if (existingUnit.OwnerId != currentUserId)
+                //{
+                //    return Forbid("You Cannot Delete This Unit.");
+                //}
+                 _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+
+                return Ok(new { Message = "Unit Deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         readonly IUnitOfWork _unitOfWork;
         readonly IMapper _mapper;
 
@@ -21,9 +59,8 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-
         [Authorize(Roles = "Owner")]
-        [HttpPost]
+        [HttpPost("AddUnit")]
         public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
         {
             try
@@ -38,20 +75,20 @@ namespace API.Controllers
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
 
+                //Handle contract document upload
+                if (unitDto.ContractDocument != null)
+                {
+                    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                    var filePath = Path.Combine("Uploads", "Contracts", fileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-                // Handle contract document upload
-                //if (unitDto.ContractDocument != null)
-                //{
-                //    var fileName = $"unit_contract_user:{userId}{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await unitDto.ContractDocument.CopyToAsync(stream);
+                    }
+                    unit.ContractPath = filePath;
+                }
 
-                //    using (var stream = new FileStream(filePath, FileMode.Create))
-                //    {
-                //        await unitDto.ContractDocument.CopyToAsync(stream);
-                //    }
-                //    unit.ContractPath = filePath;
-                //}
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
@@ -81,11 +118,9 @@ namespace API.Controllers
             }
         }
 
-        #region Real Add Unit 
+        [Authorize(Roles = "Owner")]
         [HttpPost("VerifyUnit/{id:int}")]
-        //[Authorize(Roles = "Owner")]
-
-        public async Task<IActionResult> VerifyUnit( int id)
+        public async Task<IActionResult> VerifyUnit(int id)
         {
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             _mapper.Map<Unit>(unit);
@@ -101,17 +136,13 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
-
-
         }
-        #endregion
 
-        #region Unit Details
         // Get By Id
-        [HttpGet("{id}")]
+        [HttpGet("GetUnitById/{id}")]
         public async Task<IActionResult> GetUnitById(int id)
         {
+
             var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             if (unit == null)
             {
@@ -119,9 +150,6 @@ namespace API.Controllers
             }
             return Ok(_mapper.Map<UnitDetailsDTO>(unit));
         }
-        #endregion
-
-        #region  Update Unit
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
@@ -131,11 +159,13 @@ namespace API.Controllers
             {
                 return BadRequest("Unit data is null");
             }
+
             var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
             if (existingUnit == null)
             {
                 return NotFound("Unit Not Found");
             }
+
             var unit = _mapper.Map<Unit>(unitDto);
             try
             {
@@ -149,7 +179,13 @@ namespace API.Controllers
             return Ok("Unit Updated Successfully");
         }
 
-        #endregion
-
+        [HttpPut("DeleteUnit/{id}")]
+        public async Task<IActionResult> DeleteUnit(int id)
+        {
+            _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+            await _unitOfWork.SaveAsync();
+            return Ok();
+        }
     }
 }
+

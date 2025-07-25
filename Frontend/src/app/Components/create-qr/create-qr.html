@@ -1,0 +1,15 @@
+<p>create-qr works!</p>
+<button (click)="CreateQrCloud()">Create qr code</button>
+
+<button (click)="getQrCloud(39)">Get QR</button>
+
+<!-- @if(qrCodeUrl && !isLoading){
+<div>
+    <img [src]="qrCodeUrl" alt="Booking QR Code" />
+    <p>Show this code at the gate for entry.</p>
+</div>} -->
+
+<div>
+    <img [src]="[imgPath]">
+    {{imgPath}}
+</div>

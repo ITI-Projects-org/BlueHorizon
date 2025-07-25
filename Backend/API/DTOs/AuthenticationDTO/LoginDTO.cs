@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Principal;
 
 namespace API.DTOs.AuthenticationDTO
 {
     public class LoginDTO
     {
-        [Required(ErrorMessage = "First Name is required")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
-        public string Username{ get; set; }
-        public string Password{ get; set; }
-        public string Role { get; set; }
+
+        //[Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; }
     }
 }

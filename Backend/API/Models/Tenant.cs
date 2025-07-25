@@ -2,7 +2,6 @@
 
 namespace API.Models
 {
-    [NotMapped]
     public class Tenant : ApplicationUser
     {
     }

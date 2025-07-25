@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Models
@@ -9,7 +10,7 @@ namespace API.Models
 
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<AccessPermission> AccessPermission { get; set; }
+        public DbSet<AccessPermission> AccessPermissions { get; set; }
         public DbSet<Amenity> Amenity { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -20,24 +21,39 @@ namespace API.Models
         public DbSet<UnitAmenity> UnitAmenities { get; set; }
         public DbSet<UnitReview> UnitReviews { get; set; }
         public DbSet<Unit> Units { get; set; }
+        public DbSet<UnitImages> UnitImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+
+
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
+
+            //Message Fluent API
+            builder.Entity<Message>().Property(m => m.SenderId).IsRequired();
+            builder.Entity<Message>().Property(m => m.ReceiverId).IsRequired();
+            builder.Entity<Message>().Property(m => m.MessageContent).IsRequired();
+
 
             builder.Entity<Unit>()
             .HasMany(u => u.UnitAmenities)
             .WithOne(ua => ua.Unit)
             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Owner>()
-                .HasMany(o => o.Units)
-                .WithOne(u => u.Owner)
-                .OnDelete(DeleteBehavior.Restrict);
+            // builder.Entity<Owner>()
+            //     .HasMany(o => o.Units)
+            //     .WithOne(u => u.Owner)
+            //     .HasForeignKey(u => u.OwnerId);
 
+            builder.Entity<Unit>()
+                .HasOne(u => u.Owner)
+                .WithMany(o => o.Units)
+                .HasForeignKey(u => u.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<ApplicationUser>()
                 .HasDiscriminator<string>("UserType")
@@ -53,11 +69,9 @@ namespace API.Models
             builder.Entity<Booking>()
                 .Property(b => b.TotalPrice)
                 .HasPrecision(10, 2);
-
             builder.Entity<Booking>()
                 .Property(b => b.PlatformComission)
                 .HasPrecision(10, 2);
-
             builder.Entity<Booking>()
                 .Property(b => b.OwnerPayoutAmount)
                 .HasPrecision(10, 2);
@@ -113,38 +127,31 @@ namespace API.Models
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-            // Unit relationships
-            builder.Entity<Unit>()
-                .HasOne(u => u.Owner)
-                .WithMany()
-                .HasForeignKey(u => u.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+           
 
             // Message relationships
             builder.Entity<Message>()
                 .HasOne(m => m.SenderUser)
                 .WithMany()
-                .HasForeignKey(m => m.Sender)
+                .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()
-                .HasOne(m => m.RecieverUser)
+                .HasOne(m => m.ReceiverUser)
                 .WithMany()
-                .HasForeignKey(m => m.Reciever)
+                .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Message>()
-                .HasOne(m => m.Booking)
-                .WithMany()
-                .HasForeignKey(m => m.BookingId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Message>()
+            //    .HasOne(m => m.Booking)
+            //    .WithMany()
+            //    .HasForeignKey(m => m.BookingId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // OwnerVerificationDocument relationships
             builder.Entity<OwnerVerificationDocument>()
                 .HasOne(o => o.Owner)
-                .WithMany()
+                .WithMany(o => o.OwnerVerificationDocuments)
                 .HasForeignKey(o => o.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -158,12 +165,17 @@ namespace API.Models
                 .HasOne(ua => ua.Amenity)
                 .WithMany(a => a.UnitAmenities)
                 .OnDelete(DeleteBehavior.Restrict);
-
             builder.Entity<QRCode>()
                 .HasOne(QRCode => QRCode.Booking)
                 .WithOne(b => b.QRCode)
                 .HasForeignKey<QRCode>(qr => qr.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
+                
+            builder.Entity<Unit>()
+                .HasMany(u=>u.UnitImages)
+                .WithOne(ui=>ui.Unit)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
