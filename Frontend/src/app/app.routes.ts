@@ -12,11 +12,13 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
-import { AuthGuard } from './Guards/auth-guard';
 import { Chat } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
+import { AuthGuard } from './Guards/auth-guard-guard';
+import { BookingList } from './Pages/booking-list/booking-list';
+import { BookingForm } from './Pages/booking-form/booking-form';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -33,6 +35,9 @@ export const routes: Routes = [
   { path: 'profile', component: Profile },
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
+  { path: 'my-bookings', component: BookingList },
+  { path: 'add-booking', component: BookingForm },
+
   {
     path: 'chat',
     component: Chat,
@@ -40,7 +45,7 @@ export const routes: Routes = [
   },
   // 4. Catch-all route: Redirects any unmatched URLs to the login page.
   //    This ensures users don't land on a blank page if they type a wrong URL.
-  { path: 'addReview', component: Review },
+  { path: 'addReview', component: Review, canActivate: [AuthGuard] },
   { path: 'createQr', component: CreateQr },
   { path: '**', redirectTo: 'login' },
   { path: '', component: Units },

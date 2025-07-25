@@ -5,7 +5,6 @@ namespace API.DTOs.BookingDTOs
 {
     public class BookingDTO
     {
-        public int? Id { get; set; }
         public string? TenantId { get; set; }
         public int UnitId { get; set; }
         public DateTime? BookingDate { get; set; }
