@@ -9,7 +9,7 @@ namespace API.Models
         public int? Id { get; set; }
         [ForeignKey(nameof(Booking))]
         public int BookingId { get; set; }
-        public string QRCodeValue { get; set; } //(the actual generated string/image data)
+        public string? QRCodeValue { get; set; } //(the actual generated string/image data)
         public DateTime GeneratedDate { get; set; }
         public DateTime ExpirationDate { get; set; }
         public virtual Booking Booking{ get; set; }
@@ -18,5 +18,6 @@ namespace API.Models
         public string UnitAddress { get; set; }
         public string OwnerName { get; set; }
         public string TenantName { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

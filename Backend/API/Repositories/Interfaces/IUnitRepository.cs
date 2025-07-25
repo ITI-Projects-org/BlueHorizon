@@ -1,3 +1,4 @@
+
 ﻿using API.Models;
 
 namespace API.Repositories.Interfaces
@@ -11,3 +12,4 @@ namespace API.Repositories.Interfaces
 
     }
 }
+
