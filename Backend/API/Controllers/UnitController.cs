@@ -148,7 +148,10 @@ namespace API.Controllers
             {
                 return Content("Unit Not Found");
             }
-            return Ok(_mapper.Map<UnitDetailsDTO>(unit));
+            var unitDto=_mapper.Map<UnitDetailsDTO>(unit);
+             var images =await _unitOfWork.UnitImagesRepository.GetUnitImagesByUnitIdAsync(id);
+            unitDto.UnitImages = images.Select(i => i.ImagePath).ToList();
+            return Ok(unitDto);    
         }
 
         [HttpPut("{id}")]

@@ -9,6 +9,7 @@ namespace API.Repositories.Implementations
     {
         public UnitRepository(BlueHorizonDbContext _context) : base(_context)
         {
+
         }
        
 

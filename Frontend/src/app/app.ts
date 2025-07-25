@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { Navbar } from './Layout/navbar/navbar';
 import { Footer } from './Layout/footer/footer';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Footer, Navbar,FormsModule,ReactiveFormsModule],
+  imports: [RouterOutlet, Footer, Navbar, FormsModule, ReactiveFormsModule, UnitDetailsComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

@@ -143,6 +143,18 @@ namespace API.UnitOfWorks
                 return unitRepository;
             }
         }
+        IUnitImagesRepository unitImagesRepository;
+        public IUnitImagesRepository UnitImagesRepository
+        {
+            get
+            {
+                if (unitImagesRepository == null)
+                {
+                    unitImagesRepository = new UnitImagesRepository(_context);
+                };
+                return unitImagesRepository;
+            }
+        }
 
         public IUnitReviewRepository unitReviewRepository;
         public IUnitReviewRepository UnitReviewRepository

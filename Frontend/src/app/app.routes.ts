@@ -20,6 +20,7 @@ import { ChangePassword } from './Pages/change-password/change-password';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'units', component: Units },
   { path: 'home', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
@@ -43,5 +44,4 @@ export const routes: Routes = [
   { path: 'addReview', component: Review },
   { path: 'createQr', component: CreateQr },
   { path: '**', redirectTo: 'login' },
-  { path: '', component: Units },
 ];

@@ -16,6 +16,7 @@ namespace API.UnitOfWorks
         IQRCodeRepository QRCodeRepository { get; }
         IUnitAmenityRepository UnitAmenityRepository { get; }
         IUnitRepository UnitRepository { get; }
+        IUnitImagesRepository UnitImagesRepository { get; }
         IUnitReviewRepository UnitReviewRepository { get; }
         Task SaveAsync();
     }

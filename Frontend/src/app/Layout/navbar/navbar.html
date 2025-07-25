@@ -1,7 +1,7 @@
 <!-- Navbar -->
 <nav #mainNavbar class="navbar navbar-expand-lg fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" [routerLink]="['/home']">
       <span class="logo-text">BlueHorizon</span>
     </a>
     <button
@@ -16,25 +16,27 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Home</a>
+          <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#">Pages</a>
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Pages</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">About Us</a></li>
-            <li><a class="dropdown-item" href="#">Services</a></li>
+            <li><span class="dropdown-item disabled">About Us</span></li>
+            <li><span class="dropdown-item disabled">Services</span></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Units</a>
+          <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
+          <span class="nav-link disabled"
+          [routerLink]="['/contact']"
+          >Contact</span>
         </li>
       </ul>
 
       <div class="d-flex">
-        <a href="#" class="btn btn-outline-light">Login</a>
+        <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
       </div>
     </div>
   </div>
