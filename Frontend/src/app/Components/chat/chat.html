@@ -1,0 +1,33 @@
+<div class="chat-container">
+  <h2>Welcome to BlueHorizon Chat</h2>
+
+  <div class="message-box">
+    <div *ngFor="let msg of messages"
+         [class.my-message-container]="msg.isMyMessage"
+         [class.other-message-container]="!msg.isMyMessage">
+
+      <div class="message-bubble" [class.my-message-bubble]="msg.isMyMessage" [class.other-message-bubble]="!msg.isMyMessage">
+        <strong class="message-sender">{{ msg.from }}:</strong>
+        <span class="message-content">{{ msg.content }}</span>
+        <span *ngIf="msg.timestamp" class="message-timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <input
+      [(ngModel)]="toUserId"
+      (ngModelChange)="onToUserIdChange()"
+      placeholder="Enter receiver user ID"
+      class="user-id-input"
+    />
+
+    <input
+      [(ngModel)]="messageText"
+      placeholder="Type your message..."
+      class="message-input"
+    />
+
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>
