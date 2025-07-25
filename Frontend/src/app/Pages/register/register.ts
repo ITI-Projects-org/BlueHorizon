@@ -10,13 +10,13 @@ import {
 } from '@angular/forms';
 import { RegisterDTO } from '../../Models/register-dto';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule], // Add NgxSpinnerModule
+  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule, RouterLink], // Add NgxSpinnerModule
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
 })
