@@ -186,7 +186,31 @@ namespace API.UnitOfWorks
             }
         }
 
+
+
+
+
+
         
+
+
+
+
+
+        public IUnitImagesRepository unitImagesRepository;
+        public IUnitImagesRepository UnitImagesRepository
+        {
+            get
+            {
+                if (unitImagesRepository == null)
+                {
+                    unitImagesRepository = new UnitImagesRepository(_context);
+                };
+                return unitImagesRepository;
+            }
+        }
+
+        //public ITenantRepository TenantRepository => throw new NotImplementedException();
 
         public void Dispose()
         {

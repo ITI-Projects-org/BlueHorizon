@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using API.Repositories.Interfaces;
 
 namespace API.Controllers
 {
@@ -12,6 +13,20 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
+
+        readonly IUnitOfWork _unitOfWork;
+        readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
+
+        public UnitController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _photoService = photoService;
+        }
+
+
+
         [HttpGet("All")]
         public async Task<ActionResult> GetAll()
         {
@@ -20,6 +35,13 @@ namespace API.Controllers
             var units = await _unitOfWork.UnitRepository.GetAllValidUnits();
             //var units = await _unitOfWork.UnitRepository.GetAllFiltered();
             List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
+
+            foreach (var unitdto in unitsdto)
+            {
+                unitdto.UnitId = unitdto.Id;
+                unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
+            }
+
             return Ok(unitsdto);
 
         }
@@ -40,7 +62,7 @@ namespace API.Controllers
                 //{
                 //    return Forbid("You Cannot Delete This Unit.");
                 //}
-                 _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+                _unitOfWork.UnitRepository.DeleteByIdAsync(id);
 
                 return Ok(new { Message = "Unit Deleted successfully" });
             }
@@ -51,14 +73,7 @@ namespace API.Controllers
 
         }
 
-        readonly IUnitOfWork _unitOfWork;
-        readonly IMapper _mapper;
-
-        public UnitController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+       
 
         [Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
@@ -90,6 +105,19 @@ namespace API.Controllers
                     unit.ContractPath = filePath;
                 }
 
+                if (unitDto.UnitImages != null && unitDto.UnitImages.Any())
+                {
+                    foreach (var image in unitDto.UnitImages)
+                    {
+                        var res = await _photoService.AddPhotoAsync(image);
+                        //res.Url
+                        UnitImages unitImage = new UnitImages(){
+                            UnitID = unit.Id,
+                            ImageURL = res.Url.ToString()
+                        };
+                        await _unitOfWork.UnitImagesRepository.AddAsync(unitImage);
+                    }
+                }
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();

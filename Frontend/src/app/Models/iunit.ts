@@ -17,6 +17,7 @@ export interface IUnit {
   address:string|null,
   description:string|null,
   villageName:string|null,
+  imageURL:string|null
 
 }
 

@@ -18,6 +18,8 @@ namespace API.UnitOfWorks
         IUnitAmenityRepository UnitAmenityRepository { get; }
         IUnitRepository UnitRepository { get; }
         IUnitReviewRepository UnitReviewRepository { get; }
+        IUnitImagesRepository UnitImagesRepository { get; }
+
         Task SaveAsync();
     }
 }

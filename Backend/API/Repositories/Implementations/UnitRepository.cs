@@ -1,5 +1,6 @@
 ﻿using API.Models;
 using API.Repositories.Interfaces;
+using CloudinaryDotNet.Actions;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -34,6 +35,13 @@ namespace API.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<string> GetSingleImagePathByUnitId(int unitId)
+        {
+            return await _context.UnitImages
+                .Where(ui=>ui.UnitID == unitId)
+                .Select(ui=>ui.ImageURL)
+                .FirstOrDefaultAsync();
+        }
 
 
 

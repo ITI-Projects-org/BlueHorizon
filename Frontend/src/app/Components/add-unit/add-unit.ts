@@ -22,6 +22,9 @@ export class AddUnit implements OnInit {
   unitForm: FormGroup;
   contractFile: File | null = null;
   selectedAmenityIds: number[] = [];
+  unitFiles: FileList | null = null;
+
+
 
   unitTypes = [
     { value: UnitType.Apartment, label: 'Apartment' },
@@ -49,7 +52,10 @@ export class AddUnit implements OnInit {
       address: ['', Validators.required],
       villageName: ['', Validators.required],
 
-      contractDocument: [null, Validators.required]
+      contractDocument: [null, Validators.required],
+
+      unitImages:[null, Validators.required]
+
     });
   }
 
@@ -75,7 +81,7 @@ export class AddUnit implements OnInit {
     this.submitForm();
   }
 
-  onFileSelected(event: Event) {
+  onContractFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.contractFile = input.files[0];
@@ -86,6 +92,19 @@ export class AddUnit implements OnInit {
       this.unitForm.get('contractDocument')?.setValue(null);
     }
   }
+
+  onUnitFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.unitFiles = input.files;
+
+      this.unitForm.get('unitImages')?.setValue(this.unitFiles);
+    } else {
+      this.unitFiles = null;
+      this.unitForm.get('unitImages')?.setValue(null);
+    }
+  }
+
 
   onAmenityChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
@@ -108,12 +127,22 @@ export class AddUnit implements OnInit {
     if (this.contractFile) {
       formData.append('ContractDocument', this.contractFile, this.contractFile.name);
     }
+    if (this.unitFiles) {
+      for (let i = 0; i < this.unitFiles?.length; i++)
+      {
+        formData.append('unitImages', this.unitFiles[i], this.unitFiles[i].name)
+      }
+      console.log(this.unitFiles);
+    }
+    if(this.amenities)
 
     this.selectedAmenityIds.forEach(id => {
       formData.append('AmenityIds', id.toString());
       console.log('Selected Amenity ID:', id);
     });
 
+    console.log('Form Data');
+    console.log(formData);
     this.unitService.AddUnit(formData).subscribe({
       next: res => {
         console.log('unit added successfully', res);
