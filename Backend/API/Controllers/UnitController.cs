@@ -90,21 +90,28 @@ namespace API.Controllers
 
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
-             
+
 
                 //Handle contract document upload
+                //if (unitDto.ContractDocument != null)
+                //{
+                //    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
+                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                //    using (var stream = new FileStream(filePath, FileMode.Create))
+                //    {
+                //        await unitDto.ContractDocument.CopyToAsync(stream);
+                //    }
+                //    unit.ContractPath = filePath;
+                //}
                 if (unitDto.ContractDocument != null)
                 {
-                    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    var res =await _photoService.AddPhotoAsync(unitDto.ContractDocument);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await unitDto.ContractDocument.CopyToAsync(stream);
-                    }
-                    unit.ContractPath = filePath;
+                    unit.ContractPath = res.Url.ToString();
                 }
+
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
                 if (unitDto.UnitImages != null && unitDto.UnitImages.Any())

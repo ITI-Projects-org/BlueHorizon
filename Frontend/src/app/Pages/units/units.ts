@@ -1,148 +1,269 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http'; // فقط استيراد HttpClient
-import { RouterModule } from '@angular/router';
-import { IUnit } from '../../Models/iunit';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { Unit } from '../../Models/unit.model';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
+import { Navbar } from "../../Layout/navbar/navbar";
+import { UnitsService } from '../../Services/units.service';
+import { SearchService } from '../../Services/searchService';
 
 @Component({
   selector: 'app-units',
-  imports: [CommonModule, FormsModule, RouterModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './units.html',
   styleUrl: './units.css',
+  providers: [UnitsService]
 })
-export class Units implements OnInit {
-  units: IUnit[] = []; // ستبدأ فارغة ويتم ملؤها من الـ API
-  paginatedUnits: IUnit[] = []; // الوحدات المعروضة في الصفحة الحالية
+export class Units implements OnInit, OnDestroy {
+  allUnits: Unit[] = [];
+  filteredUnits: Unit[] = [];
+  paginatedUnits: Unit[] = [];
 
-  // Pagination properties
-  pageSize: number = 6;
-  currentPage: number = 1;
-  totalPages: number = 1; // تم تعديل هذا المتغير وتصحيحه
+  isLoading = true;
+  error: string | null = null;
 
-  // بيانات الفلاتر (تم توحيد الهيكل)
-  unitType = [
-    { name: 'Apartment', count: 0 }, // تم تصحيح الاسم ليكون موحدًا
-    { name: 'Villa', count: 0 },
-    { name: 'House', count: 0 },
-    { name: 'Office', count: 0 },
-    { name: 'Land', count: 0 },
-  ];
+  currentPage = 1;
+  pageSize = 6;
+  totalPages = 1;
 
-  village = [
-    { name: 'Village A', count: 0 },
-    { name: 'Village B', count: 0 },
-    { name: 'Village C', count: 0 },
-  ];
+  villageOptions: { name: string; count: number }[] = [];
+  unitTypeOptions: { name: string; count: number }[] = [];
 
-  constructor(private http: HttpClient,private cdr:ChangeDetectorRef) {}
+  selectedVillage?: string | null = null;
+  selectedType?: string | null = null;
+  selectedBedrooms?: string | null = null;
+  selectedBathrooms?: string | null = null;
+  minPrice?: number | null = null;
+  maxPrice?: number | null = null;
+  searchTerm?: string | null = null;
+  sortOption?: string = 'default';
+
+  unitTypeMap: { [key: number]: string } = {
+    0: 'Apartment',
+    1: 'Villa',
+    2: 'Chalet'
+  };
+
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private unitsService: UnitsService,
+    private route: ActivatedRoute,
+    private searchService: SearchService
+  ) {}
 
   ngOnInit(): void {
-    this.fetchUnits();
-    // this.calculateCounts() سيتم استدعاؤها بعد جلب الوحدات
+    this.searchService.searchCriteria$
+      .pipe(takeUntil(this.destroy$), debounceTime(200))
+      .subscribe(criteria => {
+        this.selectedVillage = criteria.selectedVillage;
+        this.selectedType = criteria.selectedType;
+        this.selectedBedrooms = criteria.selectedBedrooms;
+        this.selectedBathrooms = criteria.selectedBathrooms;
+        this.minPrice = criteria.minPrice;
+        this.maxPrice = criteria.maxPrice;
+        this.currentPage = 1;
+        this.applyAllFiltersAndSortAndPaginate();
+      });
+
+    this.route.queryParams.subscribe(params => {
+      this.selectedVillage = params['village'] || null;
+      this.selectedType = params['type'] || null;
+      this.selectedBedrooms = params['bedrooms'] || null;
+      this.selectedBathrooms = params['bathrooms'] || null;
+      this.minPrice = params['minPrice'] ? parseFloat(params['minPrice']) : null;
+      this.maxPrice = params['maxPrice'] ? parseFloat(params['maxPrice']) : null;
+      this.searchTerm = params['search'] || null;
+
+      this.fetchUnits();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   fetchUnits(): void {
-    // استبدل هذا الرابط برابط الـ API الفعلي الخاص بك
-    const apiUrl = 'https://localhost:7083/api/Unit/All'; // مثال: 'https://api.example.com/units'
-
-    this.http.get<IUnit[]>(apiUrl).subscribe({
+    this.isLoading = true;
+    this.unitsService.getUnits().subscribe({
       next: (data) => {
-        console.log('data come from request')
-        console.log(data)
-        this.units = data;
-        this.calculatePagination(); // حساب الصفحات بعد جلب البيانات
-        this.updatePaginatedUnits(); // تحديث الوحدات المعروضة
-        this.calculateCounts(); // حساب العدادات للفلاتر بعد جلب البيانات
-      },
-      error: (errorRes) => {
-        // تغيير اسم المتغير لتجنب التعارض مع استيراد خاطئ سابق
-        console.error('Error fetching units:', errorRes);
-        // يمكنك إضافة رسالة خطأ مرئية للمستخدم هنا
-      },
-      complete: () => {
+        this.allUnits = data;
+        this.isLoading = false;
+        this.populateFilterOptions();
+        this.applyAllFiltersAndSortAndPaginate();
         console.log('Units fetched successfully');
+        console.log(data)
       },
+      error: (err) => {
+        console.error('Error fetching units', err);
+        this.error = 'Failed to load units. Please try again later.';
+        this.isLoading = false;
+      }
     });
   }
 
-  calculatePagination(): void {
-    // يحسب العدد الإجمالي للصفحات
-    this.totalPages = Math.ceil(this.units.length / this.pageSize);
-  }
+  populateFilterOptions(): void {
+    const villageMap = new Map<string, number>();
+    const unitTypeMap = new Map<string, number>();
 
-  updatePaginatedUnits(): void {
-    // تحديث الوحدات المعروضة في الصفحة الحالية
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedUnits = this.units.slice(startIndex, endIndex);
-    this.cdr.detectChanges();
-  }
+    this.allUnits.forEach(unit => {
+      if (unit.villageName) {
+        const village = unit.villageName;
+        villageMap.set(village, (villageMap.get(village) || 0) + 1);
+      }
 
-  calculateCounts(): void {
-    // يتم حساب عدد الوحدات لكل نوع (Apartment, Villa, House, etc.)
-    this.unitType.forEach((type) => {
-      type.count = this.units.filter((unit) =>
-        unit.title?.toLowerCase().includes(type.name.toLowerCase())
-      ).length;
+      if (unit.unitType !== undefined && this.unitTypeMap[unit.unitType]) {
+        const unitType = this.unitTypeMap[unit.unitType];
+        unitTypeMap.set(unitType, (unitTypeMap.get(unitType) || 0) + 1);
+      }
     });
 
-    // يتم حساب عدد الوحدات لكل قرية بناءً على العنوان
-    this.village.forEach((village) => {
-      village.count = this.units.filter((unit) =>
-        unit.address?.toLowerCase().includes(village.name.toLowerCase())
-      ).length;
-    });
+    this.villageOptions = Array.from(villageMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    this.unitTypeOptions = Array.from(unitTypeMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  applyAllFiltersAndSortAndPaginate(): void {
+    let tempUnits = [...this.allUnits];
+
+    if (this.searchTerm) {
+      const lower = this.searchTerm.toLowerCase();
+      tempUnits = tempUnits.filter(unit =>
+        unit.title?.toLowerCase().includes(lower) ||
+        unit.address?.toLowerCase().includes(lower) ||
+        unit.villageName?.toLowerCase().includes(lower) ||
+        unit.unitType?.toString().includes(lower)
+      );
+    }
+
+    if (this.selectedVillage) {
+      tempUnits = tempUnits.filter(unit => unit.villageName === this.selectedVillage);
+    }
+
+    if (this.selectedType) {
+      tempUnits = tempUnits.filter(
+        unit => unit.unitType !== undefined && this.unitTypeMap[unit.unitType] === this.selectedType
+      );
+    }
+
+    if (this.minPrice !== null) {
+      tempUnits = tempUnits.filter(unit => unit.basePricePerNight !== undefined && unit.basePricePerNight >= this.minPrice!);
+    }
+    if (this.maxPrice !== null) {
+      tempUnits = tempUnits.filter(unit => unit.basePricePerNight !== undefined && unit.basePricePerNight <= this.maxPrice!);
+    }
+
+    if (this.selectedBedrooms) {
+      if (this.selectedBedrooms === '3+') {
+        tempUnits = tempUnits.filter(unit => unit.bedrooms !== undefined && unit.bedrooms >= 3);
+      } else {
+        const num = parseInt(this.selectedBedrooms, 10);
+        tempUnits = tempUnits.filter(unit => unit.bedrooms === num);
+      }
+    }
+
+    if (this.selectedBathrooms) {
+      if (this.selectedBathrooms === '3+') {
+        tempUnits = tempUnits.filter(unit => unit.bathrooms !== undefined && unit.bathrooms >= 3);
+      } else {
+        const num = parseInt(this.selectedBathrooms, 10);
+        tempUnits = tempUnits.filter(unit => unit.bathrooms === num);
+      }
+    }
+
+    this.filteredUnits = tempUnits;
+    this.sortUnits();
+    this.calculateTotalPages();
+    this.paginate();
+  }
+
+  sortUnits(): void {
+    switch (this.sortOption) {
+      case 'price-asc':
+        this.filteredUnits.sort((a, b) => (a.basePricePerNight || 0) - (b.basePricePerNight || 0));
+        break;
+      case 'price-desc':
+        this.filteredUnits.sort((a, b) => (b.basePricePerNight || 0) - (a.basePricePerNight || 0));
+        break;
+      default:
+        this.filteredUnits.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+    }
+  }
+
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.filteredUnits.length / this.pageSize);
+    if (this.totalPages === 0) this.totalPages = 1;
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+  }
+
+ filterByCity(name: string | null, event: Event): void {
+  event.preventDefault();
+  this.selectedVillage = (this.selectedVillage === name) ? null : name;
+  this.currentPage = 1;
+  this.applyAllFiltersAndSortAndPaginate();
+}
+
+  filterByType(name: string | null, event: Event): void {
+  event.preventDefault();
+  this.selectedType = (this.selectedType === name) ? null : name;
+  this.currentPage = 1;
+  this.applyAllFiltersAndSortAndPaginate();
+}
+
+  sortBy(option: string): void {
+    this.sortOption = option;
+    this.currentPage = 1;
+    this.applyAllFiltersAndSortAndPaginate();
+  }
+
+  applyPriceFilter(): void {
+    this.currentPage = 1;
+    this.applyAllFiltersAndSortAndPaginate();
+  }
+
+  applyBedroomsBathroomsFilter(): void {
+    this.currentPage = 1;
+    this.applyAllFiltersAndSortAndPaginate();
+  }
+
+  paginate(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedUnits = this.filteredUnits.slice(start, end);
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePaginatedUnits();
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.paginate();
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.paginate();
     }
   }
 
   nextPage(): void {
-    this.goToPage(this.currentPage + 1);
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.paginate();
+    }
   }
 
-  previousPage(): void {
-    this.goToPage(this.currentPage - 1);
-  }
-
-  filterByCity(city: string): void {
-    console.log('Filtering by city:', city);
-    // هنا يجب إضافة منطق الفلترة الفعلي
-    // مثال:
-    // const filteredUnits = this.units.filter(unit => unit.address.toLowerCase().includes(city.toLowerCase()));
-    // this.paginatedUnits = filteredUnits.slice(0, this.pageSize); // عرض الصفحة الأولى من الفلترة
-    // this.currentPage = 1;
-    // this.calculatePagination(); // قد تحتاج إلى إعادة حساب totalPages بناءً على الفلترة
-  }
-
-  filterByType(type: string): void {
-    console.log('Filtering by type:', type);
-    // منطق الفلترة
-  }
-
-  filterByStatus(status: string): void {
-    console.log('Filtering by status:', status);
-    // منطق الفلترة
-  }
-
-  sortBy(criteria: string): void {
-    console.log('Sorting by:', criteria);
-    
-    if (criteria === 'price-asc') {
-      console.log('insde sortingggggg')
-     this.units = this.units.sort((a, b) => a.basePricePerNight - b.basePricePerNight);
-    } else if (criteria === 'price-desc') {
-      console.log('ninsede elseeeee')
-
-      this.units.sort((a, b) => b.basePricePerNight - a.basePricePerNight);
-    
-    this.updatePaginatedUnits();
-    
-  }
-}
+  getUnitImagePath(unit: Unit): string {
+    // return unit.imagePath && unit.imagePath.length > 0 ? unit.imagePath : 'assets/placeholder.jpg';
+    console.log("this is image paths")
+    console.log(unit.imageURL)
+    return unit.imageURL??"";}
 }
