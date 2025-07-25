@@ -123,7 +123,7 @@ namespace API.Models
 
             builder.Entity<Booking>()
                 .HasOne(b => b.Unit)
-                .WithMany()
+                .WithMany(u=> u.Bookings)
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
