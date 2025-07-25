@@ -107,6 +107,7 @@ namespace API.Controllers
         {
             var redirectUrl = Url.Action("GoogleLoginCallback", "Authentication");
             var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
+            
             return Challenge(properties, "Google");
         }
 

@@ -12,7 +12,7 @@ using System.Text;
 
 namespace API.Services.Implementation
 {
-    public class AuthService: IAuthService
+    public class AuthService : IAuthService
     {
         public UserManager<ApplicationUser> _userManager { get; }
         public IConfiguration _config { get; }
@@ -51,7 +51,8 @@ namespace API.Services.Implementation
 
             JwtSecurityToken tokenObject = new JwtSecurityToken(
                 claims: userData,
-                expires: DateTime.Now.AddMinutes(5),
+                // expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddMonths(12),
                 signingCredentials: signingCredentials
                 );
 

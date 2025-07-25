@@ -1,11 +1,13 @@
 ﻿using API.DTOs;
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
+using API.DTOs.BookingDTOs;
 using API.DTOs.MessageDTO;
 using API.DTOs.UnitDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
 using AutoMapper;
+using MailKit.Security;
 
 namespace API.Mappers
 {
@@ -56,6 +58,7 @@ namespace API.Mappers
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
+            CreateMap<Booking, BookingDTO>().ReverseMap();
         }
     }
 }
