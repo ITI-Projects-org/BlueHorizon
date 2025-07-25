@@ -1,8 +1,14 @@
-import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+// src/app/Layout/navbar/navbar.ts
+import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+declare var bootstrap: any;
+
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { SearchService , SearchCriteria} from '../../services/searchService';
+import { SearchService, SearchCriteria } from './../../services/searchService';
+import { UnitsService } from '../../services/units.service';
+import { Unit } from '../../Models/unit.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -11,30 +17,68 @@ import { SearchService , SearchCriteria} from '../../services/searchService';
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
-export class Navbar implements AfterViewInit, OnDestroy {
-  searchTerm: string | null = null;
-  selectedVillage: string | null = null;
-  selectedType: string | null = null;
-  selectedBedrooms: string | null = null;
-  selectedBathrooms: string | null = null;
-  constructor(private SearchService: SearchService) {}
-
+export class Navbar implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('mainNavbar') mainNavbar!: ElementRef;
   @ViewChild('heroSection') heroSection!: ElementRef;
-  
+
   currentSlide = 0;
   private slideInterval: any;
   showMoreOptions = false;
-  minPrice: number | null = null;
-  maxPrice: number | null = null;
   isScrolled = false;
 
-  // Slider images array
+  selectedBedrooms?: string | null = null;
+  selectedBathrooms?: string | null = null;
+  minPrice?: number | null = null;
+  maxPrice?: number | null = null;
+  selectedVillage?: string | null = null;
+  selectedType?: string | null = null;
+
+  villages: (string | undefined)[] = [];
+  unitTypes: string[] = [];
+
   slides = [
     { image: 'imges/1.jpg', alt: 'Modern Villa' },
     { image: 'imges/3.jpg', alt: 'Luxury Apartment' },
     { image: 'imges/photo-1564013799919-ab600027ffc6.jpeg', alt: 'Beautiful House' }
   ];
+
+  constructor(
+    private searchService: SearchService,
+    private router: Router,
+    private unitsService: UnitsService
+  ) {}
+
+  ngOnInit(): void {
+    this.searchService.searchCriteria$.subscribe(criteria => {
+      this.selectedBedrooms = criteria.selectedBedrooms;
+      this.selectedBathrooms = criteria.selectedBathrooms;
+      this.minPrice = criteria.minPrice;
+      this.maxPrice = criteria.maxPrice;
+      this.selectedVillage = criteria.selectedVillage;
+      this.selectedType = criteria.selectedType;
+    });
+
+    this.unitsService.getUnits().subscribe(units => {
+       console.log('Loaded units:', units);
+         console.log('First unit sample:', units[0]);
+      this.villages = Array.from(
+        new Set(units.map(u => u.villageName).filter(v => v))
+      );
+
+      const unitTypeMap: { [key: number]: string } = {
+        0: 'Apartment',
+        1: 'Villa',
+        2: 'Chalet'
+      };
+
+      this.unitTypes = Array.from(
+        new Set(units.map(u => unitTypeMap[u.unitType!]).filter(t => t))
+      );
+      
+  console.log('Villages:', this.villages);   
+  console.log('Types:', this.unitTypes);    
+    });
+  }
 
   @HostListener('window:scroll')
   onWindowScroll() {
@@ -42,16 +86,14 @@ export class Navbar implements AfterViewInit, OnDestroy {
     this.updateNavbarStyle();
   }
 
-  @HostListener('window:resize')
-  onWindowResize() {
-    this.adjustHeroPadding();
-  }
-
   ngAfterViewInit() {
     this.adjustHeroPadding();
     this.startSlider();
     this.updateNavbarStyle();
-    
+     const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+    dropdownElements.forEach(dropdown => {
+      new bootstrap.Dropdown(dropdown);
+    });
   }
 
   ngOnDestroy() {
@@ -86,7 +128,6 @@ export class Navbar implements AfterViewInit, OnDestroy {
 
   goToSlide(index: number) {
     this.currentSlide = index;
-    // Reset timer when manually changing slides
     clearInterval(this.slideInterval);
     this.slideInterval = setInterval(() => {
       this.currentSlide = (this.currentSlide + 1) % this.slides.length;
@@ -98,23 +139,16 @@ export class Navbar implements AfterViewInit, OnDestroy {
     this.showMoreOptions = !this.showMoreOptions;
   }
 
-  validatePriceRange() {
-    if (this.minPrice !== null && this.maxPrice !== null && this.minPrice > this.maxPrice) {
-      alert('Minimum price cannot be greater than maximum price');
-      this.maxPrice = null;
-    }
+  applySearchFilters() {
+    const currentCriteria: SearchCriteria = {
+      selectedBedrooms: this.selectedBedrooms,
+      selectedBathrooms: this.selectedBathrooms,
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice,
+      selectedVillage: this.selectedVillage,
+      selectedType: this.selectedType
+    };
+    this.searchService.updateSearchCriteria(currentCriteria);
+    this.router.navigate(['/units']);
   }
-  onSearch() {
-  const searchCriteria: Partial<SearchCriteria> = {
-    title: this.searchTerm || null,
-    selectedBedrooms: this.selectedBedrooms || null,
-    selectedBathrooms: this.selectedBathrooms || null,
-    minPrice: this.minPrice,
-    maxPrice: this.maxPrice,
-    selectedVillage: this.selectedVillage || null,
-    selectedType: this.selectedType || null
-  };
-
-this.SearchService.updateSearchCriteria(searchCriteria);
-}
-}
+} 

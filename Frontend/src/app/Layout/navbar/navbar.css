@@ -109,15 +109,22 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.form-select {
+.search-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
-  margin-bottom: 15px;
+  justify-content: center;
+}
+
+.search-form .form-group {
+  flex: 1 1 200px;
+  min-width: 200px;
 }
 
 .form-select, .btn-search {
   height: 50px;
   border: none;
+  width: 100%;
 }
 
 .btn-search {
@@ -158,9 +165,9 @@
   .search-form {
     flex-wrap: wrap;
   }
-  
-  .form-select, .btn-search {
-    flex: 1 1 200px;
+
+  .search-form .form-group {
+    flex: 1 1 100%;
   }
 }
 
@@ -168,11 +175,11 @@
   .logo-text {
     font-size: 1.8rem;
   }
-  
+
   .hero-content h1 {
     font-size: 2.5rem;
   }
-  
+
   .search-form-container {
     padding: 20px;
   }
