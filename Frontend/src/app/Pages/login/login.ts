@@ -9,7 +9,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { LoginDTO } from '../../Models/loginDTO';
 import { AuthenticationService } from './../../Services/authentication-service';
-import Swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import { Verification } from '../../Services/verification-service';
 @Component({
@@ -23,7 +23,7 @@ export class Login {
     private authenticationService: AuthenticationService,
     private spinner: NgxSpinnerService,
     private router: Router,
-    private verificationService:Verification
+    private verificationService: Verification
   ) {}
 
   loginDTO!: LoginDTO;
@@ -44,36 +44,39 @@ export class Login {
     this.authenticationService.login(this.loginDTO).subscribe({
       next: () => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Login Successful!',
           text: 'You logged in successfully!',
           icon: 'success',
+          draggable: true,
         }).then(() => {
-          
-          const role = this.authenticationService.getRole(localStorage.getItem('accessToken') ?? "")
-          let  verified;
+          const role = this.authenticationService.getRole(
+            localStorage.getItem('accessToken') ?? ''
+          );
+          let verified;
           this.verificationService.isVerified().subscribe({
-            next:res=>{ console.log(res.isVerified);
+            next: (res) => {
+              console.log(res.isVerified);
               verified = res.isVerified;
-            
-          console.log("from login.ts" + verified)
-          // console.log(verified)
 
-          if(role === 'Owner' && !verified)
-            this.router.navigateByUrl('/VerifyOwner');
-          else 
-            this.router.navigateByUrl('/home');
-            // ++ guard
-            }
-          })
+              console.log('from login.ts' + verified);
+              // console.log(verified)
+
+              if (role === 'Owner' && !verified)
+                this.router.navigateByUrl('/VerifyOwner');
+              else this.router.navigateByUrl('/home');
+              // ++ guard
+            },
+          });
         });
       },
       error: (error) => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Login Failed',
           text: error.error?.msg || 'An error occurred during registration',
           icon: 'error',
+          draggable: true,
         });
       },
     });
