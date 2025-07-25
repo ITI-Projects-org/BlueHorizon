@@ -1,62 +1,42 @@
-// src/app/services/search.service.ts
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-
-// واجهة لتعريف شكل بيانات معايير البحث
-export interface SearchCriteria {
-  title: string | null;
-  selectedBedrooms: string | null;
-  selectedBathrooms: string | null;
-  minPrice: number | null;
-  maxPrice: number | null;
-  selectedVillage: string | null;
-  selectedType: string | null;
-}
+// src/app/services/searchService.ts
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
+import { ISearchCriteria } from "../Models/isearch-criteria";
 
 @Injectable({
-  providedIn: 'root', // هذه الخدمة ستكون Singleton على مستوى التطبيق بالكامل
+  providedIn: "root",
 })
 export class SearchService {
-  // BehaviorSubject: يحتفظ بالقيمة الأخيرة الصادرة، وعند الاشتراك، يصدر القيمة الأخيرة فوراً.
-  // القيمة الافتراضية عند البدء هي كل الخصائص null.
-  private searchCriteriaSubject = new BehaviorSubject<SearchCriteria>({
-    title: null,
+  private searchCriteriaSubject = new BehaviorSubject<ISearchCriteria>({
     selectedBedrooms: null,
     selectedBathrooms: null,
     minPrice: null,
     maxPrice: null,
     selectedVillage: null,
     selectedType: null,
+    sortOption: "default",
   });
 
-  // Observable: الجزء الذي تشترك فيه الكومبوننتات الأخرى (مثل UnitsComponent) لتلقي التحديثات.
-  searchCriteria$: Observable<SearchCriteria> =
+  searchCriteria$: Observable<ISearchCriteria> =
     this.searchCriteriaSubject.asObservable();
 
   constructor() {}
 
-  /**
-   * لتحديث معايير البحث. يتم استدعاؤها من NavbarComponent.
-   * تقبل Partial<SearchCriteria> للسماح بتحديث جزء فقط من المعايير.
-   */
-  updateSearchCriteria(newCriteria: Partial<SearchCriteria>) {
-    const currentCriteria = this.searchCriteriaSubject.getValue(); // الحصول على المعايير الحالية
-    const updatedCriteria = { ...currentCriteria, ...newCriteria }; // دمج المعايير الجديدة مع القديمة
-    this.searchCriteriaSubject.next(updatedCriteria); // إرسال المعايير المحدثة إلى جميع المشتركين
+  updateSearchCriteria(newCriteria: Partial<ISearchCriteria>) {
+    const currentCriteria = this.searchCriteriaSubject.getValue();
+    const updatedCriteria = { ...currentCriteria, ...newCriteria };
+    this.searchCriteriaSubject.next(updatedCriteria);
   }
 
-  /**
-   * (اختياري) لتصفير جميع معايير البحث.
-   */
   clearSearchCriteria() {
     this.searchCriteriaSubject.next({
-      title: null,
       selectedBedrooms: null,
       selectedBathrooms: null,
       minPrice: null,
       maxPrice: null,
       selectedVillage: null,
       selectedType: null,
+      sortOption: "default",
     });
   }
 }
