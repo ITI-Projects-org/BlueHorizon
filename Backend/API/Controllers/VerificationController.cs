@@ -136,6 +136,17 @@ namespace API.Controllers
             unit.VerificationStatus = respondDTO.VerificationStatus;
             await _unit.SaveAsync();
         }
+       
+        [HttpGet("isVerified")]
+        [Authorize]
+        public async Task <IActionResult> isVerified (){
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Owner? user = await _unit.OwnerRepository.GetByIdAsync(userId);
+            if(user == null)
+                return NotFound(new{Message= "Owner not found"});
+            var isVerified = user.VerificationStatus == VerificationStatus.Verified || user.VerificationStatus == VerificationStatus.Pending;
+            return Ok(new {  isVerified = isVerified });
+        }
 
     }
 }

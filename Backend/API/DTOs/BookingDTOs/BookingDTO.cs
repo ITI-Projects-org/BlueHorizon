@@ -1,4 +1,7 @@
-﻿namespace API.DTOs.BookingDTOs
+﻿using API.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace API.DTOs.BookingDTOs
 {
     public class BookingDTO
     {

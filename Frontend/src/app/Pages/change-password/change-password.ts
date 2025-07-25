@@ -9,7 +9,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { error } from 'console';
 @Component({
   selector: 'app-change-password',
@@ -46,20 +46,23 @@ export class ChangePassword {
 
     this.authService.changePassword(this.changePasswordReq).subscribe({
       next: (res) => {
-        Swal({
+        Swal.fire({
           title: 'Success',
           text: res.msg,
           icon: 'success',
+          draggable: true,
+          confirmButtonText: 'Go to Login page',
         }).then(() => {
           this.router.navigateByUrl('/login');
         });
       },
       error: (error) => {
-        Swal({
+        Swal.fire({
           title: 'Changing Password Failed',
           text:
             error.error?.msg || 'An error occurred during changing password',
           icon: 'error',
+          draggable: true,
         });
       },
     });

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../Services/authentication-service';
-import Swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import { Router } from '@angular/router';
 @Component({
@@ -40,10 +40,12 @@ export class Profile implements OnInit {
     this.authService.forgotPassword({ email: this.email }).subscribe({
       next: (res) => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Success',
           text: res.msg,
           icon: 'success',
+          draggable: true,
+          confirmButtonText: 'Ok',
         });
       },
       error: (error) => {
