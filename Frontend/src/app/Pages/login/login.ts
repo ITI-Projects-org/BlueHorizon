@@ -55,7 +55,7 @@ export class Login {
         this.spinner.hide();
         Swal({
           title: 'Login Failed',
-          text: error.error?.msg || 'An error occurred during registration',
+          text: error.error?.msg || 'An error occurred during login',
           icon: 'error',
         });
       },
