@@ -1,4 +1,5 @@
-﻿using API.DTOs;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using API.DTOs;
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.MessageDTO;
@@ -56,6 +57,7 @@ namespace API.Mappers
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
+            CreateMap<UnitDTO, Unit>().ReverseMap();
         }
     }
 }

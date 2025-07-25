@@ -16,10 +16,11 @@ namespace API.Controllers
         public async Task<ActionResult> GetAll()
         {
 
-            var units = await _unitOfWork.UnitRepository.GetAllAsync();
-
-
-            return Ok(_mapper.Map<List<UnitDTO>>(units));
+            //var units = await _unitOfWork.UnitRepository.GetAllAsync();
+            var units = await _unitOfWork.UnitRepository.GetAllValidUnits();
+            //var units = await _unitOfWork.UnitRepository.GetAllFiltered();
+            List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
+            return Ok(unitsdto);
 
         }
 

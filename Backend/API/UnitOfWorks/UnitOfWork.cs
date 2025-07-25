@@ -170,6 +170,24 @@ namespace API.UnitOfWorks
             }
         }
 
+
+
+
+        public ITenantRepository tenantRepository;
+        public ITenantRepository TenantRepository
+        {
+            get
+            {
+                if (tenantRepository == null)
+                {
+                    tenantRepository = new TenantRepository(_context);
+                };
+                return tenantRepository;
+            }
+        }
+
+        
+
         public void Dispose()
         {
             _context.Dispose();

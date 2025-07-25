@@ -30,13 +30,14 @@ get token(){
     return this.http.delete<any>(`${this.reviewURL}/${reviewId}`,{headers:this.headers});
     
   }
-  getAllReviews(unitId:number):Observable<any>{
+
+  getAllReviews(unitId:number):Observable<{ reviewDate:Date|null,unitId:number,bookingId :number,rating:number,comment :string|null,reviewStatus : number,tenantName:string|null}>{
     console.log('getting all reviews')
     console.log('of unit : '+unitId)
-    const params = new HttpParams().set("unitId",unitId)
-    console.log(`${this.reviewURL}/GetAllUnitReviews`);
+    // const params = new HttpParams().set("unitId",unitId)
+    console.log(`${this.reviewURL}/GetAllUnitReviews/${unitId}`);
 
-    return this.http.get<any>(`${this.reviewURL}/GetAllUnitReviews`,{headers:this.headers, params:params});
+    return this.http.get<{ reviewDate:Date|null,unitId:number,bookingId :number,rating:number,comment :string|null,reviewStatus : number,tenantName:string|null}>(`${this.reviewURL}/GetAllUnitReviews/${unitId}`,{headers:this.headers});
   }
   private get headers(){
     return new HttpHeaders({

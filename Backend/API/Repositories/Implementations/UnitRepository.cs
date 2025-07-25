@@ -27,9 +27,15 @@ namespace API.Repositories.Implementations
                 .Include(u => u.UnitAmenities)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
+        public async Task<IEnumerable<Unit>> GetAllValidUnits()
+        {
+            return await _context.Units
+                .Where(u => u.VerificationStatus == VerificationStatus.Verified)
+                .ToListAsync();
+        }
 
 
-      
+
 
 
     }

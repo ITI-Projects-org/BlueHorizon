@@ -6,5 +6,6 @@ namespace API.Repositories.Interfaces
     {
         Task<IEnumerable<Unit>> GetUnitsByOwnerIdAsync(string ownerId);
         Task<Unit> GetUnitWithDetailsAsync(int id);
+        Task<IEnumerable<Unit>> GetAllValidUnits();
     }
 }

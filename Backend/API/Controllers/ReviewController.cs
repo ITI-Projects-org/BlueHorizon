@@ -51,15 +51,19 @@ namespace API.Controllers
             unit.AverageUnitRating = (float)_unit.UnitReviewRepository.CalculateAverageRating(review.UnitId);
             booking.UnitReviewed = true;
             await _unit.SaveAsync();
-            return Ok(new { Message = "Review Added Succesfully ✅" });
+            return Ok(new { Message = "Review Added Succesfully ✅"});
         }
-        [HttpGet("GetAllUnitReviews")]
+        [HttpGet("GetAllUnitReviews/{unitId}")]
         [Authorize(Roles = "Tenant,Owner,Admin")]
         public async Task<IActionResult> GetAllReviews(int unitId)
         {
             IEnumerable<UnitReview> unitReviews = await _unit.UnitReviewRepository.GetAllUnitReviews(unitId);
-            IEnumerable<ReviewDTO>? unitreviesDto =  _mapper.Map<List<ReviewDTO>>(unitReviews);
-            return Ok(unitreviesDto);
+            IEnumerable<ReviewDTO>? unitreviewsDto = _mapper.Map<List<ReviewDTO>>(unitReviews);
+            foreach (var unitReview in unitreviewsDto)
+            {
+                unitReview.TenantName = await _unit.TenantRepository.GetTenantNameBuUserId(unitReview.TenantId);
+            }
+            return Ok(unitreviewsDto);
         }
 
         [HttpDelete("{id}")]

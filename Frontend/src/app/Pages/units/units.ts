@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http'; // فقط استيراد HttpClient
@@ -35,7 +35,7 @@ export class Units implements OnInit {
     { name: 'Village C', count: 0 },
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private cdr:ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.fetchUnits();
@@ -44,10 +44,12 @@ export class Units implements OnInit {
 
   fetchUnits(): void {
     // استبدل هذا الرابط برابط الـ API الفعلي الخاص بك
-    const apiUrl = 'YOUR_API_ENDPOINT_HERE/units'; // مثال: 'https://api.example.com/units'
+    const apiUrl = 'https://localhost:7083/api/Unit/All'; // مثال: 'https://api.example.com/units'
 
     this.http.get<IUnit[]>(apiUrl).subscribe({
       next: (data) => {
+        console.log('data come from request')
+        console.log(data)
         this.units = data;
         this.calculatePagination(); // حساب الصفحات بعد جلب البيانات
         this.updatePaginatedUnits(); // تحديث الوحدات المعروضة
@@ -74,20 +76,21 @@ export class Units implements OnInit {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.paginatedUnits = this.units.slice(startIndex, endIndex);
+    this.cdr.detectChanges();
   }
 
   calculateCounts(): void {
     // يتم حساب عدد الوحدات لكل نوع (Apartment, Villa, House, etc.)
     this.unitType.forEach((type) => {
       type.count = this.units.filter((unit) =>
-        unit.title.toLowerCase().includes(type.name.toLowerCase())
+        unit.title?.toLowerCase().includes(type.name.toLowerCase())
       ).length;
     });
 
     // يتم حساب عدد الوحدات لكل قرية بناءً على العنوان
     this.village.forEach((village) => {
       village.count = this.units.filter((unit) =>
-        unit.address.toLowerCase().includes(village.name.toLowerCase())
+        unit.address?.toLowerCase().includes(village.name.toLowerCase())
       ).length;
     });
   }
@@ -129,13 +132,17 @@ export class Units implements OnInit {
 
   sortBy(criteria: string): void {
     console.log('Sorting by:', criteria);
-    // منطق الفرز
-    // مثال:
-    // if (criteria === 'price-asc') {
-    //   this.units.sort((a, b) => a.price - b.price);
-    // } else if (criteria === 'price-desc') {
-    //   this.units.sort((a, b) => b.price - a.price);
-    // }
-    // this.updatePaginatedUnits();
+    
+    if (criteria === 'price-asc') {
+      console.log('insde sortingggggg')
+     this.units = this.units.sort((a, b) => a.basePricePerNight - b.basePricePerNight);
+    } else if (criteria === 'price-desc') {
+      console.log('ninsede elseeeee')
+
+      this.units.sort((a, b) => b.basePricePerNight - a.basePricePerNight);
+    
+    this.updatePaginatedUnits();
+    
   }
+}
 }
