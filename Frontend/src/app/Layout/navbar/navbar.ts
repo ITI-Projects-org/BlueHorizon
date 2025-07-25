@@ -7,27 +7,27 @@ import {
   AfterViewInit,
   OnDestroy,
   OnInit,
-} from "@angular/core";
+} from '@angular/core';
 declare var bootstrap: any;
 
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
-import { FormsModule } from "@angular/forms";
-import { SearchService } from "./../../Services/search.service";
-import { UnitsService } from "../../services/units.service";
-import { Router } from "@angular/router";
-import { ISearchCriteria } from "../../Models/isearch-criteria";
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { SearchService } from './../../Services/search.service';
+import { UnitsService } from '../../Services/units.service';
+import { Router } from '@angular/router';
+import { ISearchCriteria } from '../../Models/isearch-criteria';
 
 @Component({
-  selector: "app-navbar",
+  selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: "./navbar.html",
-  styleUrls: ["./navbar.css"],
+  templateUrl: './navbar.html',
+  styleUrls: ['./navbar.css'],
 })
 export class Navbar implements AfterViewInit, OnDestroy, OnInit {
-  @ViewChild("mainNavbar") mainNavbar!: ElementRef;
-  @ViewChild("heroSection") heroSection!: ElementRef;
+  @ViewChild('mainNavbar') mainNavbar!: ElementRef;
+  @ViewChild('heroSection') heroSection!: ElementRef;
 
   currentSlide = 0;
   private slideInterval: any;
@@ -45,11 +45,11 @@ export class Navbar implements AfterViewInit, OnDestroy, OnInit {
   unitTypes: string[] = [];
 
   slides = [
-    { image: "imges/1.jpg", alt: "Modern Villa" },
-    { image: "imges/3.jpg", alt: "Luxury Apartment" },
+    { image: 'imges/1.jpg', alt: 'Modern Villa' },
+    { image: 'imges/3.jpg', alt: 'Luxury Apartment' },
     {
-      image: "imges/photo-1564013799919-ab600027ffc6.jpeg",
-      alt: "Beautiful House",
+      image: 'imges/photo-1564013799919-ab600027ffc6.jpeg',
+      alt: 'Beautiful House',
     },
   ];
 
@@ -70,28 +70,28 @@ export class Navbar implements AfterViewInit, OnDestroy, OnInit {
     });
 
     this.unitsService.getUnits().subscribe((units) => {
-      console.log("Loaded units:", units);
-      console.log("First unit sample:", units[0]);
+      console.log('Loaded units:', units);
+      console.log('First unit sample:', units[0]);
       this.villages = Array.from(
         new Set(units.map((u) => u.villageName).filter((v) => v))
       );
 
       const unitTypeMap: { [key: number]: string } = {
-        0: "Apartment",
-        1: "Villa",
-        2: "Chalet",
+        0: 'Apartment',
+        1: 'Villa',
+        2: 'Chalet',
       };
 
       this.unitTypes = Array.from(
         new Set(units.map((u) => unitTypeMap[u.unitType!]).filter((t) => t))
       );
 
-      console.log("Villages:", this.villages);
-      console.log("Types:", this.unitTypes);
+      console.log('Villages:', this.villages);
+      console.log('Types:', this.unitTypes);
     });
   }
 
-  @HostListener("window:scroll")
+  @HostListener('window:scroll')
   onWindowScroll() {
     this.isScrolled = window.scrollY > 50;
     this.updateNavbarStyle();
@@ -101,7 +101,7 @@ export class Navbar implements AfterViewInit, OnDestroy, OnInit {
     this.adjustHeroPadding();
     this.startSlider();
     this.updateNavbarStyle();
-    const dropdownElements = document.querySelectorAll(".dropdown-toggle");
+    const dropdownElements = document.querySelectorAll('.dropdown-toggle');
     dropdownElements.forEach((dropdown) => {
       new bootstrap.Dropdown(dropdown);
     });
@@ -117,9 +117,9 @@ export class Navbar implements AfterViewInit, OnDestroy, OnInit {
     if (this.mainNavbar) {
       const navbar = this.mainNavbar.nativeElement;
       if (this.isScrolled) {
-        navbar.classList.add("scrolled");
+        navbar.classList.add('scrolled');
       } else {
-        navbar.classList.remove("scrolled");
+        navbar.classList.remove('scrolled');
       }
     }
   }
@@ -160,6 +160,6 @@ export class Navbar implements AfterViewInit, OnDestroy, OnInit {
       selectedType: this.selectedType,
     };
     this.searchService.updateSearchCriteria(currentCriteria);
-    this.router.navigate(["/units"]);
+    this.router.navigate(['/units']);
   }
 }

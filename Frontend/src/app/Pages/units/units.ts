@@ -1,21 +1,20 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { RouterModule, ActivatedRoute } from "@angular/router";
-import { UnitsService } from "../../services/units.service";
-import { Unit } from "../../Models/unit.model";
-import { SearchService } from "../../Services/search.service";
-import { Subject } from "rxjs";
-import { takeUntil, debounceTime } from "rxjs/operators";
-import { Navbar } from "../../Layout/navbar/navbar";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { UnitsService } from '../../Services/units.service';
+import { Unit } from '../../Models/unit.model';
+import { SearchService } from '../../Services/search.service';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
+import { Navbar } from '../../Layout/navbar/navbar';
 
 @Component({
-  selector: "app-units",
+  selector: 'app-units',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, Navbar],
-  templateUrl: "./units.html",
-  styleUrl: "./units.css",
-  providers: [UnitsService],
+  templateUrl: './units.html',
+  styleUrl: './units.css',
 })
 export class Units implements OnInit, OnDestroy {
   allUnits: Unit[] = [];
@@ -39,12 +38,12 @@ export class Units implements OnInit, OnDestroy {
   minPrice?: number | null = null;
   maxPrice?: number | null = null;
   searchTerm?: string | null = null;
-  sortOption?: string = "default";
+  sortOption?: string = 'default';
 
   unitTypeMap: { [key: number]: string } = {
-    0: "Apartment",
-    1: "Villa",
-    2: "Chalet",
+    0: 'Apartment',
+    1: 'Villa',
+    2: 'Chalet',
   };
 
   private destroy$ = new Subject<void>();
@@ -70,17 +69,17 @@ export class Units implements OnInit, OnDestroy {
       });
 
     this.route.queryParams.subscribe((params) => {
-      this.selectedVillage = params["village"] || null;
-      this.selectedType = params["type"] || null;
-      this.selectedBedrooms = params["bedrooms"] || null;
-      this.selectedBathrooms = params["bathrooms"] || null;
-      this.minPrice = params["minPrice"]
-        ? parseFloat(params["minPrice"])
+      this.selectedVillage = params['village'] || null;
+      this.selectedType = params['type'] || null;
+      this.selectedBedrooms = params['bedrooms'] || null;
+      this.selectedBathrooms = params['bathrooms'] || null;
+      this.minPrice = params['minPrice']
+        ? parseFloat(params['minPrice'])
         : null;
-      this.maxPrice = params["maxPrice"]
-        ? parseFloat(params["maxPrice"])
+      this.maxPrice = params['maxPrice']
+        ? parseFloat(params['maxPrice'])
         : null;
-      this.searchTerm = params["search"] || null;
+      this.searchTerm = params['search'] || null;
 
       this.fetchUnits();
     });
@@ -101,8 +100,8 @@ export class Units implements OnInit, OnDestroy {
         this.applyAllFiltersAndSortAndPaginate();
       },
       error: (err) => {
-        console.error("Error fetching units", err);
-        this.error = "Failed to load units. Please try again later.";
+        console.error('Error fetching units', err);
+        this.error = 'Failed to load units. Please try again later.';
         this.isLoading = false;
       },
     });
@@ -177,7 +176,7 @@ export class Units implements OnInit, OnDestroy {
     }
 
     if (this.selectedBedrooms) {
-      if (this.selectedBedrooms === "3+") {
+      if (this.selectedBedrooms === '3+') {
         tempUnits = tempUnits.filter(
           (unit) => unit.bedrooms !== undefined && unit.bedrooms >= 3
         );
@@ -188,7 +187,7 @@ export class Units implements OnInit, OnDestroy {
     }
 
     if (this.selectedBathrooms) {
-      if (this.selectedBathrooms === "3+") {
+      if (this.selectedBathrooms === '3+') {
         tempUnits = tempUnits.filter(
           (unit) => unit.bathrooms !== undefined && unit.bathrooms >= 3
         );
@@ -206,19 +205,19 @@ export class Units implements OnInit, OnDestroy {
 
   sortUnits(): void {
     switch (this.sortOption) {
-      case "price-asc":
+      case 'price-asc':
         this.filteredUnits.sort(
           (a, b) => (a.basePricePerNight || 0) - (b.basePricePerNight || 0)
         );
         break;
-      case "price-desc":
+      case 'price-desc':
         this.filteredUnits.sort(
           (a, b) => (b.basePricePerNight || 0) - (a.basePricePerNight || 0)
         );
         break;
       default:
         this.filteredUnits.sort((a, b) =>
-          (a.title || "").localeCompare(b.title || "")
+          (a.title || '').localeCompare(b.title || '')
         );
         break;
     }
@@ -289,6 +288,6 @@ export class Units implements OnInit, OnDestroy {
   getUnitImagePath(unit: Unit): string {
     return unit.imagePath && unit.imagePath.length > 0
       ? unit.imagePath
-      : "assets/placeholder.jpg";
+      : 'assets/placeholder.jpg';
   }
 }
