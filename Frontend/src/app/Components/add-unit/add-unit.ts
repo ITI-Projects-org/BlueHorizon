@@ -61,7 +61,7 @@ export class AddUnit implements OnInit {
 
   ngOnInit(): void {
 
-    this.unitService.GetUnitById(3).subscribe({
+    this.unitService.GetUnitById(1).subscribe({
       next: (unit) => {
         console.log('Fetched unit:', unit);
       },
@@ -116,45 +116,107 @@ export class AddUnit implements OnInit {
     }
   }
 
+  // submitForm() {
+  //   const formData = new FormData();
+  //   Object.keys(this.unitForm.value).forEach(key => {
+  //       if (key !== 'contractDocument') {
+  //           formData.append(key, this.unitForm.get(key)?.value);
+  //       }
+  //   });
+
+  //   if (this.contractFile) {
+  //     formData.append('ContractDocument', this.contractFile, this.contractFile.name);
+  //   }
+  //   if (this.unitFiles) {
+  //     for (let i = 0; i < this.unitFiles?.length; i++)
+  //     {
+  //       formData.append('unitImages', this.unitFiles[i], this.unitFiles[i].name)
+  //     }
+  //     console.log(this.unitFiles);
+  //   }
+  //   if(this.amenities)
+
+  //   this.selectedAmenityIds.forEach(id => {
+  //     formData.append('AmenityIds', id.toString());
+  //     console.log('Selected Amenity ID:', id);
+  //   });
+
+  //   console.log('Form Data');
+  //   console.log(formData);
+  //   this.unitService.AddUnit(formData).subscribe({
+  //     next: res => {
+  //       console.log('unit added successfully', res);
+
+  //       this.unitForm.reset();
+  //       this.contractFile = null;
+  //       this.selectedAmenityIds = [];
+  //     },
+  //     error: err => {
+  //       console.error('error on adding unit', err);
+
+  //     }
+  //   });
+  // }
   submitForm() {
-    const formData = new FormData();
-    Object.keys(this.unitForm.value).forEach(key => {
-        if (key !== 'contractDocument') {
-            formData.append(key, this.unitForm.get(key)?.value);
-        }
-    });
-
-    if (this.contractFile) {
-      formData.append('ContractDocument', this.contractFile, this.contractFile.name);
+  const formData = new FormData();
+  
+  // Append all form fields except file fields
+  Object.keys(this.unitForm.value).forEach(key => {
+    if (key !== 'contractDocument' && key !== 'unitImages') {
+      formData.append(key, this.unitForm.get(key)?.value);
     }
-    if (this.unitFiles) {
-      for (let i = 0; i < this.unitFiles?.length; i++)
-      {
-        formData.append('unitImages', this.unitFiles[i], this.unitFiles[i].name)
-      }
-      console.log(this.unitFiles);
-    }
-    if(this.amenities)
+  });
 
-    this.selectedAmenityIds.forEach(id => {
-      formData.append('AmenityIds', id.toString());
-      console.log('Selected Amenity ID:', id);
-    });
-
-    console.log('Form Data');
-    console.log(formData);
-    this.unitService.AddUnit(formData).subscribe({
-      next: res => {
-        console.log('unit added successfully', res);
-
-        this.unitForm.reset();
-        this.contractFile = null;
-        this.selectedAmenityIds = [];
-      },
-      error: err => {
-        console.error('error on adding unit', err);
-
-      }
-    });
+  // Append contract document
+  if (this.contractFile) {
+    formData.append('ContractDocument', this.contractFile, this.contractFile.name);
   }
+
+  // Append unit images
+  if (this.unitFiles) {
+    for (let i = 0; i < this.unitFiles.length; i++) {
+      formData.append('UnitImages', this.unitFiles[i], this.unitFiles[i].name);
+    }
+    console.log('Number of unit images:', this.unitFiles.length);
+  }
+
+  // Append selected amenity IDs
+  this.selectedAmenityIds.forEach(id => {
+    formData.append('AmenityIds', id.toString());
+  });
+
+  // Debug: Log FormData contents
+  console.log('=== FormData Contents ===');
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ':', pair[1]);
+  }
+
+  this.unitService.AddUnit(formData).subscribe({
+    next: res => {
+      console.log('Unit added successfully', res);
+      this.unitForm.reset();
+      this.contractFile = null;
+      this.unitFiles = null;
+      this.selectedAmenityIds = [];
+    },
+    error: (err) => {
+      console.error('=== Full Error Details ===');
+      console.error('Status:', err.status);
+      console.error('Status Text:', err.statusText);
+      console.error('URL:', err.url);
+      
+      // Try to get the actual error message from the response
+      if (err.error && typeof err.error === 'string') {
+        console.error('Error Message:', err.error);
+      } else if (err.message) {
+        console.error('Error Message:', err.message);
+      }
+      
+      // Log the raw response if available
+      console.error('Raw Error:', err);
+      
+      alert('Error adding unit. Check console for details.');
+    }
+  });
+}
 }

@@ -28,7 +28,7 @@ namespace API.Mappers
 
             // UnitDTO to Unit ==> AddUnit
             CreateMap<AddUnitDTO, Unit>()
-                .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.VerificationStatus, opt => opt.MapFrom(src => VerificationStatus.Pending))
                 .ForMember(dest => dest.AverageUnitRating, opt => opt.MapFrom(src => 0.0f))
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore())
@@ -58,6 +58,8 @@ namespace API.Mappers
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
             CreateMap<UnitDTO, Unit>().ReverseMap();
+
+
         }
     }
 }

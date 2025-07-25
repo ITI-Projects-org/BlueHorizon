@@ -90,6 +90,7 @@ namespace API.Controllers
 
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
+             
 
                 //Handle contract document upload
                 if (unitDto.ContractDocument != null)
@@ -104,7 +105,8 @@ namespace API.Controllers
                     }
                     unit.ContractPath = filePath;
                 }
-
+                await _unitOfWork.UnitRepository.AddAsync(unit);
+                await _unitOfWork.SaveAsync();
                 if (unitDto.UnitImages != null && unitDto.UnitImages.Any())
                 {
                     foreach (var image in unitDto.UnitImages)
@@ -119,8 +121,7 @@ namespace API.Controllers
                     }
                 }
 
-                await _unitOfWork.UnitRepository.AddAsync(unit);
-                await _unitOfWork.SaveAsync();
+                
 
                 // Add amenities
                 if (unitDto.AmenityIds != null && unitDto.AmenityIds.Any())
@@ -134,11 +135,12 @@ namespace API.Controllers
                         };
                         await _unitOfWork.UnitAmenityRepository.AddAsync(unitAmenity);
                     }
+
                     await _unitOfWork.SaveAsync();
                 }
 
                 unit.VerificationStatus = VerificationStatus.Pending;
-
+                await _unitOfWork.SaveAsync();
                 return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unitDto);
             }
             catch (Exception ex)
