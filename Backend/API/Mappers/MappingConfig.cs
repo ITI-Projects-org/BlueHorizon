@@ -59,6 +59,14 @@ namespace API.Mappers
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
             CreateMap<Booking, BookingDTO>().ReverseMap();
+
+            CreateMap<Booking, BookingSlotDTO>()
+                 .ForMember(dest => dest.CheckInDate, opt => opt.MapFrom(src => src.CheckInDate))
+                 .ForMember(dest => dest.CheckOutDate, opt => opt.MapFrom(src => src.CheckOutDate));
+
+            // Map Unit to BookedSlotsDTO
+            CreateMap<Unit, BookedSlotsDTO>()
+                .ForMember(dest => dest.BookingSlots, opt => opt.MapFrom(src => src.Bookings));
         }
     }
 }
