@@ -5,17 +5,16 @@ import { IUnit } from '../../Models/iunit';
 import { CommonModule } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
 import { BookingForm } from '../../Pages/booking-form/booking-form';
 import { BookingService } from '../../Services/booking-service';
 import { BookedSlotsDTO } from '../../Models/booked-slots-dto';
 import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-unit-details',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatIconModule, BookingForm],
+  imports: [CommonModule, BookingForm],
   templateUrl: './unit-details.html',
-  styleUrl: './unit-details.css',
   styleUrl: './unit-details.css',
 })
 export class UnitDetailsComponent implements OnInit {
