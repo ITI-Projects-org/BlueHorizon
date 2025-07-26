@@ -2,11 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { UnitsService } from '../../Services/units.service';
 import { Unit } from '../../Models/unit.model';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { Navbar } from '../../Layout/navbar/navbar';
-import { UnitsService } from '../../Services/units.service';
 import { SearchService } from '../../Services/searchService';
 
 @Component({
@@ -15,7 +15,6 @@ import { SearchService } from '../../Services/searchService';
   imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './units.html',
   styleUrl: './units.css',
-  providers: [UnitsService],
 })
 export class Units implements OnInit, OnDestroy {
   allUnits: Unit[] = [];

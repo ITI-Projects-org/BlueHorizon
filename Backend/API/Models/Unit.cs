@@ -1,6 +1,7 @@
 ﻿using MimeKit.Encodings;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace API.Models
 {
@@ -23,6 +24,7 @@ namespace API.Models
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Booking> Bookings { get; set; }
         public virtual ICollection<UnitAmenity> UnitAmenities { get; set; }
         public VerificationStatus VerificationStatus { get; set; } // NotVerified=0 ,Pending=1, Verified=2, Rejected=3

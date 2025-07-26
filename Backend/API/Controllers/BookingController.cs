@@ -8,6 +8,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace API.Controllers
 {
@@ -17,16 +19,22 @@ namespace API.Controllers
     {
         public IMapper _mapper { get; }
         public IUnitOfWork _unit { get; }
-        
-        public BookingController(IMapper mapper, IUnitOfWork unit)
+        public IConfiguration _config { get; set; }
+        public IEmailSender _emailSender { get; set; }
+        public UserManager<ApplicationUser> _userManager { get; }
+
+        public BookingController(IMapper mapper, IUnitOfWork unit, UserManager<ApplicationUser> userManager, IConfiguration config, IEmailSender emailSender)
         {
             _mapper = mapper;
             _unit = unit;
+            _userManager = userManager;
+            _config = config;
+            _emailSender = emailSender;
         }
 
         [HttpPost("Add")]
         [Authorize(Roles = "Admin,Tenant")]
-        public async Task<ActionResult> AddBooking(BookingDTO bookingdto)
+        public async Task<IActionResult> AddBooking(BookingDTO bookingdto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -74,8 +82,48 @@ namespace API.Controllers
                 await _unit.BookingRepository.AddAsync(booking);
                 await _unit.SaveAsync();
 
+                // Send confirmation email
+                var tenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(tenantId);
+
+                if (user != null && !string.IsNullOrEmpty(user.Email))
+                {
+                    var redirectUrl = $"{_config["ClientApp:BaseUrl"]}/my-bookings";
+
+                    var emailBody = $@"
+                        <h2>Booking Confirmation</h2>
+                        <p>Dear {user.UserName},</p>
+                        
+                        <p>Thank you for your booking! This email confirms your reservation details:</p>
+                        
+                        <div style='background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                            <h3>Booking Details</h3>
+                            <p><strong>Property:</strong> {unit.Title}</p>
+                            <p><strong>Booking Date:</strong> {booking.BookingDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-in:</strong> {booking.CheckInDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-out:</strong> {booking.CheckOutDate:MMMM dd, yyyy}</p>
+                            <p><strong>Number of Nights:</strong> {(int)numberOfDays}</p>
+                            <p><strong>Total Amount:</strong> ${booking.TotalPrice:F2}</p>
+                            <p><strong>Booking ID:</strong> #{booking.Id}</p>
+                        </div>
+                        
+                        <p>You can view all your bookings and manage your reservations by <a href='{redirectUrl}' style='color: #007bff;'>clicking here</a>.</p>
+                        
+                        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+                        
+                        <p>Thank you for choosing BlueHorizon!</p>
+                        
+                        <p>Best regards,<br>
+                        The BlueHorizon Team</p>";
+
+                    await _emailSender.SendEmailAsync(
+                        user.Email,
+                        "Booking Confirmation - BlueHorizon",
+                        emailBody);
+                }
+
                 return Ok(new { 
-                    msg = "Booking added successfully",
+                    msg = "Booking added successfully! A confirmation email has been sent.",
                     bookingId = booking.Id,
                     totalPrice = booking.TotalPrice
                 });
@@ -87,7 +135,7 @@ namespace API.Controllers
         }
 
         [HttpGet("booked-slots/{unitId}")]
-        public async Task<ActionResult<BookedSlotsDTO>> GetBookedSlots(int unitId)
+        public async Task<IActionResult> GetBookedSlots(int unitId)
         {
             var unit = await _unit.UnitRepository.GetByIdAsync(unitId);
             if (unit == null)
@@ -101,7 +149,7 @@ namespace API.Controllers
         // Optional: Add endpoint to get user's bookings
         [HttpGet("my-bookings")]
         [Authorize(Roles = "Tenant")]
-        public async Task<ActionResult> GetMyBookings()
+        public async Task<IActionResult> GetMyBookings()
         {
             var tenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var bookings = await _unit.BookingRepository.GetAllAsync();

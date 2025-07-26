@@ -11,7 +11,7 @@ namespace API.Repositories.Implementations
         public UnitRepository(BlueHorizonDbContext _context) : base(_context)
         {
         }
-       
+
 
         public async Task<IEnumerable<Unit>> GetUnitsByOwnerIdAsync(string ownerId)
         {
@@ -49,6 +49,5 @@ namespace API.Repositories.Implementations
     }
 
 }
-   
-    
+
 
