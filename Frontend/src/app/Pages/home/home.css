@@ -1,85 +1,279 @@
-/***** Harmonized with Bootstrap *****/
-.hero-section {
-  background: linear-gradient(120deg, #e0e7ef 0%, #f8fafc 100%);
-  padding: 4rem 0 3rem 0;
+/* app/Pages/home/home.css */
+
+/* General Section Styling */
+.section-padding {
+  padding: 60px 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+h2 {
+  font-size: 2.5em;
+  color: #333;
   text-align: center;
-  /* home.css - Additions if desired for .other-links cards */
-
-  .other-links .card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    text-align: center;
-  }
-
-  .other-links .card-title {
-    color: #007bff;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-  }
-
-  .other-links .card-text {
-    color: #6c757d;
-    font-size: 0.95rem;
-  }
-
-  .other-links .btn-outline-info {
-    color: #17a2b8;
-    border-color: #17a2b8;
-  }
-
-  .other-links .btn-outline-info:hover {
-    background-color: #17a2b8;
-    color: #fff;
-  }
+  margin-bottom: 15px;
 }
-.hero-section h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin-bottom: 0.7rem;
+
+.section-description {
+  font-size: 1.1em;
+  color: #666;
+  text-align: center;
+  margin-bottom: 40px;
 }
-.hero-section p {
-  color: #64748b;
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e90ff;
-  margin-bottom: 1.5rem;
+
+.text-center {
   text-align: center;
 }
-.property-card {
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
-  transition: box-shadow 0.2s;
-}
-.property-card:hover {
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.16);
-}
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-}
-.property-price {
-  font-size: 1.2em;
-  font-weight: 700;
-  color: #1e90ff;
-  margin-bottom: 0.5rem;
-}
-.property-features {
-  margin-bottom: 0.7rem;
-}
-.property-features i {
-  color: #1e90ff;
-}
+
+/* Buttons */
 .btn-primary {
-  background: linear-gradient(90deg, #1e90ff 0%, #38b6ff 100%);
+  background-color: #007bff; /* Example blue */
+  color: white;
+  padding: 12px 25px;
   border: none;
-  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
 }
+
 .btn-primary:hover {
-  background: linear-gradient(90deg, #38b6ff 0%, #1e90ff 100%);
+  background-color: #0056b3;
 }
+
+.btn-secondary {
+  background-color: #6c757d; /* Example gray */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-large {
+  padding: 15px 30px;
+  font-size: 1.1em;
+}
+
+.ml-3 {
+  margin-left: 15px;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  height: 600px; /* Adjust as needed */
+  background: url("https://via.placeholder.com/1920x600?text=Beautiful+Resort+View")
+    no-repeat center center/cover;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  z-index: 1;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.hero-content h1 {
+  font-size: 3.5em;
+  margin-bottom: 20px;
+  color: white; /* Override h2 color */
+}
+
+.hero-content p {
+  font-size: 1.3em;
+  margin-bottom: 30px;
+}
+
+.search-bar-placeholder {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.search-bar-placeholder input[type="text"] {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  width: 60%;
+  max-width: 400px;
+  font-size: 1em;
+}
+
+/* Featured Units Section */
+.featured-units-section {
+  background-color: #f9f9f9;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.unit-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.unit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.unit-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+}
+
+.unit-info {
+  padding: 20px;
+}
+
+.unit-info h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: left; /* Override global h2 */
+}
+
+.unit-location {
+  color: #777;
+  font-size: 0.95em;
+  margin-bottom: 15px;
+}
+
+.unit-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.unit-details span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.unit-price {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+/* Why Choose Us Section */
+.why-choose-us-section {
+  background-color: #eef4f9; /* Light blue background */
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.feature-item {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 3em;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.feature-item h3 {
+  font-size: 1.6em;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center; /* Override global h2 */
+}
+
+.feature-item p {
+  color: #666;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+/* Call to Action Section */
+.cta-section {
+  position: relative;
+  background: url("https://via.placeholder.com/1920x400?text=Contact+Us+Background")
+    no-repeat center center/cover;
+  color: white;
+  text-align: center;
+  height: 350px; /* Adjust as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-section h2 {
+  font-size: 2.8em;
+  margin-bottom: 20px;
+  color: white; /* Override h2 color */
+}
+
+.cta-section p {
+  font-size: 1.2em;
+  margin-bottom: 40px;
+}
+
+/* Font Awesome Icons (assuming you have them linked in index.html) */
+/* If not, you'll need to add a link to Font Awesome CDN in index.html */
+/* Example: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> */
