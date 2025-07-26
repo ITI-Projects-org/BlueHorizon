@@ -30,6 +30,7 @@ namespace API.Models
         public VerificationStatus VerificationStatus { get; set; } // NotVerified=0 ,Pending=1, Verified=2, Rejected=3
         public DocumentType Contract { get; set; } // OwnershipContract, NationaId_Front, NationaId_Back 
         public string ContractPath { get; set; }
+        [JsonIgnore]
         public virtual ICollection<UnitImages> UnitImagesTable { get; set; }
     }
 }

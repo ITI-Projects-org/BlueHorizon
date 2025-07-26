@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace API.Models
 {
@@ -11,7 +12,7 @@ namespace API.Models
 
         [ForeignKey(nameof(Unit))]
         public int  UnitID { get; set; }
-
+        [JsonIgnore]
         public virtual Unit? Unit { get; set; }
     }
 }
