@@ -66,6 +66,19 @@ namespace API.UnitOfWorks
             }
         }
 
+        public IChatMessageRepository chatMessageRepository;
+        public IChatMessageRepository ChatMessageRepository
+        {
+            get
+            {
+                if (chatMessageRepository == null)
+                {
+                    chatMessageRepository = new ChatMessageRepository(_context);
+                };
+                return chatMessageRepository;
+            }
+        }
+
         public IOwnerReviewRepository ownerReviewRepository;
         public IOwnerReviewRepository OwnerReviewRepository
         {

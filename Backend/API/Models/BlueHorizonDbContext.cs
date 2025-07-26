@@ -14,6 +14,7 @@ namespace API.Models
         public DbSet<Amenity> Amenity { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<OwnerReview> OwnerReviews { get; set; }
         public DbSet<OwnerVerificationDocument> OwnerVerificationDocuments { get; set; }
         public DbSet<PaymentTransaction> PaymentTransactions { get; set; }

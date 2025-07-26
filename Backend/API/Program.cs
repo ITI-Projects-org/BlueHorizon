@@ -55,6 +55,8 @@ namespace API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
+            builder.Services.AddScoped<IAIService, AIService>();
+            builder.Services.AddHttpClient<IAIService, AIService>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
