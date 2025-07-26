@@ -51,6 +51,103 @@
     </button>
   </div>
 
+  <!-- Availability Calendar -->
+  <div class="calendar-section mt-4">
+    <h4>Availability Calendar</h4>
+    <div *ngIf="calendarLoading" class="text-center">
+      <div class="spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading calendar...</span>
+      </div>
+    </div>
+
+    <div *ngIf="!calendarLoading" class="calendar-container">
+      <!-- Calendar Header -->
+      <div
+        class="calendar-header d-flex justify-content-between align-items-center mb-3"
+      >
+        <button
+          class="btn btn-outline-secondary btn-sm"
+          (click)="previousMonth()"
+        >
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <h5 class="mb-0">{{ getMonthYearString() }}</h5>
+        <button class="btn btn-outline-secondary btn-sm" (click)="nextMonth()">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="calendar-grid">
+        <!-- Day Headers -->
+        <div class="calendar-day-header">Sun</div>
+        <div class="calendar-day-header">Mon</div>
+        <div class="calendar-day-header">Tue</div>
+        <div class="calendar-day-header">Wed</div>
+        <div class="calendar-day-header">Thu</div>
+        <div class="calendar-day-header">Fri</div>
+        <div class="calendar-day-header">Sat</div>
+
+        <!-- Calendar Days -->
+        <div
+          *ngFor="let day of calendarDays"
+          class="calendar-day"
+          [ngClass]="{
+            'other-month': !day.isCurrentMonth,
+            'today': day.isToday,
+            'past': day.isPast,
+            'booked': day.isBooked,
+            'available': day.isAvailable
+          }"
+          [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') : 
+                   day.isBooked ? 'Booked' : 
+                   day.isAvailable ? 'Available' : 
+                   day.isPast ? 'Past' : 'Not Available'"
+        >
+          {{ day.day }}
+          <small
+            *ngIf="day.isToday"
+            style="
+              position: absolute;
+              top: -5px;
+              right: -5px;
+              background: #007bff;
+              color: white;
+              border-radius: 50%;
+              width: 12px;
+              height: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 8px;
+            "
+            >T</small
+          >
+        </div>
+      </div>
+
+      <!-- Calendar Legend -->
+      <div class="calendar-legend mt-3">
+        <div class="legend-item">
+          <span class="legend-color available"></span>
+          <small>Available</small>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color booked"></span>
+          <small>Booked</small>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color past"></span>
+          <small>Past</small>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color today"></span>
+          <small>Today</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div
     *ngIf="unit.unitImages && unit.unitImages.length"
     class="image-gallery mt-3"

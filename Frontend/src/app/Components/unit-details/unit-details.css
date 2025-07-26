@@ -54,3 +54,171 @@
   padding: 1rem 2rem;
   font-size: 1.125rem;
 }
+
+/* Calendar Styles */
+.calendar-section {
+  margin: 30px 0;
+}
+
+.calendar-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  margin-bottom: 15px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.calendar-day-header {
+  background-color: #f8f9fa;
+  padding: 8px 4px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #6c757d;
+  border-radius: 4px;
+}
+
+.calendar-day {
+  background-color: white;
+  padding: 10px 4px;
+  text-align: center;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Added for absolute positioning of today indicator */
+}
+
+.calendar-day:hover {
+  transform: translateY(-1px);
+}
+
+.calendar-day.other-month {
+  color: #adb5bd;
+  background-color: #f8f9fa;
+}
+
+.calendar-day.past {
+  background-color: #f8f9fa;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.calendar-day.available {
+  background-color: #28a745;
+  color: white;
+}
+
+.calendar-day.available:hover {
+  background-color: #218838;
+}
+
+.calendar-day.booked {
+  background-color: #dc3545;
+  color: white;
+  cursor: not-allowed;
+}
+
+.calendar-day.booked:hover {
+  transform: none;
+}
+
+/* Today should always have priority over other states */
+.calendar-day.today {
+  background-color: #007bff !important;
+  color: white !important;
+  font-weight: 600;
+  border: 2px solid #0056b3;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Special case: today AND booked - show both indicators */
+.calendar-day.today.booked {
+  background: linear-gradient(45deg, #007bff 50%, #dc3545 50%) !important;
+  border: 2px solid #0056b3;
+  position: relative;
+}
+
+.calendar-day.today.booked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  background-color: #dc3545;
+  border-radius: 50%;
+}
+
+/* Calendar Legend */
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-color.available {
+  background-color: #28a745;
+}
+
+.legend-color.booked {
+  background-color: #dc3545;
+}
+
+.legend-color.past {
+  background-color: #f8f9fa;
+  border: 1px solid #adb5bd;
+}
+
+.legend-color.today {
+  background-color: #007bff;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .calendar-container {
+    max-width: 100%;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .calendar-legend {
+    gap: 10px;
+  }
+
+  .legend-item {
+    font-size: 0.8rem;
+  }
+}

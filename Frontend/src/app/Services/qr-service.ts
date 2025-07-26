@@ -23,7 +23,7 @@ export class QrServise {
 
   get token() {
     if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('token')?.toString();
+      return localStorage.getItem('accessToken')?.toString();
     }
     return null;
   }
