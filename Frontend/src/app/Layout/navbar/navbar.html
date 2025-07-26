@@ -1,22 +1,18 @@
-<!-- Navbar -->
 <nav #mainNavbar class="navbar navbar-expand-lg fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="#">
+
+    <a class="navbar-brand" [routerLink]="['/home']">
       <span class="logo-text">BlueHorizon</span>
     </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Home</a>
+
+          <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
         <li class="nav-item dropdown">
           <a
@@ -29,19 +25,23 @@
             Pages
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">About Us</a></li>
-            <li><a class="dropdown-item" href="#">Services</a></li>
+
+            <li><span class="dropdown-item disabled">About Us</span></li>
+            <li><span class="dropdown-item disabled">Services</span></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Units</a>
+
+          <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
+
+          <span class="nav-link disabled" [routerLink]="['/contact']">Contact</span>
         </li>
       </ul>
       <div class="d-flex">
-        <a href="#" class="btn btn-outline-light">Login</a>
+
+        <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
       </div>
       <div class="d-flex">
         <a href="#" class="btn btn-outline-light">Logout</a>
@@ -56,19 +56,9 @@
 <!-- Hero Section with Slider -->
 <section class="hero-section" #heroSection>
   <div class="slider-container">
-    <div
-      *ngFor="let slide of slides; let i = index"
-      [class.active]="i === currentSlide"
-      class="slide"
-    >
-      <img [src]="slide.image" [alt]="slide.alt" />
-    </div>
-    <div class="slider-dots">
-      <span
-        *ngFor="let slide of slides; let i = index"
-        [class.active]="i === currentSlide"
-        (click)="goToSlide(i)"
-      ></span>
+    <div class="slider">
+      <div *ngFor="let slide of slides; let i = index" class="slide" [class.active]="currentSlide === i"
+        [style.backgroundImage]="'url(' + slide.image + ')'"></div>
     </div>
   </div>
 
@@ -78,21 +68,25 @@
 
     <!-- Search Form Container -->
     <div class="search-form-container">
-      <form class="search-form" (submit)="applySearchFilters()">
-        <!-- Select Village Filter -->
-        <div class="form-group">
-          <select
-            class="form-select"
-            [(ngModel)]="selectedVillage"
-            name="selectedVillageInput"
-            (change)="applySearchFilters()"
-          >
-            <option [ngValue]="null">Select Village</option>
-            <option *ngFor="let village of villages" [value]="village">
-              {{ village }}
-            </option>
-          </select>
-        </div>
+      <div class="search-form">
+        <select class="form-select">
+          <option selected>Location</option>
+          <option>Marassi</option>
+          <option>Fouka Bay</option>
+        </select>
+        <select class="form-select">
+          <option selected>Type</option>
+          <option>Villa</option>
+          <option>House</option>
+        </select>
+        <select class="form-select">
+          <option selected>Bedrooms</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3+</option>
+        </select>
+        <button class="btn btn-search">SEARCH</button>
+      </div>
 
         <!-- Select Unit Type Filter -->
         <div class="form-group">
@@ -163,37 +157,30 @@
           </div>
           <!-- Price Range Filter -->
           <div class="col-md-4">
-            <div class="input-group">
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Min Price"
-                [(ngModel)]="minPrice"
-                name="minPriceInput"
-                (change)="applySearchFilters()"
-              />
-              <span class="input-group-text">-</span>
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Max Price"
-                [(ngModel)]="maxPrice"
-                name="maxPriceInput"
-                (change)="applySearchFilters()"
-              />
+            <div class="price-range">
+              <div class="d-flex align-items-center">
+                <input type="number" class="form-control min-price" placeholder="Min" [(ngModel)]="minPrice"
+                  (change)="validatePriceRange()" />
+                <span class="mx-1">-</span>
+                <input type="number" class="form-control max-price" placeholder="Max" [(ngModel)]="maxPrice"
+                  (change)="validatePriceRange()" />
+              </div>
             </div>
           </div>
         </div>
-      </form>
+      </div>
+
+      <a href="#" class="more-options-btn" (click)="toggleMoreOptions($event)">
+        <i class="fas" [class.fa-plus]="!showMoreOptions" [class.fa-times]="showMoreOptions"></i>
+        {{ showMoreOptions ? 'Less options' : 'More options' }}
+      </a>
     </div>
   </div>
 </section>
 
-<!-- Slider Indicators -->
-<div class="slider-indicators">
-  <button
-    *ngFor="let slide of slides; let i = index"
-    [class.active]="currentSlide === i"
-    (click)="goToSlide(i)"
-  ></button>
-</div>
+  <!-- Slider Indicators -->
+  <div class="slider-indicators">
+    <button *ngFor="let slide of slides; let i = index" [class.active]="currentSlide === i"
+      (click)="goToSlide(i)"></button>
+  </div>
+</header>

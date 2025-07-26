@@ -15,7 +15,9 @@ namespace API.DTOs.UnitDTO
         public string Address { get; set; }
         public string VillageName { get; set; }
         public List<int> AmenityIds { get; set; }
-        public IFormFile ContractDocument { get; set; }
+        public IFormFile? ContractDocument { get; set; }
+        public List<IFormFile>? UnitImages { get; set; }
+
 
     }
 }

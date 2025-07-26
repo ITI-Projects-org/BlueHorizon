@@ -7,7 +7,7 @@ namespace API.Models
     {
         [Key]
         public int Id { get; set; }
-        public string ImagePath { get; set; }
+        public string ImageURL { get; set; }
 
         [ForeignKey(nameof(Unit))]
         public int  UnitID { get; set; }

@@ -1,5 +1,6 @@
 ﻿using API.Models;
 using API.Repositories.Interfaces;
+using CloudinaryDotNet.Actions;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -27,9 +28,22 @@ namespace API.Repositories.Implementations
                 .Include(u => u.UnitAmenities)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
+        public async Task<IEnumerable<Unit>> GetAllValidUnits()
+        {
+            return await _context.Units
+                .Where(u => u.VerificationStatus == VerificationStatus.Verified)
+                .ToListAsync();
+        }
+
+        public async Task<string> GetSingleImagePathByUnitId(int unitId)
+        {
+            return await _context.UnitImages
+                .Where(ui=>ui.UnitID == unitId)
+                .Select(ui=>ui.ImageURL)
+                .FirstOrDefaultAsync();
+        }
 
 
-      
 
 
     }

@@ -13,16 +13,16 @@ using QRCoder;
 [Route("api/[controller]")]
 public class QrCodeController : ControllerBase
 {
-        public IMapper _mapper { get; }
-        public IUnitOfWork _unit { get; }
+    public IMapper _mapper { get; }
+    public IUnitOfWork _unit { get; }
 
-        private IPhotoService _photoService;
+    private IPhotoService _photoService;
 
-    public QrCodeController(IMapper mapper, IUnitOfWork unit,IPhotoService photoService)
-        {
-            _mapper = mapper;
-            _unit = unit;
-            _photoService = photoService;
+    public QrCodeController(IMapper mapper, IUnitOfWork unit, IPhotoService photoService)
+    {
+        _mapper = mapper;
+        _unit = unit;
+        _photoService = photoService;
     }
 
     // ------------------------------------
@@ -32,8 +32,10 @@ public class QrCodeController : ControllerBase
     // ------------------------------------
     // ------------------------------------
     // ------------------------------------
+    
     [HttpPost("createCloud")]
-    public async Task<IActionResult> CreateQrCloud([FromBody] QRDTO qrdto) {
+    public async Task<IActionResult> CreateQrCloud([FromBody] QRDTO qrdto)
+    {
         QRCode qr = _mapper.Map<QRCode>(qrdto);
         qr.ExpirationDate = DateTime.Now.AddDays(3);
         qr.GeneratedDate = DateTime.Now;
@@ -52,17 +54,14 @@ public class QrCodeController : ControllerBase
         using PngByteQRCode? qrCode = new PngByteQRCode(qrData);
         byte[] qrCodeImage = qrCode.GetGraphic(20);
         IFormFile file = new FormFile(new MemoryStream(qrCodeImage), 0, qrCodeImage.Length, "file", "qr.png");
-        ImageUploadResult? QrImageUploadResult= await _photoService.AddPhotoAsync(file);
+        ImageUploadResult? QrImageUploadResult = await _photoService.AddPhotoAsync(file);
         if (QrImageUploadResult.Error != null)
             return BadRequest(QrImageUploadResult.Error.Message);
         qr.ImagePath = QrImageUploadResult.Url.ToString();
         await _unit.QRCodeRepository.AddAsync(qr);
         await _unit.SaveAsync();
-        return CreatedAtAction(nameof(GetQRCodeByIdCloud), new { QrId = qr.Id }, new { Message = "Qr created successfully", QrId = qr.Id, imgPath=qr.ImagePath });
+        return CreatedAtAction(nameof(GetQRCodeByIdCloud), new { QrId = qr.Id }, new { Message = "Qr created successfully", QrId = qr.Id, imgPath = qr.ImagePath });
     }
-
-
-
 
     [HttpGet("Cloud/{QrId}")]
     //[Authorize(Roles = "Tenant,Owner,Admin")]
@@ -79,6 +78,7 @@ public class QrCodeController : ControllerBase
     // ------------------------------------
     // ------------------------------------
     // ------------------------------------
+    
     [HttpPost("create")]
     //[Authorize(Roles ="Owner")]
     public async Task<IActionResult> CreateQr([FromBody] QRDTO qrdto)
@@ -107,7 +107,7 @@ public class QrCodeController : ControllerBase
 
         //return File(qrCodeImage, "image/png");
 
-        return CreatedAtAction(nameof(GetQRCodeById),new { QrId= qr.Id}, new {Message="Qr created successfully", QrId=qr.Id});
+        return CreatedAtAction(nameof(GetQRCodeById), new { QrId = qr.Id }, new { Message = "Qr created successfully", QrId = qr.Id });
     }
 
     [HttpGet("{QrId}")]
@@ -115,8 +115,8 @@ public class QrCodeController : ControllerBase
     public async Task<IActionResult> GetQRCodeById(int QrId)
     {
         QRCode? qrCode = await _unit.QRCodeRepository.GetByIdAsync(QrId);
-        byte[] Qrimage= Convert.FromBase64String(qrCode.QRCodeValue);
+        byte[] Qrimage = Convert.FromBase64String(qrCode.QRCodeValue);
 
-        return File(Qrimage,"image/png");
+        return File(Qrimage, "image/png");
     }
 }

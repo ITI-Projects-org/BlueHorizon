@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Unit } from '../Models/unit.model';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UnitsService {
   private apiUrl = 'https://localhost:7083/api/unit/all';

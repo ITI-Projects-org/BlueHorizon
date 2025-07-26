@@ -1,4 +1,61 @@
-<p>review works!</p>
+<!-- 
+<form (ngSubmit)="SubmitReview()">
+    <div>
+        <label for="rating">Rating:</label>
+     
+        <input type="number" id="rating" name="rating" [(ngModel)]="rating">
+    </div>
+    <div>
+        <label for="comment">Comment:</label>
+     
+        <textarea id="comment" name="comment" [(ngModel)]="comment"></textarea>
+    </div>
+    <button type="submit">Submit Review</button>
+</form>
 
-<button (click)="deleteReview(3)">delete review</button>
-<button (click)="getAllReviews(1)">get all review</button>
+<button (click)="getAllReviews(1)">get all reviews</button>
+<h3>All Reviews</h3>
+@for(review of allReviews;track review){
+
+<p>tenantName:{{review.tenantName}}</p>
+<p>comment:{{review.comment}}</p>
+<p>rating:{{review.rating}}</p>
+<p>reviewDate:{{review.reviewDate}}</p>
+} -->
+
+<div class="container">
+    <div class="review-form-container">
+        <h3 class="form-title">Submit Your Review</h3>
+        <form (ngSubmit)="SubmitReview()">
+            <div>
+                <label for="rating">Rating:</label>
+                <input type="number" id="rating" name="rating" [(ngModel)]="rating" min="1" max="5" required>
+            </div>
+            <div>
+                <label for="comment">Comment:</label>
+                <textarea id="comment" name="comment" [(ngModel)]="comment" rows="5"></textarea>
+            </div>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+
+    <div class="get-reviews-btn-container">
+        <button (click)="getAllReviews(1)" class="get-reviews-btn">Load All Reviews</button>
+    </div>
+
+    <h3>Customer Reviews</h3>
+    <div class="reviews-grid">
+        @for(review of allReviews; track review.bookingId){ <div class="review-card">
+            <p class="tenant-name">{{review.tenantName}}</p>
+            <p><strong>Comment:</strong> {{review.comment}}</p>
+            <p><strong>Rating:</strong>
+                <span class="rating-stars">
+                    {{ '⭐'.repeat(review.rating) }}
+                </span>
+                ({{review.rating}}/5)
+            </p>
+            <p class="review-date">{{review.reviewDate | date:'mediumDate'}}</p>
+        </div>
+        }
+    </div>
+</div>

@@ -7,6 +7,7 @@ export interface Unit {
   address?: string;
   bedrooms?: number;
   bathrooms?: number;
-  imagePath?: string;
+  // imagePath?: string;
   price?: number;
+  imageURL?: string;
 }
