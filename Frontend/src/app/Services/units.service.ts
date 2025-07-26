@@ -7,11 +7,13 @@ import { Unit } from '../Models/unit.model';
   providedIn: 'root'
 })
 export class UnitsService {
-  private apiUrl = 'https://localhost:7083/api/unit/all';
+  private apiUrl = 'https://localhost:7083/api/unit/All';
 
   constructor(private http: HttpClient) {}
 
   getUnits(): Observable<Unit[]> {
+    console.log('Fetching units from API:', this.apiUrl);
+
     return this.http.get<Unit[]>(this.apiUrl);
   }
 }

@@ -1,148 +1,47 @@
-<nav #mainNavbar class="navbar navbar-expand-lg fixed-top">
-  <div class="container">
-    <a class="navbar-brand" [routerLink]="['/home']">
-      <span class="logo-text">BlueHorizon</span>
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item">
-          <a class="nav-link active" [routerLink]="['/home']">Home</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-            >Pages</a
-          >
-          <ul class="dropdown-menu">
-            <li><span class="dropdown-item disabled">About Us</span></li>
-            <li><span class="dropdown-item disabled">Services</span></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/units']">Units</a>
-        </li>
-        <li class="nav-item">
-          <span class="nav-link disabled" [routerLink]="['/contact']"
-            >Contact</span
-          >
-        </li>
-      </ul>
-
-      <div class="d-flex">
-        <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<!-- Hero Section with Slider -->
-<header #heroSection class="hero-section">
-  <!-- Slider -->
-  <div class="slider-container">
-    <div class="slider">
-      <div
-        *ngFor="let slide of slides; let i = index"
-        class="slide"
-        [class.active]="currentSlide === i"
-        [style.backgroundImage]="'url(' + slide.image + ')'"
-      ></div>
-    </div>
-  </div>
-
-  <!-- Hero Content -->
-  <div class="hero-content">
-    <h1>Find Your Dream Home</h1>
-    <p>Discover the perfect property for you and your family</p>
-
-    <!-- Search Form -->
-    <div class="search-form-container">
-      <div class="search-form">
-        <select class="form-select">
-          <option selected>Location</option>
-          <option>Marassi</option>
-          <option>Fouka Bay</option>
-        </select>
-        <select class="form-select">
-          <option selected>Type</option>
-          <option>Villa</option>
-          <option>House</option>
-        </select>
-        <select class="form-select">
-          <option selected>Bedrooms</option>
-          <option>1</option>
-          <option>2</option>
-          <option>3+</option>
-        </select>
-        <button class="btn btn-search">SEARCH</button>
-      </div>
-
-      <!-- More Options -->
-      <div class="more-options-form" *ngIf="showMoreOptions">
-        <div class="row g-3 mt-2">
-          <div class="col-md-4">
-            <select class="form-select">
-              <option selected>Bathrooms</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3+</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <select class="form-select">
-              <option selected>Unit Status</option>
-              <option>For Rent</option>
-              <option>For Sale</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <div class="price-range">
-              <div class="d-flex align-items-center">
-                <input
-                  type="number"
-                  class="form-control min-price"
-                  placeholder="Min"
-                  [(ngModel)]="minPrice"
-                  (change)="validatePriceRange()"
-                />
-                <span class="mx-1">-</span>
-                <input
-                  type="number"
-                  class="form-control max-price"
-                  placeholder="Max"
-                  [(ngModel)]="maxPrice"
-                  (change)="validatePriceRange()"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <a href="#" class="more-options-btn" (click)="toggleMoreOptions($event)">
-        <i
-          class="fas"
-          [class.fa-plus]="!showMoreOptions"
-          [class.fa-times]="showMoreOptions"
-        ></i>
-        {{ showMoreOptions ? 'Less options' : 'More options' }}
+<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+  <li class="nav-item message-icon-container">
+      <a class="nav-link" (click)="toggleMessagePopup()">
+          <i class="fas fa-envelope"></i> <span *ngIf="unreadMessagesCount > 0" class="message-count">{{ unreadMessagesCount }}</span>
       </a>
-    </div>
-  </div>
 
-  <!-- Slider Indicators -->
-  <div class="slider-indicators">
-    <button
-      *ngFor="let slide of slides; let i = index"
-      [class.active]="currentSlide === i"
-      (click)="goToSlide(i)"
-    ></button>
-  </div>
-</header>
+      <div class="message-popup" [class.show]="showPopup">
+          <div class="popup-header">
+              <h5>Recent Chats</h5>
+              <button class="close-btn" (click)="toggleMessagePopup()">&times;</button>
+          </div>
+          <div class="popup-body">
+              <ng-container *ngIf="recentChats && recentChats.length > 0; else noChatsPopup">
+                  <div
+                      *ngFor="let chat of recentChats"
+                      class="chat-item"
+                      (click)="goToChat(chat.otherUserId)"
+                  >
+                      <div class="chat-main-info">
+                          <div class="chat-user-name">{{ chat.otherUserName }}</div>
+                          <div class="last-message-preview">
+                              {{ chat.lastMessageContent | slice:0:30 }}{{ chat.lastMessageContent.length > 30 ? '...' : '' }}
+                          </div>
+                      </div>
+                      <div class="chat-meta-info">
+                          <div class="message-time">
+                              {{ chat.lastMessageTimestamp | date:'shortTime' }}
+                          </div>
+                          <span
+                              *ngIf="chat.unreadCount && chat.unreadCount > 0"
+                              class="badge bg-primary rounded-pill unread-badge"
+                              >{{ chat.unreadCount }}</span
+                          >
+                      </div>
+                  </div>
+              </ng-container>
+              <ng-template #noChatsPopup>
+                  <div class="no-chats-message">No recent chats.</div>
+              </ng-template>
+          </div>
+          <div class="popup-footer">
+              <a [routerLink]="['/chat']" (click)="toggleMessagePopup()">View All Chats</a>
+          </div>
+      </div>
+  </li>
+
+  </ul>

@@ -1,39 +1,53 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Message } from '../Components/chat/chat';
+import { AuthService } from './auth.service'; // تأكد من المسار الصحيح لـ AuthService
+import { InboxItem, ChatMessage } from '../Models/chat.models'; // استخدام ChatMessage
 
 @Injectable({
   providedIn: 'root'
 })
 export class Messages {
+  // تأكد أن هذا الـ URL يطابق الـ URL الأساسي للـ API في الـ Backend
   baseurl: string = 'https://localhost:7083/api/Message';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    if (token) {
-      return new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      });
+    // هذه الميثود تجلب الـ Access Token من AuthService وتضيفه للـ Headers
+    const accessToken = this.authService.getToken(); // استخدم getAccessToken() أو getToken() حسب اسم الميثود في AuthService
+    if (!accessToken) {
+      console.error('No access token found for API request.');
+      // يمكنك هنا إعادة توجيه المستخدم لصفحة تسجيل الدخول أو التعامل مع الخطأ
+      return new HttpHeaders({ 'Content-Type': 'application/json' });
     }
-    return new HttpHeaders({ 'Content-Type': 'application/json' });
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    });
   }
 
-  getInboxMessages(): Observable<Message[]> {
+  // لجلب قائمة المحادثات الأخيرة (الـ Inbox)
+  getInboxMessages(): Observable<InboxItem[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Message[]>(`${this.baseurl}/inbox`, { headers });
+    console.log('Fetching inbox messages from API:', `${this.baseurl}/inbox`);
+    return this.http.get<InboxItem[]>(`${this.baseurl}/inbox`, { headers });
   }
 
-  getChatBetweenUsers(otherUserId: string): Observable<Message[]> {
+  // لجلب سجل المحادثة بين المستخدمين
+  // **التعديل هنا:** تم تغيير الـ URL لإرسال 'otherUserId' كـ Query Parameter
+  getChatHistory(otherUserId: string): Observable<ChatMessage[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Message[]>(`${this.baseurl}/chat?otherUserId=${otherUserId}`, { headers });
+    const url = `${this.baseurl}/history?otherUserId=${otherUserId}`; // <--- التغيير هنا
+    console.log(`Fetching chat history with ${otherUserId} from API:`, url);
+    return this.http.get<ChatMessage[]>(url, { headers });
   }
 
-  sendMessageViaHttp(messageDto: { receiverId: string; messageContent: string }): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(`${this.baseurl}/SendMessage`, messageDto, { headers });
-  }
+  // إذا كنت تستخدم HTTP Post لإرسال الرسائل (بالإضافة إلى SignalR أو كـ fallback)
+  // يمكنك تفعيل هذه الميثود
+  // sendMessageHttp(receiverId: string, messageContent: string): Observable<ChatMessage> {
+  //   const headers = this.getAuthHeaders();
+  //   const body = { receiverId, messageContent }; // تأكد من مطابقة اسم الـ Property في الـ DTO الخاص بـ SendMessage
+  //   return this.http.post<ChatMessage>(`${this.baseurl}/SendMessage`, body, { headers });
+  // }
 }

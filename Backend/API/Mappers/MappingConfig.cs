@@ -48,8 +48,8 @@ namespace API.Mappers
             #endregion
 
             CreateMap<Message, MessageDto>()
-                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName))
-                .ForMember(dest => dest.ReceiverUsername, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
+                .ForMember(dest => dest.SenderUserName, opt => opt.MapFrom(src => src.SenderUser.UserName))
+                .ForMember(dest => dest.ReceiverUserName, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
                 //.ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => src.SenderUser.PhotoUrl))
                 //.ForMember(dest => dest.ReceiverPhotoUrl, opt => opt.MapFrom(src => src.ReceiverUser.PhotoUrl))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp));
