@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BookingForm } from '../../Pages/booking-form/booking-form';
 import { BookingService } from '../../Services/booking-service';
 import { BookedSlotsDTO } from '../../Models/booked-slots-dto';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-unit-details',
   standalone: true,
@@ -222,11 +222,14 @@ export class UnitDetailsComponent implements OnInit {
 
   onBookingSuccess(response: any): void {
     // Handle successful booking
-    alert(
-      `Booking successful! Booking ID: ${response.bookingId}, Total: $${response.totalPrice}`
-    );
-    this.closeBookingForm();
-    // Reload booked slots to update calendar
-    this.loadBookedSlots();
+    Swal.fire({
+      title: 'Booking Successful!',
+      text: 'A confirmation email of the booking was sent, please check it',
+      icon: 'success',
+      draggable: true,
+    }).then(() => {
+      this.closeBookingForm();
+      this.loadBookedSlots();
+    });
   }
 }
