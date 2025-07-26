@@ -1,0 +1,127 @@
+<div class="home-container">
+    <section class="hero-section">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1>Find Your Perfect Resort Unit</h1>
+                <p>Discover amazing properties for your next vacation or investment.</p>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search by location, amenities, or unit type..."
+                        aria-label="Search resort units" />
+                    <button class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-units-section section-padding">
+        <div class="container">
+            <h2 class="section-title">Most Recent Units</h2>
+            <p class="section-description">
+                Explore our hand-picked selection of the finest resort units.
+            </p>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col" *ngFor="let unit of paginatedUnits">
+                    <div class="card h-100 shadow-sm">
+                        <img [src]="getUnitImagePath(unit)" class="card-img-top" alt="Image of {{ unit.title }}" />
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ unit.title }}</h5>
+                            <p class="card-subtitle mb-2 text-muted">Unit ID: {{ unit.id }}</p>
+                            <p class="property-address">
+                                <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }},
+                                {{ unit.villageName }}
+                            </p>
+                            <p class="property-price">
+                                <strong>${{ unit.basePricePerNight | number : '1.2-2' }}</strong>
+                                / night
+                            </p>
+                            <div
+                                class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+                                <div class="detail-item">
+                                    <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a [routerLink]="['/unitDetails', unit.id]" class="btn btn-outline-primary btn-sm">View
+                                    Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a routerLink="/units" class="btn btn-primary btn-lg">View All Units</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-choose-us-section section-padding bg-light">
+        <div class="container">
+            <h2 class="section-title">Why Choose Blue Horizon?</h2>
+            <p class="section-description">
+                We offer unparalleled service and a wide selection of premium resort units.
+            </p>
+            <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+                <div class="col">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-handshake feature-icon mb-3"></i>
+                        <h3>Trusted & Reliable</h3>
+                        <p>
+                            We connect you with verified owners and secure booking processes.
+                        </p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-home feature-icon mb-3"></i>
+                        <h3>Diverse Selection</h3>
+                        <p>From cozy studios to luxurious villas, find your perfect match.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-star feature-icon mb-3"></i>
+                        <h3>Exceptional Service</h3>
+                        <p>Our dedicated support team is here to assist you 24/7.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section section-padding">
+        <div class="cta-overlay">
+            <div class="container text-center">
+                <h2 class="text-white">Ready to Find Your Dream Getaway?</h2>
+                <p class="lead text-white-50 mb-4">
+                    Browse our listings or contact us for personalized assistance.
+                </p>
+                <a routerLink="/units" class="btn btn-light btn-lg me-3">Browse Units</a>
+                <a routerLink="/contact" class="btn btn-outline-light btn-lg">Contact Us</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="container mt-5 p-4 bg-light rounded shadow-sm">
+    <h3 class="mb-3">Quick Links (Development/Admin)</h3>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="/login" class="btn btn-sm btn-outline-secondary">Login</a>
+        <a href="/register" class="btn btn-sm btn-outline-secondary">Register</a>
+        <a href="/profile" class="btn btn-sm btn-outline-secondary">Profile</a>
+
+        <a href="/VerifyOwner" class="btn btn-sm btn-outline-secondary">Verify Owner</a>
+
+        <!-- on unit -->
+        <!-- <a href="/unitDetails/1" class="btn btn-sm btn-outline-secondary">Unit Details (ID 1)</a> -->
+        <!-- <a href="/addunit" class="btn btn-sm btn-outline-secondary">Add Unit</a> -->
+        <!-- <a href="/addReview" class="btn btn-sm btn-outline-secondary">Add Review</a> -->
+
+        <!-- on booking -->
+        <!-- <a href="/createQr" class="btn btn-sm btn-outline-secondary">Create QR</a> -->
+    </div>
+</div>

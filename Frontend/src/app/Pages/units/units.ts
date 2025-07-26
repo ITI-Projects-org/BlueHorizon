@@ -289,7 +289,7 @@ export class Units implements OnInit, OnDestroy {
 
   getUnitImagePath(unit: Unit): string {
     // return unit.imagePath && unit.imagePath.length > 0 ? unit.imagePath : 'assets/placeholder.jpg';
-    console.log('this is image paths');
+    // console.log('this is image paths');
     console.log(unit.imageURL);
     return unit.imageURL ?? '';
   }
