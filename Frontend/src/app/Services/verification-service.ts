@@ -18,22 +18,30 @@ export class Verification {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
+  // VerifiyOwner(data: FormData) {
+  //   const headers = new HttpHeaders().set(
+  //     'Authorization',
+  //     'Bearer ' + localStorage.getItem('accessToken')
+  //   );
+  //   // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
+  //   return this.http.post(this.verificationURL + '/AddRequest', data, {
+  //     headers: headers,
+  //     responseType: 'text',
+  //   });
+  // }
+
   VerifiyOwner(data: FormData) {
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      'Bearer ' + localStorage.getItem('token')
-    );
     // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
-    return this.http.post(this.verificationURL + '/AddRequest', data, {
-      headers: headers,
-      responseType: 'text',
-    });
+    return this.http.post(this.verificationURL + '/AddRequest', data);
   }
 
-  isVerified():Observable<{isVerified:boolean}>{
+  isVerified(): Observable<{ isVerified: boolean }> {
     console.log('from is verifed serivce');
     console.log(`${this.verificationURL}/isVerified`);
-    return this.http.get<{isVerified:boolean}>(`${this.verificationURL}/isVerified`,{headers:this.headers});
+    return this.http.get<{ isVerified: boolean }>(
+      `${this.verificationURL}/isVerified`,
+      { headers: this.headers }
+    );
   }
 
   GetPendingOwners(): Observable<OwnerVerificationDTO[]> {
