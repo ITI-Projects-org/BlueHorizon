@@ -4,6 +4,7 @@ import { Footer } from './Layout/footer/footer';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 import { Navbar } from './Layout/navbar/navbar';
+import { SecNavbar } from "./Layout/sec-navbar/sec-navbar";
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,8 @@ import { Navbar } from './Layout/navbar/navbar';
     FormsModule,
     ReactiveFormsModule,
     UnitDetailsComponent,
-  ],
+    SecNavbar
+],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

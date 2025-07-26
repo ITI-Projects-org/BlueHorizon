@@ -26,4 +26,3 @@ namespace API.Models
         public virtual QRCode QRCode { get; set; }
     }
 }
-

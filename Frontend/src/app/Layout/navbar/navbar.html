@@ -16,20 +16,23 @@
         <li class="nav-item">
           <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
-        <li class="nav-item dropdown">
+        <!-- <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Pages</a>
           <ul class="dropdown-menu">
             <li><span class="dropdown-item disabled">About Us</span></li>
             <li><span class="dropdown-item disabled">Services</span></li>
           </ul>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <span class="nav-link disabled" [routerLink]="['/contact']">Contact</span>
-        </li>
+        </li> -->
 
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/add-booking']">Add booking</a>
+        </li>
 
         <li class="nav-item">
           <span class="nav-link disabled" [routerLink]="['/PendingOwners']">Pending Owners</span>
@@ -44,7 +47,17 @@
         <li class="nav-item">
           <span class="nav-link disabled" [routerLink]="['/profile']">Profile </span>
         </li>
+
+
+
+        <li class="nav-item"><a href="/login" class="btn btn-sm btn-outline-secondary">Login</a></li>
+        <li class="nav-item"><a href="/register" class="btn btn-sm btn-outline-secondary">Register</a></li>
+        <li class="nav-item"><a href="/profile" class="btn btn-sm btn-outline-secondary">Profile</a></li>
+
+
+
       </ul>
+
 
       <div class="d-flex">
         <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
