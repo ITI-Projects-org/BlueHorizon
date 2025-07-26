@@ -1,15 +1,180 @@
-<p>create-qr works!</p>
-<button (click)="CreateQrCloud()">Create qr code</button>
+<!-- Trigger Button -->
+<button class="btn btn-primary" (click)="showForm()">
+  <i class="bi bi-qr-code me-2"></i>Create QR Code
+</button>
 
-<button (click)="getQrCloud(39)">Get QR</button>
+<!-- Overlay Form -->
+<div class="qr-overlay" *ngIf="isFormVisible">
+  <div class="create-qr-container">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h2>Create QR Code</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="hideForm()"
+        ></button>
+      </div>
+      <div class="card-body">
+        <!-- Error Message -->
+        @if (errorMessage) {
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ errorMessage }}
+        </div>
+        }
 
-<!-- @if(qrCodeUrl && !isLoading){
-<div>
-    <img [src]="qrCodeUrl" alt="Booking QR Code" />
-    <p>Show this code at the gate for entry.</p>
-</div>} -->
+        <!-- QR Code Form -->
+        <form [formGroup]="qrForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="BookingId" class="form-label">Booking ID *</label>
+                <input
+                  type="number"
+                  id="BookingId"
+                  class="form-control"
+                  formControlName="BookingId"
+                  [class.is-invalid]="BookingId?.invalid && BookingId?.touched"
+                />
+                @if (BookingId?.invalid && BookingId?.touched) {
+                <div class="invalid-feedback">
+                  Booking ID is required and must be greater than 0
+                </div>
+                }
+              </div>
+            </div>
 
-<div>
-    <img [src]="[imgPath]">
-    {{imgPath}}
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="TenantNationalId" class="form-label"
+                  >Tenant National ID *</label
+                >
+                <input
+                  type="text"
+                  id="TenantNationalId"
+                  class="form-control"
+                  formControlName="TenantNationalId"
+                  [class.is-invalid]="TenantNationalId?.invalid && TenantNationalId?.touched"
+                />
+                @if (TenantNationalId?.invalid && TenantNationalId?.touched) {
+                <div class="invalid-feedback">
+                  National ID is required and must be at least 10 characters
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="VillageName" class="form-label"
+                  >Village Name *</label
+                >
+                <input
+                  type="text"
+                  id="VillageName"
+                  class="form-control"
+                  formControlName="VillageName"
+                  [class.is-invalid]="VillageName?.invalid && VillageName?.touched"
+                />
+                @if (VillageName?.invalid && VillageName?.touched) {
+                <div class="invalid-feedback">Village name is required</div>
+                }
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="UnitAddress" class="form-label"
+                  >Unit Address *</label
+                >
+                <input
+                  type="text"
+                  id="UnitAddress"
+                  class="form-control"
+                  formControlName="UnitAddress"
+                  [class.is-invalid]="UnitAddress?.invalid && UnitAddress?.touched"
+                />
+                @if (UnitAddress?.invalid && UnitAddress?.touched) {
+                <div class="invalid-feedback">Unit address is required</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="OwnerName" class="form-label">Owner Name *</label>
+                <input
+                  type="text"
+                  id="OwnerName"
+                  class="form-control"
+                  formControlName="OwnerName"
+                  [class.is-invalid]="OwnerName?.invalid && OwnerName?.touched"
+                />
+                @if (OwnerName?.invalid && OwnerName?.touched) {
+                <div class="invalid-feedback">Owner name is required</div>
+                }
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="TenantName" class="form-label">Tenant Name *</label>
+                <input
+                  type="text"
+                  id="TenantName"
+                  class="form-control"
+                  formControlName="TenantName"
+                  [class.is-invalid]="TenantName?.invalid && TenantName?.touched"
+                />
+                @if (TenantName?.invalid && TenantName?.touched) {
+                <div class="invalid-feedback">Tenant name is required</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-secondary me-2"
+              (click)="reset()"
+            >
+              Reset
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="qrForm.invalid || isLoading"
+            >
+              @if (isLoading) {
+              <span
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Generating... } @else { Generate QR Code }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Display QR code outside the form if generated -->
+<div *ngIf="imgPath" class="qr-result mt-4">
+  <div class="card">
+    <div class="card-body text-center">
+      <img [src]="imgPath" alt="QR Code" class="qr-image mb-3" />
+      <p class="text-muted mb-0">Show this QR code at the gate for entry.</p>
+    </div>
+  </div>
 </div>

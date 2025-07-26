@@ -2,7 +2,7 @@ import { QrCodeDto } from './../Models/qr-code-dto';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -28,13 +28,13 @@ export class QrServise {
   }
 
   createQr(): Observable<{ message: string; qrId: number }> {
-    console.log('from podt in  service');
+    console.log('from post in service');
     let Qrdto: QrCodeDto = {
       BookingId: 2,
       TenantNationalId: '2341',
       VillageName: 'Mousa Cosst',
       UnitAddress: 'Alex',
-      OwnerName: 'mark  Owner',
+      OwnerName: 'mark Owner',
       TenantName: 'tenant name',
     };
     console.log(`${this.QrURL}/create`);
@@ -46,7 +46,7 @@ export class QrServise {
   }
 
   getQrCode(qrId: number): Observable<Blob> {
-    console.log('from get in  service');
+    console.log('from get in service');
 
     return this.http.get(`${this.QrURL}/${qrId}`, {
       headers: this.headers,
@@ -63,26 +63,35 @@ export class QrServise {
   // -------------------------
   // -------------------------
 
-  createQrCloud(): Observable<{
+  createQrCloud(qrData: QrCodeDto): Observable<{
     message: string;
     qrId: number;
     imgPath: string;
   }> {
-    console.log('from podt in  service');
-    let Qrdto: QrCodeDto = {
-      BookingId: 5,
-      TenantNationalId: '2341',
-      VillageName: 'Mousa Cosst',
-      UnitAddress: 'Alex',
-      OwnerName: 'new from angular',
-      TenantName: 'tenant name',
-    };
-    console.log(`${this.QrURL}/createCloud`);
-    return this.http.post<{ message: string; qrId: number; imgPath: string }>(
-      `${this.QrURL}/createCloud`,
-      Qrdto,
-      { headers: this.headers }
-    );
+    // Validate required fields
+    if (!qrData.BookingId || !qrData.TenantNationalId) {
+      throw new Error('BookingId and TenantNationalId are required fields');
+    }
+
+    return this.http
+      .post<{ message: string; qrId: number; imgPath: string }>(
+        `${this.QrURL}/createCloud`,
+        qrData,
+        {
+          headers: this.headers,
+        }
+      )
+      .pipe(
+        catchError((error: any) => {
+          let errorMessage = 'An error occurred while creating the QR code';
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.status === 401) {
+            errorMessage = 'You are not authorized to create QR codes';
+          }
+          throw new Error(errorMessage);
+        })
+      );
   }
   getQrCodeCloud(qrId: number): Observable<{ imgPath: string }> {
     return this.http.get<{ imgPath: string }>(`${this.QrURL}/Cloud/${qrId}`, {

@@ -29,4 +29,7 @@ export interface BookingResponseDTO {
     basePricePerNight: number;
     ownerName: string;
   };
+  // Additional fields
+  tenantName?: string;
+  qrCodeUrl?: string;
 }
