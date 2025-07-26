@@ -167,11 +167,14 @@ namespace API.Models
             // Fluent API and Relationships (unchanged)
             // -------------------------------------------------------------------
 
+            // -------------------------------------------------------------------
+            // Fluent API and Relationships (unchanged)
+            // -------------------------------------------------------------------
+
             builder.Entity<Unit>()
                 .Property(u => u.BasePricePerNight)
                 .HasPrecision(10, 2);
 
-            //Message Fluent API
             builder.Entity<Message>().Property(m => m.SenderId).IsRequired();
             builder.Entity<Message>().Property(m => m.ReceiverId).IsRequired();
             builder.Entity<Message>().Property(m => m.MessageContent).IsRequired();
@@ -208,7 +211,6 @@ namespace API.Models
                 .Property(b => b.OwnerPayoutAmount)
                 .HasPrecision(10, 2);
 
-            // UnitReview relationships
             builder.Entity<UnitReview>()
                 .HasOne(u => u.Tenant)
                 .WithMany()
@@ -227,7 +229,6 @@ namespace API.Models
                 .HasForeignKey(u => u.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // OwnerReview relationships
             builder.Entity<OwnerReview>()
                 .HasOne(o => o.Owner)
                 .WithMany()
@@ -246,7 +247,6 @@ namespace API.Models
                 .HasForeignKey(o => o.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Booking relationships
             builder.Entity<Booking>()
                 .HasOne(b => b.Tenant)
                 .WithMany()
@@ -258,8 +258,6 @@ namespace API.Models
                 .WithMany(u => u.Bookings)
                 .HasForeignKey(b => b.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
 
             // Message relationships
             builder.Entity<Message>()
@@ -285,7 +283,6 @@ namespace API.Models
                 .HasOne(ua => ua.Unit)
                 .WithMany(u => u.UnitAmenities)
                 .OnDelete(DeleteBehavior.Cascade);
-
 
             builder.Entity<UnitAmenity>()
                 .HasOne(ua => ua.Amenity)

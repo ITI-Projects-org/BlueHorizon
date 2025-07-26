@@ -26,7 +26,6 @@ namespace API.Controllers
         // ✅ Get Inbox Messages for Current User
         [HttpGet("inbox")]
         public async Task<IActionResult> GetInbox()
-
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -63,28 +62,34 @@ namespace API.Controllers
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage(SendMessageDTO messageDTO)
         {
-            if (messageDTO == null || messageDTO.MessageContent == null)
+            if (messageDTO == null || string.IsNullOrWhiteSpace(messageDTO.MessageContent))
             {
                 return BadRequest("You Can't send Empty Message");
             }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-
             }
-            var userId  = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             var message = new Message()
             {
                 SenderId = userId,
                 ReceiverId = messageDTO.ReceiverId,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.Now, // أو DateTime.UtcNow حسب تفضيلك
                 MessageContent = messageDTO.MessageContent,
                 IsRead = false,
-
             };
             await UnitOfWork.MessageRepository.AddAsync(message);
             await UnitOfWork.SaveAsync();
-            return Ok();
+
+            // ممكن ترجع الـ message اللي تم إرسالها أو DTO ليها
+            return Ok(Mapper.Map<MessageDto>(message)); // لو عايز ترجع الـ message اللي تم إرسالها
         }
     }
 }

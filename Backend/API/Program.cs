@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API
 {
@@ -21,7 +22,6 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
@@ -39,7 +39,6 @@ namespace API
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
-                // options.Password.RequireUppercase = false; // ⚠️ Removed duplicate
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 3;
@@ -61,7 +60,7 @@ namespace API
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "myschema";          
+                options.DefaultScheme = "myschema";
                 options.DefaultAuthenticateScheme = "myschema";
                 options.DefaultChallengeScheme = "myschema";
             })
@@ -100,20 +99,30 @@ namespace API
                 options.CallbackPath = "/signin-google";
                 options.SaveTokens = true;
             });
-            
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("myschema", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+            });
+
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200", "https://localhost:4200");
-                        builder.AllowAnyMethod();
-                        builder.AllowAnyHeader();
-                        builder.AllowCredentials();
+                        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader()
+                               .AllowCredentials();
                     });
             });
 
             var app = builder.Build();
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -122,10 +131,13 @@ namespace API
             app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
 
             app.UseCors("AllowFrontend");
+
             app.UseHttpsRedirection();
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllers();
 
             app.MapHub<ChatHub>("/chathub").RequireAuthorization("myschema");

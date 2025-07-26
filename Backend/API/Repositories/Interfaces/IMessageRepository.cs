@@ -9,4 +9,6 @@ namespace API.Repositories.Interfaces
         Task MarkMessagesAsReadAsync(string currentUserId, string otherUserId);
         Task<IEnumerable<MessageDto>> GetChatBetweenUsersAsync(string currentUserId, string otherUserId);
     }
+
+
 }

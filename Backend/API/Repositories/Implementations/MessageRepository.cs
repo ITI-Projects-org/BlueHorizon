@@ -1,5 +1,6 @@
 ﻿using API.Models;
 using API.Repositories.Interfaces;
+using API.DTOs.MessageDTO; // تأكد من إضافة هذا الـ using
 using Microsoft.EntityFrameworkCore;
 using API.DTOs.MessageDTO;
 
@@ -16,20 +17,20 @@ namespace API.Repositories.Implementations
         public async Task<IEnumerable<MessageDto>> GetChatBetweenUsersAsync(string currentUserId, string otherUserId)
         {
             var messages = await _context.Messages
-                .Include(m => m.SenderUser) // تأكد أن Message Model فيه SenderUser navigation property
+                .Include(m => m.SenderUser)
                 .Include(m => m.ReceiverUser)
                 .Where(m =>
                     (m.SenderId == currentUserId && m.ReceiverId == otherUserId) ||
                     (m.SenderId == otherUserId && m.ReceiverId == currentUserId)
                 )
                 .OrderBy(m => m.TimeStamp)
-                .Select(m => new MessageDto // عمل Projecting للـ MessageDto
+                .Select(m => new MessageDto
                 {
                     Id = m.Id,
                     SenderId = m.SenderId,
-                    SenderUserName = m.SenderUser.UserName, // جلب اسم المرسل
+                    SenderUserName = m.SenderUser.UserName,
                     ReceiverId = m.ReceiverId,
-                    ReceiverUserName = m.ReceiverUser.UserName, // جلب اسم المستقبل
+                    ReceiverUserName = m.ReceiverUser.UserName,
                     MessageContent = m.MessageContent,
                     TimeStamp = m.TimeStamp,
                     IsRead = m.IsRead
@@ -44,8 +45,8 @@ namespace API.Repositories.Implementations
         public async Task<IEnumerable<InboxItemDto>> GetInboxAsync(string currentUserId)
         {
             var allMessages = await _context.Messages
-                .Include(m => m.SenderUser) // Include عشان تقدر تجيب اسم المستخدم
-                .Include(m => m.ReceiverUser) // Include عشان تقدر تجيب اسم المستخدم
+                .Include(m => m.SenderUser)
+                .Include(m => m.ReceiverUser)
                 .Where(m => m.ReceiverId == currentUserId || m.SenderId == currentUserId)
                 .ToListAsync();
 
@@ -64,16 +65,15 @@ namespace API.Repositories.Implementations
 
             foreach (var conv in conversations)
             {
-                if (conv.LastMessage == null) continue; // تأكد إن فيه رسائل في المحادثة
+                if (conv.LastMessage == null) continue;
 
-                // جلب بيانات المستخدم الآخر (لو محتاجها تاني غير الـ UserName)
                 var otherUser = await _context.Users.FindAsync(conv.OtherUserId);
                 if (otherUser == null) continue;
 
                 inboxItems.Add(new InboxItemDto
                 {
                     OtherUserId = otherUser.Id,
-                    OtherUserName = otherUser.UserName, // استخدم UserName من ApplicationUser
+                    OtherUserName = otherUser.UserName,
                     LastMessageContent = conv.LastMessage.MessageContent,
                     LastMessageTimestamp = conv.LastMessage.TimeStamp,
                     IsLastMessageFromCurrentUser = conv.LastMessage.SenderId == currentUserId,
