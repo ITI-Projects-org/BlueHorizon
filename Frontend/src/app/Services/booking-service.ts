@@ -19,4 +19,10 @@ export class BookingService {
   addBooking(bookingDTO: BookingDTO): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Add`, bookingDTO);
   }
+
+  getBookedSlots(unitId: number): Observable<BookedSlotsDTO> {
+    return this.http.get<BookedSlotsDTO>(
+      `${this.baseUrl}/booked-slots/${unitId}`
+    );
+  }
 }
