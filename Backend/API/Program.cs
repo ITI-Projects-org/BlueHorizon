@@ -73,7 +73,8 @@ namespace API
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    IssuerSigningKey = secretKey
+                    IssuerSigningKey = secretKey,
+                    ValidateLifetime = true
                 };
 
                 options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents

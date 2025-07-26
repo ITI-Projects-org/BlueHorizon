@@ -1,11 +1,12 @@
-﻿using API.Models;
+﻿using API.DTOs.MessageDTO;
+using API.Models;
 
 namespace API.Repositories.Interfaces
 {
     public interface IMessageRepository : IGenericRepository<Message>
     {
-        Task<List<Message>> GetChatBetweenUsersAsync(string currentUserId, string otherUserId);
-        Task<List<Message>> GetInboxAsync(string currentUserId);
-
+        Task<IEnumerable<InboxItemDto>> GetInboxAsync(string userId);
+        Task MarkMessagesAsReadAsync(string currentUserId, string otherUserId);
+        Task<IEnumerable<MessageDto>> GetChatBetweenUsersAsync(string currentUserId, string otherUserId);
     }
 }
