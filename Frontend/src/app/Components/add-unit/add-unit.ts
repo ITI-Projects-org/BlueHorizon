@@ -28,8 +28,6 @@ export class AddUnit implements OnInit {
   selectedAmenityIds: number[] = [];
   unitFiles: FileList | null = null;
 
-  unitFiles: FileList | null = null;
-
   unitTypes = [
     { value: UnitType.Apartment, label: 'Apartment' },
     { value: UnitType.Chalet, label: 'Chalet' },
@@ -61,7 +59,6 @@ export class AddUnit implements OnInit {
 
       contractDocument: [null, Validators.required],
 
-      unitImages: [null, Validators.required],
       unitImages: [null, Validators.required],
     });
   }

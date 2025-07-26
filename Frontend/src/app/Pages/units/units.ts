@@ -7,6 +7,7 @@ import { Unit } from '../../Models/unit.model';
 import { SearchService } from '../../Services/search.service'; // Using standard naming convention
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
+import { Navbar } from '../../Layout/navbar/navbar';
 
 @Component({
   selector: 'app-units',
