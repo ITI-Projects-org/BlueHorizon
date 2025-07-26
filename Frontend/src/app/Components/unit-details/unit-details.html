@@ -1,0 +1,45 @@
+<div *ngIf="loading" class="spinner-container">
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+<div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+    {{ error }}
+</div>
+<div *ngIf="unit && !loading && !error" class="unit-details-container">
+    <h2>{{ unit.title }}</h2>
+    <p><strong>Owner:</strong> {{ unit.ownerName }}</p>
+    <p><strong>Description:</strong> {{ unit.description }}</p>
+    <p><strong>Type:</strong> {{ unit.unitType }}</p>
+    <p><strong>Bedrooms:</strong> {{ unit.bedrooms }}</p>
+    <p><strong>Bathrooms:</strong> {{ unit.bathrooms }}</p>
+    <p><strong>Sleeps:</strong> {{ unit.sleeps }}</p>
+    <p><strong>Distance to Sea:</strong> {{ unit.distanceToSea }} m</p>
+    <p><strong>Base Price Per Night:</strong> {{ unit.basePricePerNight | currency }}</p>
+    <p><strong>Address:</strong> {{ unit.address }}</p>
+    <p><strong>Village:</strong> {{ unit.villageName }}</p>
+    <p><strong>Created:</strong> {{ unit.creationDate | date:'mediumDate' }}</p>
+    <div class="rating">
+        <strong>Average Rating:</strong>
+        <ng-container *ngIf="unit.averageUnitRating !== null">
+            <span *ngFor="let star of [1,2,3,4,5]">
+                <span>{{ star <= (unit.averageUnitRating || 0) ? '&#9733;' : '&#9734;' }}</span>
+            </span>
+            ({{ unit.averageUnitRating }})
+        </ng-container>
+        <ng-container *ngIf="unit.averageUnitRating === null">No ratings</ng-container>
+    </div>
+
+    <div *ngIf="unit.unitImages && unit.unitImages.length" class="image-gallery mt-3">
+        <h4>Images</h4>
+        <div class="row">
+            @for (item of unit.unitImages; track $index) {
+                <div class="col-md-4 mb-3">
+                    <img [src]="item" class="img-fluid rounded" alt="Unit Image {{ $index + 1 }}" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

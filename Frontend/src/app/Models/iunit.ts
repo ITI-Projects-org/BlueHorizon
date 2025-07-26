@@ -11,13 +11,15 @@ export interface IUnit {
   
   creationDate:Date|null,
   
+  ownerName:string|null,
   unitAmenities:string[]|null,
   ownerId:string|null,
   title:string|null,
   address:string|null,
   description:string|null,
   villageName:string|null,
-  imageURL:string|null
+  imageURL:string|null,
+  unitImages:string[]|null
 
 }
 

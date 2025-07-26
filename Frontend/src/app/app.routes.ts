@@ -18,6 +18,7 @@ import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
 import { AddUnit } from './Components/add-unit/add-unit';
+import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -45,5 +46,9 @@ export const routes: Routes = [
   { path: 'createQr', component: CreateQr },
   { path: 'units', component: Units },
   {path:'addunit',component:AddUnit},
+  {path:'unitDetails/:id',component:UnitDetailsComponent},
+    
+
+
   { path: '**', redirectTo: 'login' },
 ];
