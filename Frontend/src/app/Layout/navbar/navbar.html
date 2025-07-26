@@ -1,72 +1,68 @@
 <nav #mainNavbar class="navbar navbar-expand-lg fixed-top">
   <div class="container">
-
     <a class="navbar-brand" [routerLink]="['/home']">
       <span class="logo-text">BlueHorizon</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-
           <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
         <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+            >Pages</a
           >
-            Pages
-          </a>
           <ul class="dropdown-menu">
-
             <li><span class="dropdown-item disabled">About Us</span></li>
             <li><span class="dropdown-item disabled">Services</span></li>
           </ul>
         </li>
         <li class="nav-item">
-
           <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
         <li class="nav-item">
-
-          <span class="nav-link disabled" [routerLink]="['/contact']">Contact</span>
+          <span class="nav-link disabled" [routerLink]="['/contact']"
+            >Contact</span
+          >
         </li>
       </ul>
-      <div class="d-flex">
 
+      <div class="d-flex">
         <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
-      </div>
-      <div class="d-flex">
-        <a href="#" class="btn btn-outline-light">Logout</a>
-      </div>
-      <div class="d-flex">
-        <a href="#" class="btn btn-outline-light">Add Unit</a>
       </div>
     </div>
   </div>
 </nav>
 
 <!-- Hero Section with Slider -->
-<section class="hero-section" #heroSection>
+<header #heroSection class="hero-section">
+  <!-- Slider -->
   <div class="slider-container">
     <div class="slider">
-      <div *ngFor="let slide of slides; let i = index" class="slide" [class.active]="currentSlide === i"
-        [style.backgroundImage]="'url(' + slide.image + ')'"></div>
+      <div
+        *ngFor="let slide of slides; let i = index"
+        class="slide"
+        [class.active]="currentSlide === i"
+        [style.backgroundImage]="'url(' + slide.image + ')'"
+      ></div>
     </div>
   </div>
 
+  <!-- Hero Content -->
   <div class="hero-content">
-    <h1>Find Your Perfect Home Today</h1>
-    <p>Search thousands of properties for sale or rent</p>
+    <h1>Find Your Dream Home</h1>
+    <p>Discover the perfect property for you and your family</p>
 
-    <!-- Search Form Container -->
+    <!-- Search Form -->
     <div class="search-form-container">
       <div class="search-form">
         <select class="form-select">
@@ -88,82 +84,42 @@
         <button class="btn btn-search">SEARCH</button>
       </div>
 
-        <!-- Select Unit Type Filter -->
-        <div class="form-group">
-          <select
-            class="form-select"
-            [(ngModel)]="selectedType"
-            name="selectedTypeInput"
-            (change)="applySearchFilters()"
-          >
-            <option [ngValue]="null">Select Type</option>
-            <option *ngFor="let type of unitTypes" [value]="type">
-              {{ type }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Search Button -->
-        <div class="form-group">
-          <button class="btn btn-search" type="submit">Search</button>
-        </div>
-
-        <!-- More Options Toggle Button -->
-        <div class="col-12 text-center mt-2">
-          <a
-            href="#"
-            class="more-options-btn"
-            (click)="toggleMoreOptions($event)"
-          >
-            <i
-              class="fas"
-              [class.fa-plus]="!showMoreOptions"
-              [class.fa-times]="showMoreOptions"
-            ></i>
-            {{ showMoreOptions ? 'Less options' : 'More options' }}
-          </a>
-        </div>
-
-        <!-- More Options Content -->
-        <div class="more-options-content row g-3 mt-1" *ngIf="showMoreOptions">
-          <!-- Bedrooms Filter -->
+      <!-- More Options -->
+      <div class="more-options-form" *ngIf="showMoreOptions">
+        <div class="row g-3 mt-2">
           <div class="col-md-4">
-            <select
-              class="form-select"
-              [(ngModel)]="selectedBedrooms"
-              name="selectedBedroomsInput"
-              (change)="applySearchFilters()"
-            >
-              <option [ngValue]="null">Bedrooms (Any)</option>
-              <option value="1">1 Bedroom</option>
-              <option value="2">2 Bedrooms</option>
-              <option value="3">3 Bedrooms</option>
-              <option value="4+">4+ Bedrooms</option>
+            <select class="form-select">
+              <option selected>Bathrooms</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3+</option>
             </select>
           </div>
-          <!-- Bathrooms Filter -->
           <div class="col-md-4">
-            <select
-              class="form-select"
-              [(ngModel)]="selectedBathrooms"
-              name="selectedBathroomsInput"
-              (change)="applySearchFilters()"
-            >
-              <option [ngValue]="null">Bathrooms (Any)</option>
-              <option value="1">1 Bathroom</option>
-              <option value="2">2 Bathrooms</option>
-              <option value="3+">3+ Bathrooms</option>
+            <select class="form-select">
+              <option selected>Unit Status</option>
+              <option>For Rent</option>
+              <option>For Sale</option>
             </select>
           </div>
-          <!-- Price Range Filter -->
           <div class="col-md-4">
             <div class="price-range">
               <div class="d-flex align-items-center">
-                <input type="number" class="form-control min-price" placeholder="Min" [(ngModel)]="minPrice"
-                  (change)="validatePriceRange()" />
+                <input
+                  type="number"
+                  class="form-control min-price"
+                  placeholder="Min"
+                  [(ngModel)]="minPrice"
+                  (change)="validatePriceRange()"
+                />
                 <span class="mx-1">-</span>
-                <input type="number" class="form-control max-price" placeholder="Max" [(ngModel)]="maxPrice"
-                  (change)="validatePriceRange()" />
+                <input
+                  type="number"
+                  class="form-control max-price"
+                  placeholder="Max"
+                  [(ngModel)]="maxPrice"
+                  (change)="validatePriceRange()"
+                />
               </div>
             </div>
           </div>
@@ -171,16 +127,22 @@
       </div>
 
       <a href="#" class="more-options-btn" (click)="toggleMoreOptions($event)">
-        <i class="fas" [class.fa-plus]="!showMoreOptions" [class.fa-times]="showMoreOptions"></i>
+        <i
+          class="fas"
+          [class.fa-plus]="!showMoreOptions"
+          [class.fa-times]="showMoreOptions"
+        ></i>
         {{ showMoreOptions ? 'Less options' : 'More options' }}
       </a>
     </div>
   </div>
-</section>
 
   <!-- Slider Indicators -->
   <div class="slider-indicators">
-    <button *ngFor="let slide of slides; let i = index" [class.active]="currentSlide === i"
-      (click)="goToSlide(i)"></button>
+    <button
+      *ngFor="let slide of slides; let i = index"
+      [class.active]="currentSlide === i"
+      (click)="goToSlide(i)"
+    ></button>
   </div>
 </header>
