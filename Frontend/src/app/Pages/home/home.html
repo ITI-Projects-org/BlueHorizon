@@ -1,20 +1,130 @@
-<div class="home-container">
-  <!-- <section class="hero-section">
-    <div class="hero-overlay">
-      <div class="hero-content">
-        <h1>Find Your Perfect Resort Unit</h1>
-        <p>Discover amazing properties for your next vacation or investment.</p>
-        <div class="search-bar-placeholder">
-          <input
-            type="text"
-            placeholder="Search by location, amenities, or unit type..."
-          />
-          <button class="btn-primary">Search</button>
-        </div>
-      </div>
+<header #heroSection class="hero-section">
+  <div class="slider-container">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      [class.active]="i === currentSlide"
+      class="slide"
+      [style.backgroundImage]="'url(' + slide.image + ')'"
+    >
     </div>
-  </section> -->
+    <div class="slider-dots">
+      <span
+        *ngFor="let slide of slides; let i = index"
+        [class.active]="i === currentSlide"
+        (click)="goToSlide(i)"
+      ></span>
+    </div>
+  </div>
 
+  <div class="hero-content">
+    <h1>Find Your Perfect Home Today</h1>
+    <p>Search thousands of properties for sale or rent</p>
+
+    <div class="search-form-container">
+      <form class="search-form" (submit)="applySearchFilters()">
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedVillage"
+            name="selectedVillageInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Village</option>
+            <option *ngFor="let village of villages" [value]="village">
+              {{ village }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedType"
+            name="selectedTypeInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Type</option>
+            <option *ngFor="let type of unitTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-search" type="submit">Search</button>
+        </div>
+
+        <div class="col-12 text-center mt-2">
+          <a
+            href="#"
+            class="more-options-btn"
+            (click)="toggleMoreOptions($event)"
+          >
+            <i
+              class="fas"
+              [class.fa-plus]="!showMoreOptions"
+              [class.fa-times]="showMoreOptions"
+            ></i>
+            {{ showMoreOptions ? 'Less options' : 'More options' }}
+          </a>
+        </div>
+
+        <div class="more-options-content row g-3 mt-1" *ngIf="showMoreOptions">
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBedrooms"
+              name="selectedBedroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bedrooms (Any)</option>
+              <option value="1">1 Bedroom</option>
+              <option value="2">2 Bedrooms</option>
+              <option value="3">3 Bedrooms</option>
+              <option value="4+">4+ Bedrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBathrooms"
+              name="selectedBathroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bathrooms (Any)</option>
+              <option value="1">1 Bathroom</option>
+              <option value="2">2 Bathrooms</option>
+              <option value="3+">3+ Bathrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Min Price"
+                [(ngModel)]="minPrice"
+                name="minPriceInput"
+                (change)="applySearchFilters()"
+              />
+              <span class="input-group-text">-</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Max Price"
+                [(ngModel)]="maxPrice"
+                name="maxPriceInput"
+                (change)="applySearchFilters()"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</header>
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+<div class="home-container">
   <section class="featured-units-section section-padding">
     <div class="container">
       <h2>Featured Units</h2>

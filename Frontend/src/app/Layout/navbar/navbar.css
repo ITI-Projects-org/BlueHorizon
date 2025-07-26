@@ -1,4 +1,4 @@
-/* Navbar Styles */
+/* Navbar Styles (أبقي على الستايلات الأصلية للـ Navbar هنا) */
 .navbar {
   transition: all 0.3s ease;
   padding: 25px 0;
@@ -37,151 +37,181 @@
   color: #555 !important;
 }
 
-/* Hero & Slider Styles */
-.hero-section {
+/* Message Icon and Pop-up Styles */
+.message-icon-container {
   position: relative;
-  height: 100vh;
-  color: white;
-  overflow: hidden;
+  /* ده عشان الـ popup يبقى مكانه مظبوط تحت الأيقونة */
 }
 
-.slider-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
-.slider {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-}
-
-.slide.active {
-  opacity: 1;
-}
-
-.slide::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 0 20px;
-  height: 100%;
+.message-icon-container .nav-link {
+  /* ستايلات الـ link اللي جواها الأيقونة عشان تبقى في نص العنصر */
+  padding: 0.5rem 1rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
-/* Search Form Styles */
-.search-form-container {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 30px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 1100px;
-  margin: 20px auto 0;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-}
-
-.search-form .form-group {
-  flex: 1 1 200px;
-  min-width: 200px;
-}
-
-.form-select,
-.btn-search {
-  height: 50px;
-  border: none;
-  width: 100%;
-}
-
-.btn-search {
-  background-color: #0066cc;
-  color: white;
-  padding: 0 30px;
-  font-weight: 500;
-}
-
-/* Slider Indicators */
-.slider-indicators {
-  position: absolute;
-  bottom: 30px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.slider-indicators button {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
+.message-icon-container .nav-link i {
+  font-size: 1.5rem; /* حجم الأيقونة */
+  color: white; /* لون الأيقونة */
   transition: all 0.3s ease;
 }
 
-.slider-indicators button.active {
-  background-color: white;
-  transform: scale(1.2);
+.navbar.scrolled .message-icon-container .nav-link i {
+  color: #555; /* لون الأيقونة لما الـ navbar يعمل scroll */
 }
 
-/* Responsive Styles */
-@media (max-width: 992px) {
-  .search-form {
-    flex-wrap: wrap;
-  }
-
-  .search-form .form-group {
-    flex: 1 1 100%;
-  }
+.message-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%); /* يخلي الـ badge يظهر بره الأيقونة شوية */
+  font-size: 0.7em;
+  padding: 0.2em 0.5em;
+  line-height: 1; /* عشان الكلام يبقى في نص الـ badge */
+  border-radius: 50%;
+  background-color: #dc3545; /* لون أحمر للـ badge */
+  color: white;
+  min-width: 20px; /* عشان يبقى مدور حتى لو رقم واحد */
+  text-align: center;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* Border أبيض خفيف */
 }
 
-@media (max-width: 768px) {
-  .logo-text {
-    font-size: 1.8rem;
-  }
+.navbar.scrolled .message-count {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Border أسود خفيف لما الـ navbar يعمل scroll */
+}
 
-  .hero-content h1 {
-    font-size: 2.5rem;
-  }
+.message-popup {
+  position: absolute;
+  top: 100%; /* عشان يبقى تحت الأيقونة مباشرة */
+  right: 0; /* عشان يبدأ من اليمين تحت الأيقونة */
+  width: 300px; /* عرض مناسب للـ popup */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* ظل أنيق */
+  z-index: 1000; /* عشان يظهر فوق كل حاجة */
+  opacity: 0;
+  visibility: hidden; /* إخفاء الـ popup تماما */
+  transform: translateY(10px); /* يبدأ من تحت شوية ويعمل animation لفوق */
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; /* animation سلس */
+  overflow: hidden; /* عشان لو فيه محتوى خرج عن الـ boundaries */
+}
 
-  .search-form-container {
-    padding: 20px;
-  }
+.message-popup.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0); /* يظهر في مكانه الطبيعي */
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+}
+
+.popup-header h5 {
+  margin: 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.popup-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: #555;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.popup-body {
+  max-height: 300px; /* ارتفاع أقصى عشان يبقى فيه scroll لو الرسائل كتير */
+  overflow-y: auto;
+  padding: 0; /* هنشيل الـ padding من هنا عشان الـ chat-item ياخد راحته */
+}
+
+.chat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chat-item:last-child {
+  border-bottom: none;
+}
+
+.chat-item:hover {
+  background-color: #f0f0f0;
+}
+
+.chat-main-info {
+  flex-grow: 1;
+  /* عشان ياخد أكبر مساحة ممكنة */
+}
+
+.chat-user-name {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.last-message-preview {
+  color: #666;
+  font-size: 0.9em;
+  white-space: nowrap; /* لمنع الرسالة من النزول لسطر جديد */
+  overflow: hidden; /* لإخفاء أي جزء زائد */
+  text-overflow: ellipsis; /* لإضافة ... في النهاية لو الرسالة طويلة */
+  max-width: 180px; /* عرض أقصى لرسالة المعاينة */
+}
+
+.chat-meta-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* عشان الوقت والـ badge يبقوا على اليمين */
+  margin-left: 10px;
+}
+
+.message-time {
+  font-size: 0.8em;
+  color: #999;
+}
+
+.unread-badge {
+  margin-top: 5px; /* مسافة بين الوقت والـ badge */
+  font-size: 0.75em;
+  padding: 3px 7px;
+  background-color: #007bff; /* لون Badge الرسائل غير المقروءة */
+  color: white;
+  border-radius: 50%; /* عشان يبقى مدور */
+}
+
+.no-chats-message {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+.popup-footer {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+.popup-footer a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.popup-footer a:hover {
+  text-decoration: underline;
 }
