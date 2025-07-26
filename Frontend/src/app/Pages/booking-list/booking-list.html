@@ -1,1 +1,212 @@
-<p>booking-list works!</p>
+<div class="booking-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="bi bi-calendar-check me-3"></i>
+      My Bookings
+    </h1>
+    <p class="page-subtitle">Manage and view all your reservations</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading your bookings...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button
+      class="btn btn-sm btn-outline-danger ms-3"
+      (click)="loadMyBookings()"
+    >
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Retry
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && bookings.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="bi bi-calendar-x"></i>
+    </div>
+    <h3 class="empty-title">No Bookings Found</h3>
+    <p class="empty-text">
+      You haven't made any bookings yet. Start exploring our amazing properties!
+    </p>
+    <a href="/properties" class="btn btn-primary btn-lg">
+      <i class="bi bi-search me-2"></i>
+      Browse Properties
+    </a>
+  </div>
+
+  <!-- Bookings List -->
+  <div *ngIf="!loading && !error && bookings.length > 0" class="bookings-grid">
+    <div
+      *ngFor="let booking of bookings; trackBy: trackByBookingId"
+      class="booking-card"
+      [class.upcoming]="isUpcoming(booking.checkInDate)"
+      [class.past]="isPast(booking.checkOutDate)"
+    >
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="property-info">
+          <h5 class="property-title">
+            {{ booking.unit?.title || 'Property #' + booking.unitId }}
+          </h5>
+          <p class="property-location">
+            <i class="bi bi-geo-alt me-1"></i>
+            {{ booking.unit?.address || 'Address not available' }}
+            <span *ngIf="booking.unit?.villageName">
+              - {{ booking.unit?.villageName }}</span
+            >
+          </p>
+        </div>
+        <div class="status-badge">
+          <span
+            class="badge"
+            [class]="'bg-' + getStatusColor(booking.paymentStatus)"
+          >
+            <i [class]="getStatusIcon(booking.paymentStatus) + ' me-1'"></i>
+            {{ booking.paymentStatus }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- Dates Section -->
+        <div class="dates-section">
+          <div class="date-item">
+            <i class="bi bi-calendar-check text-success"></i>
+            <div class="date-details">
+              <span class="date-label">Check-in</span>
+              <span class="date-value"
+                >{{ formatDate(booking.checkInDate) }}</span
+              >
+            </div>
+          </div>
+          <div class="duration-indicator">
+            <i class="bi bi-arrow-right"></i>
+            <span class="nights"
+              >{{ getDaysBetween(booking.checkInDate, booking.checkOutDate) }}
+              nights</span
+            >
+          </div>
+          <div class="date-item">
+            <i class="bi bi-calendar-x text-warning"></i>
+            <div class="date-details">
+              <span class="date-label">Check-out</span>
+              <span class="date-value"
+                >{{ formatDate(booking.checkOutDate) }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="details-grid">
+          <div class="detail-item">
+            <i class="bi bi-people text-info"></i>
+            <span class="detail-label">Guests</span>
+            <span class="detail-value">{{ booking.numberOfGuests }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="bi bi-calendar3 text-primary"></i>
+            <span class="detail-label">Booked</span>
+            <span class="detail-value"
+              >{{ formatDate(booking.bookingDate) }}</span
+            >
+          </div>
+          <div class="detail-item" *ngIf="booking.unit?.unitType">
+            <i class="bi bi-house text-secondary"></i>
+            <span class="detail-label">Type</span>
+            <span class="detail-value">{{ booking.unit?.unitType }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="bi bi-hash text-muted"></i>
+            <span class="detail-label">Booking ID</span>
+            <span class="detail-value">#{{ booking.id }}</span>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="pricing-section">
+          <div class="price-breakdown">
+            <div class="price-row">
+              <span class="price-label">
+                <i class="bi bi-currency-dollar me-1"></i>
+                Accommodation
+              </span>
+              <span class="price-value"
+                >${{ booking.ownerPayoutAmount | number:'1.2-2' }}</span
+              >
+            </div>
+            <div class="price-row">
+              <span class="price-label">
+                <i class="bi bi-percent me-1"></i>
+                Service Fee
+              </span>
+              <span class="price-value"
+                >${{ booking.platformComission | number:'1.2-2' }}</span
+              >
+            </div>
+            <div class="price-row total">
+              <span class="price-label">
+                <i class="bi bi-receipt me-1"></i>
+                Total Amount
+              </span>
+              <span class="price-value total-amount"
+                >${{ booking.totalPrice | number:'1.2-2' }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <div class="action-buttons">
+          <button
+            class="btn btn-outline-primary btn-sm"
+            (click)="viewBookingDetails(booking)"
+          >
+            <i class="bi bi-eye me-1"></i>
+            View Details
+          </button>
+          <button
+            *ngIf="isUpcoming(booking.checkInDate) && booking.paymentStatus.toLowerCase() !== 'cancelled'"
+            class="btn btn-outline-danger btn-sm"
+            (click)="cancelBooking(booking)"
+          >
+            <i class="bi bi-x-circle me-1"></i>
+            Cancel
+          </button>
+          <button
+            *ngIf="isPast(booking.checkOutDate) && !booking.unitReviewed"
+            class="btn btn-outline-success btn-sm"
+            (click)="leaveReview(booking)"
+          >
+            <i class="bi bi-star me-1"></i>
+            Review
+          </button>
+        </div>
+        <div class="booking-meta">
+          <small class="text-muted">
+            <i class="bi bi-clock me-1"></i>
+            <span *ngIf="isUpcoming(booking.checkInDate)">Upcoming stay</span>
+            <span *ngIf="isPast(booking.checkOutDate)">Past stay</span>
+            <span
+              *ngIf="!isUpcoming(booking.checkInDate) && !isPast(booking.checkOutDate)"
+              >Current stay</span
+            >
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
