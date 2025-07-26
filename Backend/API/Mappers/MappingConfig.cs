@@ -3,6 +3,7 @@ using API.DTOs;
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.BookingDTOs;
+using API.DTOs.ChatDTOs;
 using API.DTOs.MessageDTO;
 using API.DTOs.UnitDTO;
 using API.DTOs.VerificationDTO;
@@ -72,6 +73,11 @@ namespace API.Mappers
             // Map Unit to BookedSlotsDTO
             CreateMap<Unit, BookedSlotsDTO>()
                 .ForMember(dest => dest.BookingSlots, opt => opt.MapFrom(src => src.Bookings));
+
+            // Chat Message Mappings
+            CreateMap<ChatMessage, ChatMessageResponseDTO>().ReverseMap();
+            CreateMap<ChatMessageRequestDTO, ChatMessage>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }
