@@ -156,6 +156,7 @@ namespace API.Controllers
             var userBookings = bookings.Where(b => b.TenantId == tenantId).ToList();
             
             var bookingDTOs = _mapper.Map<List<BookingDTO>>(userBookings);
+
             return Ok(bookingDTOs);
         }
     }

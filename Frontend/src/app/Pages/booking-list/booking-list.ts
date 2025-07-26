@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BookingService } from '../../Services/booking-service';
 import { BookingResponseDTO } from '../../Models/booking-dto';
@@ -15,7 +15,7 @@ export class BookingList implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private bookingService: BookingService) {}
+  constructor(private bookingService: BookingService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadMyBookings();
@@ -29,17 +29,14 @@ export class BookingList implements OnInit {
       next: (bookings) => {
         this.bookings = bookings;
         this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Failed to load bookings. Please try again.';
-        this.loading = false;
-        console.error('Error loading bookings:', error);
-      },
+        console.log(bookings)
+        this.cdr.detectChanges();
+      }
     });
   }
 
   getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'confirmed':
         return 'success';
       case 'pending':
@@ -52,7 +49,7 @@ export class BookingList implements OnInit {
   }
 
   getStatusIcon(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'confirmed':
         return 'bi-check-circle';
       case 'pending':
@@ -85,6 +82,12 @@ export class BookingList implements OnInit {
 
   isPast(checkOutDate: Date): boolean {
     return new Date(checkOutDate) < new Date();
+  }
+
+  // Add this helper method to safely check if booking can be cancelled
+  canCancelBooking(booking: BookingResponseDTO): boolean {
+    return this.isUpcoming(booking.checkInDate) && 
+           booking.paymentStatus?.toLowerCase() !== 'cancelled';
   }
 
   trackByBookingId(index: number, booking: BookingResponseDTO): number {

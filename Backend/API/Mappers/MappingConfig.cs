@@ -45,6 +45,7 @@ namespace API.Mappers
                 .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
 
+            CreateMap<Unit,UnitDetailsDTO>().ReverseMap();
             #endregion
 
             CreateMap<Message, MessageDto>()

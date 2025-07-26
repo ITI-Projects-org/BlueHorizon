@@ -20,6 +20,6 @@ namespace API.DTOs.UnitDTO
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
-        public string imageURL { get; set; }
+        public string? imageURL { get; set; }
     }
 }

@@ -38,7 +38,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
   { path: 'my-bookings', component: BookingList },
-  { path: 'add-booking', component: BookingForm },
+  // { path: 'add-booking', component: BookingForm },
 
   {
     path: 'chat',
