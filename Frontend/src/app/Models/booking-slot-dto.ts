@@ -1,4 +1,4 @@
 export interface BookingSlotDTO {
-  CheckInDate: Date;
-  CheckOutDate: Date;
+  checkInDate: Date;
+  checkOutDate: Date;
 }

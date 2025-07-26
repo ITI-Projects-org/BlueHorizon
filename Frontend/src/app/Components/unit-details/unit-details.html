@@ -4,57 +4,318 @@
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
-</div>
-<div *ngIf="error && !loading" class="alert alert-danger" role="alert">
-  {{ error }}
-</div>
-<div *ngIf="unit && !loading && !error" class="unit-details-container">
-  <h2>{{ unit.title }}</h2>
-  <p><strong>Owner:</strong> {{ unit.ownerName }}</p>
-  <p><strong>Description:</strong> {{ unit.description }}</p>
-  <p><strong>Type:</strong> {{ unit.unitType }}</p>
-  <p><strong>Bedrooms:</strong> {{ unit.bedrooms }}</p>
-  <p><strong>Bathrooms:</strong> {{ unit.bathrooms }}</p>
-  <p><strong>Sleeps:</strong> {{ unit.sleeps }}</p>
-  <p><strong>Distance to Sea:</strong> {{ unit.distanceToSea }} m</p>
-  <p>
-    <strong>Base Price Per Night:</strong> {{ unit.basePricePerNight | currency
-    }}
-  </p>
-  <p><strong>Address:</strong> {{ unit.address }}</p>
-  <p><strong>Village:</strong> {{ unit.villageName }}</p>
-  <p><strong>Created:</strong> {{ unit.creationDate | date:'mediumDate' }}</p>
-  <div class="rating">
-    <strong>Average Rating:</strong>
-    <ng-container *ngIf="unit.averageUnitRating !== null">
-      <span *ngFor="let star of [1,2,3,4,5]">
-        <span
-          >{{ star <= (unit.averageUnitRating || 0) ? '&#9733;' : '&#9734;'
-          }}</span
-        >
-      </span>
-      ({{ unit.averageUnitRating }})
-    </ng-container>
-    <ng-container *ngIf="unit.averageUnitRating === null"
-      >No ratings</ng-container
-    >
-  </div>
-
-  <div
-    *ngIf="unit.unitImages && unit.unitImages.length"
-    class="image-gallery mt-3"
-  >
-    <h4>Images</h4>
-    <div class="row">
-      @for (item of unit.unitImages; track $index) {
-      <div class="col-md-4 mb-3">
-        <img
-          [src]="item"
-          class="img-fluid rounded"
-          alt="Unit Image {{ $index + 1 }}"
-        />
-      </div>
-      }
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
   </div>
+</div>
+<div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+  {{ error }} {{ error }}
+</div>
+<div *ngIf="unit && !loading && !error" class="unit-details-container">
+  <!-- Header Section -->
+  <div class="unit-header mb-4">
+    <h1 class="unit-title">
+      <i class="bi bi-house-door me-2"></i>
+      {{ unit.title }}
+    </h1>
+    <div class="owner-info">
+      <i class="bi bi-person-badge me-1"></i>
+      <span class="text-muted">Hosted by </span>
+      <strong>{{ unit.ownerName }}</strong>
+    </div>
+  </div>
+
+  <!-- Key Features Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="feature-card">
+        <i class="bi bi-house feature-icon"></i>
+        <div>
+          <h6 class="mb-0">Property Type</h6>
+          <span class="text-muted">{{ unit.unitType }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="feature-card">
+        <i class="bi bi-currency-dollar feature-icon"></i>
+        <div>
+          <h6 class="mb-0">Price per Night</h6>
+          <span class="price-highlight"
+            >{{ unit.basePricePerNight | currency }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Details Grid -->
+  <div class="details-grid mb-4">
+    <div class="detail-item">
+      <i class="bi bi-door-open"></i>
+      <span class="detail-label">Bedrooms</span>
+      <span class="detail-value">{{ unit.bedrooms }}</span>
+    </div>
+    <div class="detail-item">
+      <i class="bi bi-droplet"></i>
+      <span class="detail-label">Bathrooms</span>
+      <span class="detail-value">{{ unit.bathrooms }}</span>
+    </div>
+    <div class="detail-item">
+      <i class="bi bi-people"></i>
+      <span class="detail-label">Sleeps</span>
+      <span class="detail-value">{{ unit.sleeps }}</span>
+    </div>
+    <div class="detail-item">
+      <i class="bi bi-water"></i>
+      <span class="detail-label">Distance to Sea</span>
+      <span class="detail-value">{{ unit.distanceToSea }}m</span>
+    </div>
+  </div>
+
+  <!-- Description Card -->
+  <div class="description-card mb-4">
+    <h5 class="card-title">
+      <i class="bi bi-info-circle me-2"></i>
+      Description
+    </h5>
+    <p class="card-text">{{ unit.description }}</p>
+  </div>
+
+  <!-- Location Card -->
+  <div class="location-card mb-4">
+    <h5 class="card-title">
+      <i class="bi bi-geo-alt me-2"></i>
+      Location
+    </h5>
+    <div class="location-details">
+      <p class="mb-1">
+        <i class="bi bi-house-door me-2"></i>
+        {{ unit.address }}
+      </p>
+      <p class="mb-0">
+        <i class="bi bi-building me-2"></i>
+        {{ unit.villageName }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Rating Card -->
+  <div class="rating-card mb-4">
+    <h5 class="card-title">
+      <i class="bi bi-star me-2"></i>
+      Guest Reviews
+    </h5>
+    <div class="rating-display">
+      <ng-container *ngIf="unit.averageUnitRating !== null">
+        <div class="stars">
+          <span
+            *ngFor="let star of [1,2,3,4,5]"
+            class="star"
+            [class.filled]="star <= (unit.averageUnitRating || 0)"
+          >
+            <i class="bi bi-star-fill"></i>
+          </span>
+        </div>
+        <span class="rating-score">{{ unit.averageUnitRating }}/5</span>
+      </ng-container>
+      <ng-container *ngIf="unit.averageUnitRating === null">
+        <span class="no-rating">
+          <i class="bi bi-star me-1"></i>
+          No ratings yet
+        </span>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Creation Date -->
+  <div class="meta-info mb-4">
+    <small class="text-muted">
+      <i class="bi bi-calendar3 me-1"></i>
+      Listed on {{ unit.creationDate | date:'mediumDate' }}
+    </small>
+  </div>
+
+  <!-- Booking Section -->
+  <div class="booking-section mb-4">
+    <div class="booking-card">
+      <div class="booking-header">
+        <h5 class="mb-0">
+          <i class="bi bi-calendar-check me-2"></i>
+          Ready to Book?
+        </h5>
+        <p class="text-muted mb-3">
+          Reserve your stay at this amazing property
+        </p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary btn-lg booking-btn"
+        (click)="openBookingForm()"
+      >
+        <i class="bi bi-calendar-plus me-2"></i>
+        Book This Unit
+      </button>
+    </div>
+  </div>
+
+  <!-- Availability Calendar -->
+  <div class="calendar-section mb-4">
+    <div class="calendar-card">
+      <h4 class="calendar-title">
+        <i class="bi bi-calendar3 me-2"></i>
+        Availability Calendar
+      </h4>
+      <p class="text-muted mb-3">
+        Select your preferred dates and check availability
+      </p>
+
+      <div *ngIf="calendarLoading" class="text-center py-4">
+        <div
+          class="spinner-border spinner-border-sm text-primary"
+          role="status"
+        >
+          <span class="visually-hidden">Loading calendar...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading availability...</p>
+      </div>
+
+      <div *ngIf="!calendarLoading" class="calendar-container">
+        <!-- Calendar Header -->
+        <div
+          class="calendar-header d-flex justify-content-between align-items-center mb-3"
+        >
+          <button
+            class="btn btn-outline-primary btn-sm calendar-nav-btn"
+            (click)="previousMonth()"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <h5 class="mb-0 calendar-month">{{ getMonthYearString() }}</h5>
+          <button
+            class="btn btn-outline-primary btn-sm calendar-nav-btn"
+            (click)="nextMonth()"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid">
+          <!-- Day Headers -->
+          <div class="calendar-day-header">Sun</div>
+          <div class="calendar-day-header">Mon</div>
+          <div class="calendar-day-header">Tue</div>
+          <div class="calendar-day-header">Wed</div>
+          <div class="calendar-day-header">Thu</div>
+          <div class="calendar-day-header">Fri</div>
+          <div class="calendar-day-header">Sat</div>
+
+          <!-- Calendar Days -->
+          <div
+            *ngFor="let day of calendarDays"
+            class="calendar-day"
+            [ngClass]="{
+            'other-month': !day.isCurrentMonth,
+            'today': day.isToday,
+            'past': day.isPast,
+            'booked': day.isBooked,
+            'available': day.isAvailable
+          }"
+            [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') : 
+                   day.isBooked ? 'Booked' : 
+                   day.isAvailable ? 'Available' : 
+                   day.isPast ? 'Past' : 'Not Available'"
+          >
+            {{ day.day }}
+            <small
+              *ngIf="day.isToday"
+              style="
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #007bff;
+                color: white;
+                border-radius: 50%;
+                width: 12px;
+                height: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8px;
+              "
+              >T</small
+            >
+          </div>
+        </div>
+
+        <!-- Calendar Legend -->
+        <div class="calendar-legend mt-3">
+          <div class="legend-title mb-2">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              Legend
+            </small>
+          </div>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="legend-color available"></span>
+              <small>Available</small>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color booked"></span>
+              <small>Booked</small>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color past"></span>
+              <small>Past</small>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color today"></span>
+              <small>Today</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Gallery -->
+    <div
+      *ngIf="unit.unitImages && unit.unitImages.length"
+      class="image-gallery mt-4"
+    >
+      <div class="gallery-card">
+        <h4 class="gallery-title">
+          <i class="bi bi-images me-2"></i>
+          Property Photos
+        </h4>
+        <div class="row g-3">
+          @for (item of unit.unitImages; track $index) {
+          <div class="col-md-4">
+            <div class="image-container">
+              <img
+                [src]="item"
+                class="img-fluid rounded-3 shadow-sm"
+                alt="Unit Image {{ $index + 1 }}"
+              />
+              <div class="image-overlay">
+                <i class="bi bi-zoom-in"></i>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Form Modal -->
+  <app-booking-form
+    [unitId]="unitId || 0"
+    [isVisible]="showBookingForm"
+    (closeForm)="closeBookingForm()"
+    (bookingSuccess)="onBookingSuccess($event)"
+  ></app-booking-form>
 </div>

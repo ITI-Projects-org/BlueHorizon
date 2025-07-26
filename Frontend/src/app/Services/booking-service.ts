@@ -1,5 +1,5 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { BookingDTO } from '../Models/booking-dto';
+import { BookingDTO, BookingResponseDTO } from '../Models/booking-dto';
 import { BookingSlotDTO } from '../Models/booking-slot-dto';
 import { BookedSlotsDTO } from '../Models/booked-slots-dto';
 import { HttpClient } from '@angular/common/http';
@@ -18,5 +18,15 @@ export class BookingService {
 
   addBooking(bookingDTO: BookingDTO): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Add`, bookingDTO);
+  }
+
+  getBookedSlots(unitId: number): Observable<BookedSlotsDTO> {
+    return this.http.get<BookedSlotsDTO>(
+      `${this.baseUrl}/booked-slots/${unitId}`
+    );
+  }
+
+  getMyBookings(): Observable<BookingResponseDTO[]> {
+    return this.http.get<BookingResponseDTO[]>(`${this.baseUrl}/my-bookings`);
   }
 }
