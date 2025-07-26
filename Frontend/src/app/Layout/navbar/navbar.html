@@ -1,7 +1,6 @@
-<!-- Navbar -->
 <nav #mainNavbar class="navbar navbar-expand-lg fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" [routerLink]="['/home']">
       <span class="logo-text">BlueHorizon</span>
     </a>
     <button
@@ -16,25 +15,29 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Home</a>
+          <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#">Pages</a>
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+            >Pages</a
+          >
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">About Us</a></li>
-            <li><a class="dropdown-item" href="#">Services</a></li>
+            <li><span class="dropdown-item disabled">About Us</span></li>
+            <li><span class="dropdown-item disabled">Services</span></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Units</a>
+          <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
+          <span class="nav-link disabled" [routerLink]="['/contact']"
+            >Contact</span
+          >
         </li>
       </ul>
 
       <div class="d-flex">
-        <a href="#" class="btn btn-outline-light">Login</a>
+        <a [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
       </div>
     </div>
   </div>
@@ -61,32 +64,25 @@
 
     <!-- Search Form -->
     <div class="search-form-container">
-      <select class="form-select" [(ngModel)]="selectedVillage">
-        <option [ngValue]="null">Location</option>
-        <option
-          *ngFor="let location of ['Marassi', 'Fouka Bay']"
-          [ngValue]="location"
-        >
-          {{location}}
-        </option>
-      </select>
-
-      <select class="form-select" [(ngModel)]="selectedType">
-        <option [ngValue]="null">Type</option>
-        <option *ngFor="let type of ['Villa', 'House']" [ngValue]="type">
-          {{type}}
-        </option>
-      </select>
-
-      <select class="form-select" [(ngModel)]="selectedBedrooms">
-        <option [ngValue]="null">Bedrooms</option>
-        <option *ngFor="let num of ['1', '2', '3+']" [ngValue]="num">
-          {{num}}
-        </option>
-      </select>
-
-      <!-- عدل زر البحث لاستدعاء onSearch() -->
-      <button class="btn btn-search" (click)="onSearch()">SEARCH</button>
+      <div class="search-form">
+        <select class="form-select">
+          <option selected>Location</option>
+          <option>Marassi</option>
+          <option>Fouka Bay</option>
+        </select>
+        <select class="form-select">
+          <option selected>Type</option>
+          <option>Villa</option>
+          <option>House</option>
+        </select>
+        <select class="form-select">
+          <option selected>Bedrooms</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3+</option>
+        </select>
+        <button class="btn btn-search">SEARCH</button>
+      </div>
 
       <!-- More Options -->
       <div class="more-options-form" *ngIf="showMoreOptions">

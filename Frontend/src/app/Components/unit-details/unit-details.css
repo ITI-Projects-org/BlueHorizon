@@ -1,0 +1,25 @@
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+.error-message {
+  color: #b00020;
+  text-align: center;
+  margin: 20px 0;
+}
+.unit-details-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.rating {
+  margin: 12px 0;
+}
+.carousel-container {
+  margin-top: 24px;
+}

@@ -20,6 +20,7 @@ import { AddUnit } from './Components/add-unit/add-unit';
 import { AuthGuard } from './Guards/auth-guard-guard';
 import { BookingList } from './Pages/booking-list/booking-list';
 import { BookingForm } from './Pages/booking-form/booking-form';
+import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -50,5 +51,7 @@ export const routes: Routes = [
   { path: 'createQr', component: CreateQr },
   { path: 'units', component: Units },
   { path: 'addunit', component: AddUnit },
+  { path: 'unitDetails/:id', component: UnitDetailsComponent },
+
   { path: '**', redirectTo: 'login' },
 ];
