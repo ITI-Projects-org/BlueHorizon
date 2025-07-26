@@ -3,24 +3,21 @@
     <a class="navbar-brand" [routerLink]="['/home']">
       <span class="logo-text">BlueHorizon</span>
     </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
+          <a class="nav-link active" [routerLink]="['/my-bookings']">My Bookings</a>
+        </li>
+
+        <li class="nav-item">
           <a class="nav-link active" [routerLink]="['/home']">Home</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-            >Pages</a
-          >
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Pages</a>
           <ul class="dropdown-menu">
             <li><span class="dropdown-item disabled">About Us</span></li>
             <li><span class="dropdown-item disabled">Services</span></li>
@@ -30,9 +27,22 @@
           <a class="nav-link" [routerLink]="['/units']">Units</a>
         </li>
         <li class="nav-item">
-          <span class="nav-link disabled" [routerLink]="['/contact']"
-            >Contact</span
-          >
+          <span class="nav-link disabled" [routerLink]="['/contact']">Contact</span>
+        </li>
+
+
+        <li class="nav-item">
+          <span class="nav-link disabled" [routerLink]="['/PendingOwners']">Pending Owners</span>
+        </li>
+
+
+
+        <li class="nav-item">
+          <span class="nav-link disabled" [routerLink]="['/VerifyOwner']">Verify Owner</span>
+        </li>
+
+        <li class="nav-item">
+          <span class="nav-link disabled" [routerLink]="['/profile']">Profile </span>
         </li>
       </ul>
 
@@ -48,12 +58,8 @@
   <!-- Slider -->
   <div class="slider-container">
     <div class="slider">
-      <div
-        *ngFor="let slide of slides; let i = index"
-        class="slide"
-        [class.active]="currentSlide === i"
-        [style.backgroundImage]="'url(' + slide.image + ')'"
-      ></div>
+      <div *ngFor="let slide of slides; let i = index" class="slide" [class.active]="currentSlide === i"
+        [style.backgroundImage]="'url(' + slide.image + ')'"></div>
     </div>
   </div>
 
@@ -105,21 +111,11 @@
           <div class="col-md-4">
             <div class="price-range">
               <div class="d-flex align-items-center">
-                <input
-                  type="number"
-                  class="form-control min-price"
-                  placeholder="Min"
-                  [(ngModel)]="minPrice"
-                  (change)="validatePriceRange()"
-                />
+                <input type="number" class="form-control min-price" placeholder="Min" [(ngModel)]="minPrice"
+                  (change)="validatePriceRange()" />
                 <span class="mx-1">-</span>
-                <input
-                  type="number"
-                  class="form-control max-price"
-                  placeholder="Max"
-                  [(ngModel)]="maxPrice"
-                  (change)="validatePriceRange()"
-                />
+                <input type="number" class="form-control max-price" placeholder="Max" [(ngModel)]="maxPrice"
+                  (change)="validatePriceRange()" />
               </div>
             </div>
           </div>
@@ -127,11 +123,7 @@
       </div>
 
       <a href="#" class="more-options-btn" (click)="toggleMoreOptions($event)">
-        <i
-          class="fas"
-          [class.fa-plus]="!showMoreOptions"
-          [class.fa-times]="showMoreOptions"
-        ></i>
+        <i class="fas" [class.fa-plus]="!showMoreOptions" [class.fa-times]="showMoreOptions"></i>
         {{ showMoreOptions ? 'Less options' : 'More options' }}
       </a>
     </div>
@@ -139,10 +131,7 @@
 
   <!-- Slider Indicators -->
   <div class="slider-indicators">
-    <button
-      *ngFor="let slide of slides; let i = index"
-      [class.active]="currentSlide === i"
-      (click)="goToSlide(i)"
-    ></button>
+    <button *ngFor="let slide of slides; let i = index" [class.active]="currentSlide === i"
+      (click)="goToSlide(i)"></button>
   </div>
 </header>
