@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { UnitsService } from '../../Services/units.service';
 import { Unit } from '../../Models/unit.model';
-import { SearchService } from '../../Services/search.service'; // Using standard naming convention
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { Navbar } from '../../Layout/navbar/navbar';
+import { SearchService } from '../../Services/searchService';
 
 @Component({
   selector: 'app-units',
@@ -15,7 +15,6 @@ import { Navbar } from '../../Layout/navbar/navbar';
   imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './units.html',
   styleUrl: './units.css',
-  providers: [UnitsService],
 })
 export class Units implements OnInit, OnDestroy {
   allUnits: Unit[] = [];

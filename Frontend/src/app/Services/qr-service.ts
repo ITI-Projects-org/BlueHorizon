@@ -1,15 +1,8 @@
 import { QrCodeDto } from './../Models/qr-code-dto';
 import { isPlatformBrowser } from '@angular/common';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  httpResource,
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ReviewDTO } from '../Models/ReviewDTO';
-import { UrlCodec } from '@angular/common/upgrade';
 
 @Injectable({
   providedIn: 'root',

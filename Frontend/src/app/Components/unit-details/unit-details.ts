@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Unit } from '../../Services/unit';
 import { IUnit } from '../../Models/iunit';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +15,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [CommonModule, MatProgressSpinnerModule, MatIconModule, BookingForm],
   templateUrl: './unit-details.html',
+  styleUrl: './unit-details.css',
   styleUrl: './unit-details.css',
 })
 export class UnitDetailsComponent implements OnInit {
