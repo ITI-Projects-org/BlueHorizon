@@ -10,13 +10,13 @@ import {
 } from '@angular/forms';
 import { RegisterDTO } from '../../Models/register-dto';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert';
+import { Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule], // Add NgxSpinnerModule
+  imports: [ReactiveFormsModule, CommonModule, NgxSpinnerModule, RouterLink], // Add NgxSpinnerModule
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
 })
@@ -58,20 +58,23 @@ export class Register {
     this.authenticationService.register(this.registerDTO).subscribe({
       next: () => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Registration Successful!',
           text: 'A confirmation email was sent, please check it to login',
           icon: 'success',
+          draggable: true,
+          confirmButtonText: 'Go to Login page',
         }).then(() => {
           this.router.navigateByUrl('/login');
         });
       },
       error: (error) => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Registration Failed',
           text: error.error?.msg || 'An error occurred during registration',
           icon: 'error',
+          draggable: true,
         });
       },
     });

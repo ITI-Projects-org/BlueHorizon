@@ -32,6 +32,7 @@ public class QrCodeController : ControllerBase
     // ------------------------------------
     // ------------------------------------
     // ------------------------------------
+    
     [HttpPost("createCloud")]
     public async Task<IActionResult> CreateQrCloud([FromBody] QRDTO qrdto)
     {
@@ -62,9 +63,6 @@ public class QrCodeController : ControllerBase
         return CreatedAtAction(nameof(GetQRCodeByIdCloud), new { QrId = qr.Id }, new { Message = "Qr created successfully", QrId = qr.Id, imgPath = qr.ImagePath });
     }
 
-
-
-
     [HttpGet("Cloud/{QrId}")]
     //[Authorize(Roles = "Tenant,Owner,Admin")]
     public async Task<IActionResult> GetQRCodeByIdCloud(int QrId)
@@ -80,6 +78,7 @@ public class QrCodeController : ControllerBase
     // ------------------------------------
     // ------------------------------------
     // ------------------------------------
+    
     [HttpPost("create")]
     //[Authorize(Roles ="Owner")]
     public async Task<IActionResult> CreateQr([FromBody] QRDTO qrdto)

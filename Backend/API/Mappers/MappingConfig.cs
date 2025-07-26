@@ -2,11 +2,13 @@
 using API.DTOs;
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
+using API.DTOs.BookingDTOs;
 using API.DTOs.MessageDTO;
 using API.DTOs.UnitDTO;
 using API.DTOs.VerificationDTO;
 using API.Models;
 using AutoMapper;
+using MailKit.Security;
 
 namespace API.Mappers
 {
@@ -57,9 +59,18 @@ namespace API.Mappers
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
+            
             CreateMap<UnitDTO, Unit>().ReverseMap();
 
+            CreateMap<Booking, BookingDTO>().ReverseMap();
 
+            CreateMap<Booking, BookingSlotDTO>()
+                 .ForMember(dest => dest.CheckInDate, opt => opt.MapFrom(src => src.CheckInDate))
+                 .ForMember(dest => dest.CheckOutDate, opt => opt.MapFrom(src => src.CheckOutDate));
+
+            // Map Unit to BookedSlotsDTO
+            CreateMap<Unit, BookedSlotsDTO>()
+                .ForMember(dest => dest.BookingSlots, opt => opt.MapFrom(src => src.Bookings));
         }
     }
 }

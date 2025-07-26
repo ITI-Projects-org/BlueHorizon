@@ -47,8 +47,6 @@ export const routes: Routes = [
   { path: 'units', component: Units },
   {path:'addunit',component:AddUnit},
   {path:'unitDetails/:id',component:UnitDetailsComponent},
-    
-
-
   { path: '**', redirectTo: 'login' },
+  { path: '', redirectTo: 'units', pathMatch: 'full' },
 ];

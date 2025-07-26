@@ -9,7 +9,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { error } from 'console';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 @Component({
@@ -59,21 +59,24 @@ export class ResetPassword implements OnInit {
     this.authService.resetPassword(this.resetRequest).subscribe({
       next: (res) => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Success',
           text: res.msg,
           icon: 'success',
+          draggable: true,
+          confirmButtonText: 'Go to Login page',
         }).then(() => {
           this.router.navigateByUrl('/login');
         });
       },
       error: (error) => {
         this.spinner.hide();
-        Swal({
+        Swal.fire({
           title: 'Reset Password Failed',
           text:
             error.error?.msg || 'An error occurred during resetting password',
           icon: 'error',
+          draggable: true,
         });
       },
     });

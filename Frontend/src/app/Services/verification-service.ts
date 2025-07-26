@@ -30,6 +30,12 @@ export class Verification {
     });
   }
 
+  isVerified():Observable<{isVerified:boolean}>{
+    console.log('from is verifed serivce');
+    console.log(`${this.verificationURL}/isVerified`);
+    return this.http.get<{isVerified:boolean}>(`${this.verificationURL}/isVerified`,{headers:this.headers});
+  }
+
   GetPendingOwners(): Observable<OwnerVerificationDTO[]> {
     return this.http.get<OwnerVerificationDTO[]>(
       `${this.verificationURL}/Requests`,
