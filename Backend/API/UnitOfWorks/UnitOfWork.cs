@@ -170,6 +170,48 @@ namespace API.UnitOfWorks
             }
         }
 
+
+
+
+        public ITenantRepository tenantRepository;
+        public ITenantRepository TenantRepository
+        {
+            get
+            {
+                if (tenantRepository == null)
+                {
+                    tenantRepository = new TenantRepository(_context);
+                };
+                return tenantRepository;
+            }
+        }
+
+
+
+
+
+
+        
+
+
+
+
+
+        public IUnitImagesRepository unitImagesRepository;
+        public IUnitImagesRepository UnitImagesRepository
+        {
+            get
+            {
+                if (unitImagesRepository == null)
+                {
+                    unitImagesRepository = new UnitImagesRepository(_context);
+                };
+                return unitImagesRepository;
+            }
+        }
+
+        //public ITenantRepository TenantRepository => throw new NotImplementedException();
+
         public void Dispose()
         {
             _context.Dispose();

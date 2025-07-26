@@ -38,8 +38,8 @@ namespace API.Repositories.Implementations
         public async Task<string> GetSingleImagePathByUnitId(int unitId)
         {
             return await _context.UnitImages
-                .Where(ui => ui.UnitID == unitId)
-                .Select(ui => ui.ImageURL)
+                .Where(ui=>ui.UnitID == unitId)
+                .Select(ui=>ui.ImageURL)
                 .FirstOrDefaultAsync();
         }
 

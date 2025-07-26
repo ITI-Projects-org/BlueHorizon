@@ -172,7 +172,7 @@ namespace API.Models
                 .OnDelete(DeleteBehavior.Restrict);
                 
             builder.Entity<Unit>()
-                .HasMany(u=>u.UnitImages)
+                .HasMany(u=>u.UnitImagesTable)
                 .WithOne(ui=>ui.Unit)
                 .OnDelete(DeleteBehavior.Cascade);
 

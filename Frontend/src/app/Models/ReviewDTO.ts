@@ -4,5 +4,8 @@ export interface ReviewDTO
     bookingId :number,
     rating:number,
     comment :string|null,
-    reviewStatus : number
+    reviewStatus : number,
+    tenantName:string|null,
+    reviewDate:Date|null
+
 }

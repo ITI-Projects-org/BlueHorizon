@@ -16,6 +16,7 @@ import { Chat } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
+import { AddUnit } from './Components/add-unit/add-unit';
 import { AuthGuard } from './Guards/auth-guard-guard';
 import { BookingList } from './Pages/booking-list/booking-list';
 import { BookingForm } from './Pages/booking-form/booking-form';
@@ -47,6 +48,7 @@ export const routes: Routes = [
   //    This ensures users don't land on a blank page if they type a wrong URL.
   { path: 'addReview', component: Review, canActivate: [AuthGuard] },
   { path: 'createQr', component: CreateQr },
+  { path: 'units', component: Units },
+  { path: 'addunit', component: AddUnit },
   { path: '**', redirectTo: 'login' },
-  { path: '', component: Units },
 ];

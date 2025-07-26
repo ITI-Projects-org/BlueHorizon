@@ -73,7 +73,7 @@ namespace API.Controllers
 
         }
 
-
+       
 
         [Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
@@ -107,7 +107,7 @@ namespace API.Controllers
                 //}
                 if (unitDto.ContractDocument != null)
                 {
-                    var res = await _photoService.AddPhotoAsync(unitDto.ContractDocument);
+                    var res =await _photoService.AddPhotoAsync(unitDto.ContractDocument);
 
                     unit.ContractPath = res.Url.ToString();
                 }
@@ -120,8 +120,7 @@ namespace API.Controllers
                     {
                         var res = await _photoService.AddPhotoAsync(image);
                         //res.Url
-                        UnitImages unitImage = new UnitImages()
-                        {
+                        UnitImages unitImage = new UnitImages(){
                             UnitID = unit.Id,
                             ImageURL = res.Url.ToString()
                         };
@@ -129,7 +128,7 @@ namespace API.Controllers
                     }
                 }
 
-
+                
 
                 // Add amenities
                 if (unitDto.AmenityIds != null && unitDto.AmenityIds.Any())
