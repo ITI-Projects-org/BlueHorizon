@@ -1,17 +1,14 @@
 ﻿using API.Models;
 using API.Repositories.Interfaces;
-using API.DTOs.MessageDTO; // تأكد من إضافة هذا الـ using
-using Microsoft.EntityFrameworkCore;
 using API.DTOs.MessageDTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories.Implementations
 {
     public class MessageRepository : GenericRepository<Message>, IMessageRepository
     {
-        private readonly BlueHorizonDbContext _context;
-        public MessageRepository(BlueHorizonDbContext context) : base(context)
+        public MessageRepository(BlueHorizonDbContext _context) : base(_context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<MessageDto>> GetChatBetweenUsersAsync(string currentUserId, string otherUserId)
