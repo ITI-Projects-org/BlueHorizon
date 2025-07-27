@@ -1,0 +1,74 @@
+<div class="qr-creation-container">
+    <div class="qr-creation-card">
+        <div class="card-header">
+            <h2 class="card-title">Generate QR Code</h2>
+            <p class="card-subtitle">
+                Enter details to create an entry QR code for booking #{{ bookingId }}
+            </p>
+        </div>
+
+        <form [formGroup]="qrCodeDto" (ngSubmit)="submitQrForm()">
+            <div class="form-group">
+                <label for="tenantNationalId" class="form-label">Tenant National ID <span
+                        class="required">*</span></label>
+                <input type="text" id="tenantNationalId" formControlName="TenantNationalId" class="form-control"
+                    placeholder="Enter Tenant National ID" />
+                <div *ngIf="TenantNationalId?.invalid && TenantNationalId?.touched" class="error-message">
+                    Tenant National ID is required.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="villageName" class="form-label">Village Name</label>
+                <input type="text" id="villageName" formControlName="VillageName" class="form-control"
+                    placeholder="Village Name" />
+            </div>
+
+            <div class="form-group">
+                <label for="unitAddress" class="form-label">Unit Address</label>
+                <input type="text" id="unitAddress" formControlName="UnitAddress" class="form-control"
+                    placeholder="Unit Address" />
+            </div>
+
+            <div class="form-group">
+                <label for="ownerName" class="form-label">Owner Name</label>
+                <input type="text" id="ownerName" formControlName="OwnerName" class="form-control"
+                    placeholder="Owner Name" />
+            </div>
+
+            <div class="form-group">
+                <label for="tenantName" class="form-label">Tenant Name</label>
+                <input type="text" id="tenantName" formControlName="TenantName" class="form-control"
+                    placeholder="Tenant Name" />
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="qrError" class="alert alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ qrError }}
+            </div>
+
+            <!-- Generated QR Code Display -->
+            <div *ngIf="generatedQrCodeUrl" class="generated-qr-display">
+                <h3>QR Code Generated!</h3>
+                <img [src]="generatedQrCodeUrl" alt="Generated QR Code" class="img-fluid" />
+                <p class="text-muted mt-2">Scan this QR code for entry.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" (click)="cancel()" class="btn btn-secondary" [disabled]="isGeneratingQr">
+                    Back
+                </button>
+
+
+                @if(!generatedQrCodeUrl){
+                <button type="submit" class="btn btn-primary" [disabled]="qrCodeDto.invalid || isGeneratingQr">
+                    <span *ngIf="isGeneratingQr" class="spinner-border spinner-border-sm me-2" role="status"
+                        aria-hidden="true"></span>
+                    {{ isGeneratingQr ? 'Generating...' : 'Generate QR Code' }}
+                </button>
+                }
+            </div>
+        </form>
+    </div>
+</div>

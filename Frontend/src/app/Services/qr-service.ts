@@ -63,35 +63,18 @@ export class QrServise {
   // -------------------------
   // -------------------------
 
-  createQrCloud(qrData: QrCodeDto): Observable<{
+  createQrCloud(qrData: QrCodeDto): Observable<{ // Modified to accept qrData parameter
     message: string;
     qrId: number;
     imgPath: string;
   }> {
-    // Validate required fields
-    if (!qrData.BookingId || !qrData.TenantNationalId) {
-      throw new Error('BookingId and TenantNationalId are required fields');
-    }
-
-    return this.http
-      .post<{ message: string; qrId: number; imgPath: string }>(
-        `${this.QrURL}/createCloud`,
-        qrData,
-        {
-          headers: this.headers,
-        }
-      )
-      .pipe(
-        catchError((error: any) => {
-          let errorMessage = 'An error occurred while creating the QR code';
-          if (error.error?.message) {
-            errorMessage = error.error.message;
-          } else if (error.status === 401) {
-            errorMessage = 'You are not authorized to create QR codes';
-          }
-          throw new Error(errorMessage);
-        })
-      );
+    console.log('from post in cloud service');
+    console.log('QR Data being sent:', qrData); // Log the data being sent
+    return this.http.post<{ message: string; qrId: number; imgPath: string }>(
+      `${this.QrURL}/createCloud`,
+      qrData, // Use the passed qrData
+      { headers: this.headers }
+    );
   }
   getQrCodeCloud(qrId: number): Observable<{ imgPath: string }> {
     return this.http.get<{ imgPath: string }>(`${this.QrURL}/Cloud/${qrId}`, {
