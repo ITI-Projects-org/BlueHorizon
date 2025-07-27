@@ -1,15 +1,15 @@
 import {
   Component,
   HostListener,
-  OnInit,
+  OnInit, // تأكد من وجود OnInit هنا
   OnDestroy,
   Inject,
   PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // تأكد من وجود CommonModule هنا
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs/operators'; // تأكد من استيراد filter من 'rxjs/operators'
 
 // Import services related to user and messages
 import { AuthService } from '../../Services/auth.service';
@@ -19,14 +19,16 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 @Component({
   selector: 'app-navbar',
+  // تأكد من وجود CommonModule في الـ imports هنا
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar implements OnInit, OnDestroy {
+export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق الواجهتين OnInit, OnDestroy
   isScrolled = false;
   private isBrowser: boolean;
-  isHomePage: boolean = false; // Property to determine if we are on the Home page
+  isHomePage: boolean = false;
+  _isLoggedIn: boolean = false; // **هذه الخاصية هي الأهم لحالة تسجيل الدخول**
 
   // Message and popup related properties and logic
   showPopup: boolean = false;
@@ -45,6 +47,7 @@ export class Navbar implements OnInit, OnDestroy {
     this.currentUserId = this.authService.getCurrentUserId();
 
     if (this.isBrowser) {
+      // الاستماع لتغييرات المسار لتحديث isHomePage و _isLoggedIn
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: NavigationEnd) => {
@@ -52,6 +55,7 @@ export class Navbar implements OnInit, OnDestroy {
             event.urlAfterRedirects === '/' ||
             event.urlAfterRedirects.startsWith('/home');
           this.updateNavbarStyle();
+          this._isLoggedIn = this.authService.isLoggedIn(); // **تحديث حالة تسجيل الدخول عند تغيير المسار**
         });
     }
   }
@@ -59,12 +63,14 @@ export class Navbar implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.isBrowser) {
       window.addEventListener('scroll', this.onWindowScroll.bind(this));
-      // Add event listener to close the popup when clicking outside it
       document.addEventListener('click', this.onDocumentClick.bind(this));
     }
 
-    // Fetch recent chats only if user is logged in
-    if (this.authService.isLoggedIn()) {
+    // **تحديث حالة تسجيل الدخول فورًا عند تهيئة المكون**
+    this._isLoggedIn = this.authService.isLoggedIn();
+
+    // جلب المحادثات وبدء SignalR فقط إذا كان المستخدم مسجلًا للدخول
+    if (this._isLoggedIn) {
       this.fetchRecentChatsForPopup();
       this.startSignalRConnectionForNavbar();
     }
@@ -108,7 +114,7 @@ export class Navbar implements OnInit, OnDestroy {
       event.stopPropagation(); // Prevent event from bubbling up the DOM
     }
     this.showPopup = !this.showPopup;
-    if (this.showPopup && this.authService.isLoggedIn()) {
+    if (this.showPopup && this._isLoggedIn) { // استخدام _isLoggedIn
       this.fetchRecentChatsForPopup(); // Fetch chats only when opening the popup
     }
   }
@@ -182,9 +188,12 @@ export class Navbar implements OnInit, OnDestroy {
     });
   }
 
-  isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
+  // هذه الدالة تم استبدالها بالخاصية _isLoggedIn
+  // لكن إذا كنت لا تزال تستخدمها في أماكن أخرى غير HTML، اتركها.
+  // إذا كنت تستخدمها فقط في HTML، فيمكنك حذفها بعد التعديل.
+  // isLoggedIn(): boolean {
+  //   return this.authService.isLoggedIn();
+  // }
 
   getCurrentUserName(): string | null {
     return this.authService.getCurrentUserName();
@@ -193,5 +202,6 @@ export class Navbar implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+    this._isLoggedIn = false; // **تحديث الحالة عند تسجيل الخروج**
   }
 }
