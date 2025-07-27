@@ -43,9 +43,7 @@
         <i class="bi bi-currency-dollar feature-icon"></i>
         <div>
           <h6 class="mb-0">Price per Night</h6>
-          <span class="price-highlight"
-            >{{ unit.basePricePerNight | currency }}</span
-          >
+          <span class="price-highlight">{{ unit.basePricePerNight | currency }}</span>
         </div>
       </div>
     </div>
@@ -111,11 +109,7 @@
     <div class="rating-display">
       <ng-container *ngIf="unit.averageUnitRating !== null">
         <div class="stars">
-          <span
-            *ngFor="let star of [1,2,3,4,5]"
-            class="star"
-            [class.filled]="star <= (unit.averageUnitRating || 0)"
-          >
+          <span *ngFor="let star of [1,2,3,4,5]" class="star" [class.filled]="star <= (unit.averageUnitRating || 0)">
             <i class="bi bi-star-fill"></i>
           </span>
         </div>
@@ -150,11 +144,7 @@
           Reserve your stay at this amazing property
         </p>
       </div>
-      <button
-        type="button"
-        class="btn btn-primary btn-lg booking-btn"
-        (click)="openBookingForm()"
-      >
+      <button type="button" class="btn btn-primary btn-lg booking-btn" (click)="openBookingForm()">
         <i class="bi bi-calendar-plus me-2"></i>
         Book This Unit
       </button>
@@ -173,10 +163,7 @@
       </p>
 
       <div *ngIf="calendarLoading" class="text-center py-4">
-        <div
-          class="spinner-border spinner-border-sm text-primary"
-          role="status"
-        >
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
           <span class="visually-hidden">Loading calendar...</span>
         </div>
         <p class="mt-2 text-muted">Loading availability...</p>
@@ -184,20 +171,12 @@
 
       <div *ngIf="!calendarLoading" class="calendar-container">
         <!-- Calendar Header -->
-        <div
-          class="calendar-header d-flex justify-content-between align-items-center mb-3"
-        >
-          <button
-            class="btn btn-outline-primary btn-sm calendar-nav-btn"
-            (click)="previousMonth()"
-          >
+        <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
+          <button class="btn btn-outline-primary btn-sm calendar-nav-btn" (click)="previousMonth()">
             <i class="bi bi-chevron-left"></i>
           </button>
           <h5 class="mb-0 calendar-month">{{ getMonthYearString() }}</h5>
-          <button
-            class="btn btn-outline-primary btn-sm calendar-nav-btn"
-            (click)="nextMonth()"
-          >
+          <button class="btn btn-outline-primary btn-sm calendar-nav-btn" (click)="nextMonth()">
             <i class="bi bi-chevron-right"></i>
           </button>
         </div>
@@ -214,25 +193,18 @@
           <div class="calendar-day-header">Sat</div>
 
           <!-- Calendar Days -->
-          <div
-            *ngFor="let day of calendarDays"
-            class="calendar-day"
-            [ngClass]="{
+          <div *ngFor="let day of calendarDays" class="calendar-day" [ngClass]="{
             'other-month': !day.isCurrentMonth,
             'today': day.isToday,
             'past': day.isPast,
             'booked': day.isBooked,
             'available': day.isAvailable
-          }"
-            [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') : 
+          }" [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') : 
                    day.isBooked ? 'Booked' : 
                    day.isAvailable ? 'Available' : 
-                   day.isPast ? 'Past' : 'Not Available'"
-          >
+                   day.isPast ? 'Past' : 'Not Available'">
             {{ day.day }}
-            <small
-              *ngIf="day.isToday"
-              style="
+            <small *ngIf="day.isToday" style="
                 position: absolute;
                 top: -5px;
                 right: -5px;
@@ -245,9 +217,7 @@
                 align-items: center;
                 justify-content: center;
                 font-size: 8px;
-              "
-              >T</small
-            >
+              ">T</small>
           </div>
         </div>
 
@@ -282,24 +252,17 @@
     </div>
 
     <!-- Image Gallery -->
-    <div
-      *ngIf="unit.unitImages && unit.unitImages.length"
-      class="image-gallery mt-4"
-    >
+    <div *ngIf="unit.imagesPaths && unit.imagesPaths.length" class="image-gallery mt-4">
       <div class="gallery-card">
         <h4 class="gallery-title">
           <i class="bi bi-images me-2"></i>
           Property Photos
         </h4>
         <div class="row g-3">
-          @for (item of unit.unitImages; track $index) {
+          @for (item of unit.imagesPaths; track $index) {
           <div class="col-md-4">
             <div class="image-container">
-              <img
-                [src]="item"
-                class="img-fluid rounded-3 shadow-sm"
-                alt="Unit Image {{ $index + 1 }}"
-              />
+              <img [src]="item" class="img-fluid rounded-3 shadow-sm" alt="Unit Image {{ $index + 1 }}" />
               <div class="image-overlay">
                 <i class="bi bi-zoom-in"></i>
               </div>
@@ -312,10 +275,6 @@
   </div>
 
   <!-- Booking Form Modal -->
-  <app-booking-form
-    [unitId]="unitId || 0"
-    [isVisible]="showBookingForm"
-    (closeForm)="closeBookingForm()"
-    (bookingSuccess)="onBookingSuccess($event)"
-  ></app-booking-form>
+  <app-booking-form [unitId]="unitId || 0" [isVisible]="showBookingForm" (closeForm)="closeBookingForm()"
+    (bookingSuccess)="onBookingSuccess($event)"></app-booking-form>
 </div>

@@ -16,5 +16,5 @@ export interface IUnit {
   description: string | null;
   villageName: string | null;
   imageURL: string | null;
-  unitImages: string[] | null;
+  imagesPaths: string[] | null;
 }
