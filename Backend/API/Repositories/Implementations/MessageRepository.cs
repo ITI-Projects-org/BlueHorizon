@@ -41,11 +41,12 @@ namespace API.Repositories.Implementations
 
         public async Task<IEnumerable<InboxItemDto>> GetInboxAsync(string currentUserId)
         {
+            // جلب جميع الرسائل التي يكون المستخدم طرفًا فيها
             var allMessages = await _context.Messages
                 .Include(m => m.SenderUser)
                 .Include(m => m.ReceiverUser)
                 .Where(m => m.ReceiverId == currentUserId || m.SenderId == currentUserId)
-                .ToListAsync();
+                .ToListAsync(); // ToListAsync() هنا عشان الـ GroupBy تشتغل في الـ Memory بعد كده
 
             var conversations = allMessages
                 .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)

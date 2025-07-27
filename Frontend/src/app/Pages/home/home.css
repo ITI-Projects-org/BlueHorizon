@@ -1,44 +1,289 @@
-/* app/Pages/home/home.css */
+/* src/app/Pages/home/home.css */
 
-/* General Section Styling */
-.section-padding {
-  padding: 60px 0;
+/* Hero & Slider Styles */
+.hero-section {
+  position: relative;
+  height: 100vh;
+  color: white;
+  overflow: hidden;
+  /* padding-top is managed by JavaScript in navbar.ts */
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
+.slider-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 
-h2 {
-  font-size: 2.5em;
-  color: #333;
+.slider { /* This class is not used in home.html, consider removing if not needed */
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover; /* Changed from img to background-image */
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+.slide::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  margin-bottom: 15px;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Search Form Styles */
+.search-form-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1100px;
+  margin: 20px auto 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.search-form .form-group {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.form-select,
+.btn-search {
+  height: 50px;
+  border: none;
+  width: 100%;
+}
+
+.btn-search {
+  background-color: #0066cc;
+  color: white;
+  padding: 0 30px;
+  font-weight: 500;
+}
+
+/* More Options Toggle Button */
+.more-options-btn {
+  display: inline-block;
+  margin-top: 15px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.more-options-btn i {
+  margin-right: 5px;
+}
+
+/* More Options Content */
+.more-options-content {
+  width: 100%;
+}
+
+/* Price Range Inputs */
+.price-range .form-control {
+  flex: 1;
+}
+
+.price-range .input-group-text {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+}
+
+/* Slider Indicators */
+.slider-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.slider-indicators button { /* This class is not used in home.html, consider removing if not needed */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-indicators button.active { /* This class is not used in home.html, consider removing if not needed */
+  background-color: white;
+  transform: scale(1.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .search-form {
+    flex-wrap: wrap;
+  }
+
+  .search-form .form-group {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-text { /* This style seems to be for Navbar, consider moving to navbar.css if not used for hero content */
+    font-size: 1.8rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .search-form-container {
+    padding: 20px;
+  }
+}
+
+/* General Home page content styles (below hero) */
+.home-container {
+  /* Add padding-top to account for fixed navbar if needed */
+  margin-top: 0; /* Hero section is 100vh, so no margin needed here */
+}
+
+.section-padding {
+  padding: 80px 0;
 }
 
 .section-description {
+  text-align: center;
   font-size: 1.1em;
   color: #666;
-  text-align: center;
   margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.text-center {
-  text-align: center;
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
 }
 
-/* Buttons */
+.unit-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.unit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.unit-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.unit-info {
+  padding: 20px;
+}
+
+.unit-info h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.unit-location {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.unit-location i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+.unit-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.unit-details span i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+.unit-price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
 .btn-primary {
-  background-color: #007bff; /* Example blue */
+  background-color: #007bff;
   color: white;
   padding: 12px 25px;
-  border: none;
   border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
   text-decoration: none;
+  font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
@@ -46,20 +291,69 @@ h2 {
   background-color: #0056b3;
 }
 
-.btn-secondary {
-  background-color: #6c757d; /* Example gray */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
+/* Why Choose Us Section */
+.why-choose-us-section {
+  background-color: #f8f9fa;
 }
 
-.btn-secondary:hover {
-  background-color: #5a6268;
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+
+.feature-item {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+  font-size: 3em;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.feature-item h3 {
+  font-size: 1.4em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  color: #666;
+  font-size: 0.95em;
+}
+
+/* Call to Action Section */
+.cta-section {
+  background: url('https://via.placeholder.com/1500x500?text=CTA+Background') no-repeat center center/cover;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.cta-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 80px 0;
+}
+
+.cta-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
 }
 
 .btn-large {
@@ -71,207 +365,24 @@ h2 {
   margin-left: 15px;
 }
 
-/* Hero Section */
-.hero-section {
-  position: relative;
-  height: 600px; /* Adjust as needed */
-  background: url("https://via.placeholder.com/1920x600?text=Beautiful+Resort+View")
-    no-repeat center center/cover;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
+/* Responsive adjustments for Home page content */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 50px 0;
+  }
 
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .units-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
 
-.hero-content {
-  z-index: 1;
-  max-width: 800px;
-  padding: 20px;
-}
+  .cta-section h2 {
+    font-size: 2em;
+  }
 
-.hero-content h1 {
-  font-size: 3.5em;
-  margin-bottom: 20px;
-  color: white; /* Override h2 color */
-}
-
-.hero-content p {
-  font-size: 1.3em;
-  margin-bottom: 30px;
-}
-
-.search-bar-placeholder {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 30px;
-}
-
-.search-bar-placeholder input[type="text"] {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 5px;
-  width: 60%;
-  max-width: 400px;
-  font-size: 1em;
-}
-
-/* Featured Units Section */
-.featured-units-section {
-  background-color: #f9f9f9;
-}
-
-.units-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 30px;
-}
-
-.unit-card {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.unit-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.unit-image {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  display: block;
-}
-
-.unit-info {
-  padding: 20px;
-}
-
-.unit-info h3 {
-  font-size: 1.5em;
-  margin-bottom: 10px;
-  color: #333;
-  text-align: left; /* Override global h2 */
-}
-
-.unit-location {
-  color: #777;
-  font-size: 0.95em;
-  margin-bottom: 15px;
-}
-
-.unit-details {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  color: #555;
-  font-size: 0.9em;
-}
-
-.unit-details span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.unit-price {
-  font-size: 1.3em;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 20px;
-}
-
-/* Why Choose Us Section */
-.why-choose-us-section {
-  background-color: #eef4f9; /* Light blue background */
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  margin-top: 30px;
-}
-
-.feature-item {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
-
-.feature-icon {
-  font-size: 3em;
-  color: #007bff;
-  margin-bottom: 20px;
-}
-
-.feature-item h3 {
-  font-size: 1.6em;
-  color: #333;
-  margin-bottom: 10px;
-  text-align: center; /* Override global h2 */
-}
-
-.feature-item p {
-  color: #666;
-  font-size: 1em;
-  line-height: 1.6;
-}
-
-/* Call to Action Section */
-.cta-section {
-  position: relative;
-  background: url("https://via.placeholder.com/1920x400?text=Contact+Us+Background")
-    no-repeat center center/cover;
-  color: white;
-  text-align: center;
-  height: 350px; /* Adjust as needed */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cta-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cta-section h2 {
-  font-size: 2.8em;
-  margin-bottom: 20px;
-  color: white; /* Override h2 color */
-}
-
-.cta-section p {
-  font-size: 1.2em;
-  margin-bottom: 40px;
+  .cta-section p {
+    font-size: 1em;
+  }
 }
 
 /* Font Awesome Icons (assuming you have them linked in index.html) */

@@ -20,32 +20,30 @@ export class OwnerVerification implements OnInit {
   constructor(private OwnerVerificationService: Verification) {}
   selectedAmenityIds: number[] = [];
   ownerDTO!: OwnerVerificationDTO;
-  amenities: Amenity[] = [
-    // { id: 1, name: 'Wifi' },
-    // { id: 2, name: 'Pool' },
-    // { id: 3, name: 'Air Conditioning' },
-  ];
+  amenities: Amenity[] = [];
+  unitImages: File[] = []; // إضافة متغير جديد لتخزين ملفات الصور المتعددة
+
   ownerForm = new FormGroup({
     DocumentType: new FormControl(0, [Validators.required]),
     OwnerName: new FormControl(''),
     FrontNationalIdDocumentPath: new FormControl(''),
     BackNationalIdDocumentPath: new FormControl(''),
-    FrontNationalIdDocument: new FormControl(null),
-    BackNationalIdDocument: new FormControl(null),
+    FrontNationalIdDocument: new FormControl(null, [Validators.required]), // أضف Validators.required
+    BackNationalIdDocument: new FormControl(null, [Validators.required]),   // أضف Validators.required
 
     NationalId: new FormControl('', [Validators.required]),
     BankAccountDetails: new FormControl('', [Validators.required]),
     Title: new FormControl('', [Validators.required]),
-    Description: new FormControl(''),
-    UnitType: new FormControl(0),
-    Bedrooms: new FormControl(0),
-    Bathrooms: new FormControl(0),
-    Sleeps: new FormControl(0),
-    DistanceToSea: new FormControl(0),
-    BasePricePerNight: new FormControl(0),
+    Description: new FormControl('', [Validators.required]), // أضف Validators.required
+    UnitType: new FormControl(0, [Validators.required]), // أضف Validators.required
+    Bedrooms: new FormControl(0, [Validators.required]),   // أضف Validators.required
+    Bathrooms: new FormControl(0, [Validators.required]),  // أضف Validators.required
+    Sleeps: new FormControl(0, [Validators.required]),     // أضف Validators.required
+    DistanceToSea: new FormControl(0, [Validators.required]), // أضف Validators.required
+    BasePricePerNight: new FormControl(0, [Validators.required]), // أضف Validators.required
     Address: new FormControl('', Validators.required),
     VillageName: new FormControl('', Validators.required),
-    Contract: new FormControl(0, [Validators.required]),
+    Contract: new FormControl(0), // غالبًا ده مش هيكون مطلوب في الفورم نفسها لكن كـ ID لو موجود في الـ DTO
     ContractPath: new FormControl(''),
     CreationDate: new FormControl(new Date().toISOString(), [
       Validators.required,
@@ -53,14 +51,11 @@ export class OwnerVerification implements OnInit {
     AverageUnitRating: new FormControl(0, [Validators.required]),
     UnitAmenities: new FormControl([]),
     VerificationStatus: new FormControl(0, [Validators.required]),
-    ContractFile: new FormControl(null),
+    ContractFile: new FormControl(null, [Validators.required]), // أضف Validators.required
     UploadDate: new FormControl(new Date().toISOString()),
-    // id :new FormControl('',[Validators.required]),
-    // ownerId :new FormControl('',[Validators.required]),
-    // ownerName :new FormControl('',[Validators.required]),
-    // VerificationNotes :new FormControl('',[Validators.required]),
-    // UnitId :new FormControl('',[Validators.required]),
+    UnitImages: new FormControl<File[] | null>(null, [Validators.required]), // إضافة FormControl لصور الوحدة
   });
+
   ngOnInit(): void {
     this.OwnerVerificationService.GetAllAmenities().subscribe({
       next: (res) => {
@@ -71,6 +66,7 @@ export class OwnerVerification implements OnInit {
       error: (e) => console.log(e),
     });
   }
+
   onAmenityChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     const id = parseInt(checkbox.value, 10);
@@ -80,17 +76,31 @@ export class OwnerVerification implements OnInit {
       this.selectedAmenityIds = this.selectedAmenityIds.filter((a) => a !== id);
     }
   }
+
   onContractFileChange(event: any) {
     let file = event.target.files[0];
     this.ownerForm.patchValue({ ContractFile: file });
   }
+
   onFrontDocumentFileChange(event: any) {
     let file = event.target.files[0];
     this.ownerForm.patchValue({ FrontNationalIdDocument: file });
   }
+
   onBackDocumentFileChange(event: any) {
     let file = event.target.files[0];
     this.ownerForm.patchValue({ BackNationalIdDocument: file });
+  }
+
+  // دالة جديدة للتعامل مع اختيار صور الوحدة
+  onUnitFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.unitImages = Array.from(event.target.files);
+      this.ownerForm.patchValue({ UnitImages: this.unitImages }); // تحديث FormControl بقائمة الملفات
+    } else {
+      this.unitImages = [];
+      this.ownerForm.patchValue({ UnitImages: null }); // إفراغ FormControl إذا لم يتم اختيار ملفات
+    }
   }
 
   getFormValidationErrors() {
@@ -109,9 +119,11 @@ export class OwnerVerification implements OnInit {
     });
     return errors;
   }
+
   Verify() {
     if (this.ownerForm.invalid) {
       this.ownerForm.markAllAsTouched();
+      console.log('Form is invalid. Errors:', this.getFormValidationErrors()); // log errors
       return;
     }
 
@@ -119,9 +131,8 @@ export class OwnerVerification implements OnInit {
     const formValue = this.ownerForm.value;
 
     // Manually append all form values EXCEPT the empty path fields
-    // to work around the backend validation issue.
     for (const key in formValue) {
-      if (key !== 'DocumentPath' && key !== 'ContractPath') {
+      if (key !== 'ContractPath' && key !== 'FrontNationalIdDocumentPath' && key !== 'BackNationalIdDocumentPath' && key !== 'UnitImages') {
         const value = formValue[key as keyof typeof formValue];
         if (value !== null && value !== undefined) {
           formData.append(key, value as any);
@@ -129,8 +140,25 @@ export class OwnerVerification implements OnInit {
       }
     }
 
+    // Append file objects separately
+    if (formValue.FrontNationalIdDocument) {
+      formData.append('FrontNationalIdDocument', formValue.FrontNationalIdDocument);
+    }
+    if (formValue.BackNationalIdDocument) {
+      formData.append('BackNationalIdDocument', formValue.BackNationalIdDocument);
+    }
+    if (formValue.ContractFile) {
+      formData.append('ContractFile', formValue.ContractFile);
+    }
+
+    // Append multiple unit images
+    this.unitImages.forEach((file) => {
+      formData.append('UnitImages', file, file.name); // 'UnitImages' هو اسم الـ field اللي الـ API هيستقبله لملفات الصور
+    });
+
+
     this.selectedAmenityIds.forEach((id) => {
-      formData.append('AmenityIds', id.toString());
+      formData.append('UnitAmenities', id.toString()); // هنا استخدمت 'UnitAmenities' بناءً على اسم الـ FormControl
       console.log('Selected Amenity ID:', id);
     });
 
@@ -140,6 +168,8 @@ export class OwnerVerification implements OnInit {
       next: (res) => {
         console.log('Verification successful!', res);
         // You can add a success message or navigate to another page here
+        this.ownerForm.reset(); // ممكن تعمل reset للفورم بعد النجاح
+        this.unitImages = []; // إفراغ قائمة الصور بعد الإرسال
       },
       error: (err) => {
         console.error('Verification failed!', err);
@@ -207,5 +237,8 @@ export class OwnerVerification implements OnInit {
   }
   get BackDocumentFile() {
     return this.ownerForm.controls['BackNationalIdDocument'];
+  }
+  get UnitImages() {
+    return this.ownerForm.controls['UnitImages'];
   }
 }

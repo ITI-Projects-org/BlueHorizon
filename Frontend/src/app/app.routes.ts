@@ -12,7 +12,7 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
-import { Chat } from './Components/chat/chat';
+import {  ChatComponent } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
@@ -42,7 +42,7 @@ export const routes: Routes = [
 
   {
     path: 'chat',
-    component: Chat,
+    component: ChatComponent,
     canActivate: [AuthGuard],
   },
   // 4. Catch-all route: Redirects any unmatched URLs to the login page.

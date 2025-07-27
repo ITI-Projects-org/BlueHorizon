@@ -1,97 +1,205 @@
-<div class="home-container">
-    <section class="hero-section">
-        <div class="hero-overlay">
-            <div class="hero-content">
-                <h1>Find Your Perfect Resort Unit</h1>
-                <p>Discover amazing properties for your next vacation or investment.</p>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search by location, amenities, or unit type..."
-                        aria-label="Search resort units" />
-                    <button class="btn btn-primary">Search</button>
-                </div>
-            </div>
+<!-- src/app/Pages/home/home.html -->
+
+<header class="hero-section">
+  <div class="slider-container">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      [class.active]="i === currentSlide"
+      class="slide"
+      [style.backgroundImage]="'url(' + slide.image + ')'"
+    ></div>
+    <div class="slider-dots">
+      <span
+        *ngFor="let slide of slides; let i = index"
+        [class.active]="i === currentSlide"
+        (click)="goToSlide(i)"
+      ></span>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <h1>Find Your Perfect Home Today</h1>
+    <p>Search thousands of properties for sale or rent</p>
+
+    <div class="search-form-container">
+      <form class="search-form" (submit)="applySearchFilters()">
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedVillage"
+            name="selectedVillageInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Village</option>
+            <option *ngFor="let village of villages" [value]="village">
+              {{ village }}
+            </option>
+          </select>
         </div>
-    </section>
 
-    <section class="featured-units-section section-padding">
-        <div class="container">
-            <h2 class="section-title">Most Recent Units</h2>
-            <p class="section-description">
-                Explore our hand-picked selection of the finest resort units.
-            </p>
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedType"
+            name="selectedTypeInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Type</option>
+            <option *ngFor="let type of unitTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <div class="col" *ngFor="let unit of paginatedUnits">
-                    <div class="card h-100 shadow-sm">
-                        <img [src]="getUnitImagePath(unit)" class="card-img-top" alt="Image of {{ unit.title }}" />
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ unit.title }}</h5>
-                            <p class="card-subtitle mb-2 text-muted">Unit ID: {{ unit.id }}</p>
-                            <p class="property-address">
-                                <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }},
-                                {{ unit.villageName }}
-                            </p>
-                            <p class="property-price">
-                                <strong>${{ unit.basePricePerNight | number : '1.2-2' }}</strong>
-                                / night
-                            </p>
-                            <div
-                                class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
-                                <div class="detail-item">
-                                    <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
-                                </div>
+        <div class="form-group">
+          <button class="btn btn-search" type="submit">Search</button>
+        </div>
+
+        <div class="col-12 text-center mt-2">
+          <a
+            href="#"
+            class="more-options-btn"
+            (click)="toggleMoreOptions($event)"
+          >
+            <i
+              class="fas"
+              [class.fa-plus]="!showMoreOptions"
+              [class.fa-times]="showMoreOptions"
+            ></i>
+            {{ showMoreOptions ? 'Less options' : 'More options' }}
+          </a>
+        </div>
+
+        <div class="more-options-content row g-3 mt-1" *ngIf="showMoreOptions">
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBedrooms"
+              name="selectedBedroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bedrooms (Any)</option>
+              <option value="1">1 Bedroom</option>
+              <option value="2">2 Bedrooms</option>
+              <option value="3">3 Bedrooms</option>
+              <option value="4+">4+ Bedrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBathrooms"
+              name="selectedBathroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bathrooms (Any)</option>
+              <option value="1">1 Bathroom</option>
+              <option value="2">2 Bathrooms</option>
+              <option value="3+">3+ Bathrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Min Price"
+                [(ngModel)]="minPrice"
+                name="minPriceInput"
+                (change)="applySearchFilters()"
+              />
+              <span class="input-group-text">-</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Max Price"
+                [(ngModel)]="maxPrice"
+                name="maxPriceInput"
+                (change)="applySearchFilters()"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</header>
+
+<div class="home-container">
+  <section class="featured-units-section section-padding">
+    <div class="container">
+        <h2 class="section-title">Most Recent Units</h2>
+        <p class="section-description">
+            Explore our hand-picked selection of the finest resort units.
+        </p>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" *ngFor="let unit of paginatedUnits">
+                <div class="card h-100 shadow-sm">
+                    <img [src]="getUnitImagePath(unit)" class="card-img-top" alt="Image of {{ unit.title }}" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ unit.title }}</h5>
+                        <p class="card-subtitle mb-2 text-muted">Unit ID: {{ unit.id }}</p>
+                        <p class="property-address">
+                            <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }},
+                            {{ unit.villageName }}
+                        </p>
+                        <p class="property-price">
+                            <strong>${{ unit.basePricePerNight | number : '1.2-2' }}</strong>
+                            / night
+                        </p>
+                        <div
+                            class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div class="detail-item">
+                                <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
                             </div>
-                            <div class="text-center mt-3">
-                                <a [routerLink]="['/unitDetails', unit.id]" class="btn btn-outline-primary btn-sm">View
-                                    Details</a>
+                            <div class="detail-item">
+                                <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
                             </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a [routerLink]="['/unitDetails', unit.id]" class="btn btn-outline-primary btn-sm">View
+                                Details</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="text-center mt-5">
-                <a routerLink="/units" class="btn btn-primary btn-lg">View All Units</a>
-            </div>
         </div>
-    </section>
 
-    <section class="why-choose-us-section section-padding bg-light">
-        <div class="container">
-            <h2 class="section-title">Why Choose Blue Horizon?</h2>
-            <p class="section-description">
-                We offer unparalleled service and a wide selection of premium resort units.
-            </p>
-            <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
-                <div class="col">
-                    <div class="feature-item p-4">
-                        <i class="fas fa-handshake feature-icon mb-3"></i>
-                        <h3>Trusted & Reliable</h3>
-                        <p>
-                            We connect you with verified owners and secure booking processes.
-                        </p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="feature-item p-4">
-                        <i class="fas fa-home feature-icon mb-3"></i>
-                        <h3>Diverse Selection</h3>
-                        <p>From cozy studios to luxurious villas, find your perfect match.</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="feature-item p-4">
-                        <i class="fas fa-star feature-icon mb-3"></i>
-                        <h3>Exceptional Service</h3>
-                        <p>Our dedicated support team is here to assist you 24/7.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="text-center mt-5">
+            <a routerLink="/units" class="btn btn-primary btn-lg">View All Units</a>
         </div>
-    </section>
+    </div>
+</section>
+
+  <section class="why-choose-us-section section-padding bg-light">
+    <div class="container">
+      <h2>Why Choose Blue Horizon?</h2>
+      <p class="section-description">
+        We offer unparalleled service and a wide selection of premium resort
+        units.
+      </p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <i class="fas fa-handshake feature-icon"></i>
+          <h3>Trusted & Reliable</h3>
+          <p>
+            We connect you with verified owners and secure booking processes.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-home feature-icon"></i>
+          <h3>Diverse Selection</h3>
+          <p>From cozy studios to luxurious villas, find your perfect match.</p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-star feature-icon"></i>
+          <h3>Exceptional Service</h3>
+          <p>Our dedicated support team is here to assist you 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
     <section class="cta-section section-padding">
         <div class="cta-overlay">

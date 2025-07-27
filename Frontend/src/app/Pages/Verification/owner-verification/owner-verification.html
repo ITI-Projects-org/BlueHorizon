@@ -25,7 +25,10 @@
                 id="FrontDocumentFile"
                 class="form-control"
                 (change)="onFrontDocumentFileChange($event)"
-                [class.is-invalid]="FrontDocumentFile.invalid && FrontDocumentFile.touched"
+                [class.is-invalid]="
+                  FrontDocumentFile.invalid && FrontDocumentFile.touched
+                "
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
               />
               <div
                 *ngIf="FrontDocumentFile.invalid && FrontDocumentFile.touched"
@@ -44,7 +47,10 @@
                 id="BackDocumentFile"
                 class="form-control"
                 (change)="onBackDocumentFileChange($event)"
-                [class.is-invalid]="BackDocumentFile.invalid && BackDocumentFile.touched"
+                [class.is-invalid]="
+                  BackDocumentFile.invalid && BackDocumentFile.touched
+                "
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
               />
               <div
                 *ngIf="BackDocumentFile.invalid && BackDocumentFile.touched"
@@ -83,7 +89,9 @@
             formControlName="BankAccountDetails"
             class="form-control"
             rows="3"
-            [class.is-invalid]="BankAccountDetails.invalid && BankAccountDetails.touched"
+            [class.is-invalid]="
+              BankAccountDetails.invalid && BankAccountDetails.touched
+            "
             placeholder="Provide bank name, account number, etc."
           ></textarea>
           <div
@@ -98,6 +106,7 @@
       <div class="card-header bg-primary text-white mb-4 mt-4 rounded">
         <h5 class="mb-0">Property Details</h5>
       </div>
+
       <div class="card-body">
         <div class="mb-3">
           <label for="Title" class="form-label"
@@ -116,73 +125,154 @@
           </div>
         </div>
         <div class="mb-3">
-          <label for="Description" class="form-label">Description</label>
+          <label for="Description" class="form-label"
+            >Description <span class="text-danger">*</span></label
+          >
           <textarea
             id="Description"
             formControlName="Description"
             class="form-control"
             rows="5"
+            [class.is-invalid]="Description.invalid && Description.touched"
             placeholder="Provide a detailed description of your property..."
           ></textarea>
-        </div>
-        <div class="row"></div>
-        <div class="col-md-4 mb-3">
-          <label for="Bedrooms" class="form-label">Bedrooms</label>
-          <input
-            type="number"
-            id="Bedrooms"
-            formControlName="Bedrooms"
-            class="form-control"
-            placeholder="Number of bedrooms"
-          />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="Bathrooms" class="form-label">Bathrooms</label>
-          <input
-            type="number"
-            id="Bathrooms"
-            formControlName="Bathrooms"
-            class="form-control"
-            placeholder="Number of bathrooms"
-          />
+          <div
+            *ngIf="Description.invalid && Description.touched"
+            class="invalid-feedback"
+          >
+            Description is required.
+          </div>
         </div>
 
         <div class="row">
           <div class="col-md-4 mb-3">
-            <label for="Sleeps" class="form-label">Sleeps</label>
+            <label for="UnitType" class="form-label"
+              >Unit Type <span class="text-danger">*</span></label
+            >
+            <select
+              id="UnitType"
+              formControlName="UnitType"
+              class="form-control"
+              [class.is-invalid]="UnitType.invalid && UnitType.touched"
+            >
+              <option value="0" disabled selected>Select unit type</option>
+              <option value="1">Apartment</option>
+              <option value="2">Chalet</option>
+              <option value="3">Villa</option>
+              </select>
+            <div
+              *ngIf="UnitType.invalid && UnitType.touched"
+              class="invalid-feedback"
+            >
+              Unit type is required.
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="Bedrooms" class="form-label"
+              >Bedrooms <span class="text-danger">*</span></label
+            >
+            <input
+              type="number"
+              id="Bedrooms"
+              formControlName="Bedrooms"
+              class="form-control"
+              [class.is-invalid]="Bedrooms.invalid && Bedrooms.touched"
+              placeholder="Number of bedrooms"
+            />
+            <div
+              *ngIf="Bedrooms.invalid && Bedrooms.touched"
+              class="invalid-feedback"
+            >
+              Number of bedrooms is required.
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="Bathrooms" class="form-label"
+              >Bathrooms <span class="text-danger">*</span></label
+            >
+            <input
+              type="number"
+              id="Bathrooms"
+              formControlName="Bathrooms"
+              class="form-control"
+              [class.is-invalid]="Bathrooms.invalid && Bathrooms.touched"
+              placeholder="Number of bathrooms"
+            />
+            <div
+              *ngIf="Bathrooms.invalid && Bathrooms.touched"
+              class="invalid-feedback"
+            >
+              Number of bathrooms is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="Sleeps" class="form-label"
+              >Sleeps (Capacity) <span class="text-danger">*</span></label
+            >
             <input
               type="number"
               id="Sleeps"
               formControlName="Sleeps"
               class="form-control"
+              [class.is-invalid]="Sleeps.invalid && Sleeps.touched"
               placeholder="Max guests"
             />
+            <div
+              *ngIf="Sleeps.invalid && Sleeps.touched"
+              class="invalid-feedback"
+            >
+              Number of guests is required.
+            </div>
           </div>
           <div class="col-md-4 mb-3">
             <label for="DistanceToSea" class="form-label"
-              >Distance to Sea (meters)</label
+              >Distance to Sea (meters)
+              <span class="text-danger">*</span></label
             >
             <input
               type="number"
               id="DistanceToSea"
               formControlName="DistanceToSea"
               class="form-control"
+              [class.is-invalid]="
+                DistanceToSea.invalid && DistanceToSea.touched
+              "
               placeholder="Distance in meters"
             />
+            <div
+              *ngIf="DistanceToSea.invalid && DistanceToSea.touched"
+              class="invalid-feedback"
+            >
+              Distance to sea is required.
+            </div>
           </div>
           <div class="col-md-4 mb-3">
             <label for="BasePricePerNight" class="form-label"
-              >Base Price Per Night (EGP)</label
+              >Base Price Per Night (EGP)
+              <span class="text-danger">*</span></label
             >
             <input
               type="number"
               id="BasePricePerNight"
               formControlName="BasePricePerNight"
               class="form-control"
+              [class.is-invalid]="
+                BasePricePerNight.invalid && BasePricePerNight.touched
+              "
               placeholder="Price per night"
             />
+            <div
+              *ngIf="BasePricePerNight.invalid && BasePricePerNight.touched"
+              class="invalid-feedback"
+            >
+              Price is required.
+            </div>
           </div>
         </div>
+
         <div class="mb-3">
           <label for="Address" class="form-label"
             >Address <span class="text-danger">*</span></label
@@ -195,10 +285,7 @@
             [class.is-invalid]="Address.invalid && Address.touched"
             placeholder="Street address, city, country"
           />
-          <div
-            *ngIf="Address.invalid && Address.touched"
-            class="invalid-feedback"
-          >
+          <div *ngIf="Address.invalid && Address.touched" class="invalid-feedback">
             Address is required.
           </div>
         </div>
@@ -222,7 +309,27 @@
             Village Name is required.
           </div>
         </div>
-        <div class="mb-3"></div>
+
+        <div class="mb-3">
+          <label for="unitImages" class="form-label"
+            >Unit Images <span class="text-danger">*</span></label
+          >
+          <input
+            type="file"
+            id="unitImages"
+            class="form-control"
+            (change)="onUnitFileSelected($event)"
+            accept=".jpg,.jpeg,.png"
+            multiple
+            [class.is-invalid]="UnitImages.invalid && UnitImages.touched"
+          />
+          <div
+            *ngIf="UnitImages.invalid && UnitImages.touched"
+            class="invalid-feedback"
+          >
+            At least one unit image is required.
+          </div>
+        </div>
         <div class="mb-3">
           <label for="ContractFile" class="form-label"
             >Upload Contract File <span class="text-danger">*</span></label
@@ -233,6 +340,7 @@
             class="form-control"
             (change)="onContractFileChange($event)"
             [class.is-invalid]="ContractFile.invalid && ContractFile.touched"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
           />
           <div
             *ngIf="ContractFile.invalid && ContractFile.touched"
@@ -264,7 +372,6 @@
           </li>
         </ul>
       </div>
-      <!-- Amenities -->
       <div class="form-group">
         <label>Amenities</label>
         <div class="amenities-checkboxes">

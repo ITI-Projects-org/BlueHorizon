@@ -18,7 +18,7 @@ namespace API.Hubs
             _unitOfWork = unitOfWork;
         }
 
-        public async Task SendMessageToUser(string receiverId, string messageContent)
+        public async Task SendMessage(string receiverId, string messageContent)
         {
             var senderId = Context.UserIdentifier;
             Console.WriteLine($"[ChatHub] SendMessageToUser received: SenderId = '{senderId}', ReceiverId = '{receiverId}', MessageContent = '{messageContent}'");
