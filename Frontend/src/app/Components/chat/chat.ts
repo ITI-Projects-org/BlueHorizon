@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Inject, PLATFORM_ID, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { AuthService } from '../../Services/auth.service';
 import { Messages } from '../../Services/messages';
+import { ChatService } from '../../Services/chat.service';
 import { InboxItem, ChatMessage } from '../../Models/chat.models';
 import { FormsModule } from '@angular/forms';
 
@@ -18,7 +18,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
-  hubConnection!: HubConnection;
   currentUserId: string | null = null;
   newMessageContent: string = '';
 
@@ -33,9 +32,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     private authService: AuthService,
     private messagesService: Messages,
+    private chatService: ChatService,
     private route: ActivatedRoute,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.currentUserId = this.authService.getCurrentUserId();
@@ -51,6 +53,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.router.navigate(['/login']);
       return;
     }
+
+    console.log('🚀 ChatComponent initialized for user:', this.currentUserId);
 
     this.fetchRecentChats();
 
@@ -76,135 +80,131 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
-    if (this.hubConnection && this.hubConnection.state === 'Connected') {
-      this.hubConnection.stop().then(() => console.log('SignalR connection stopped.')).catch(err => console.error(err));
-    }
+    console.log('🛑 ChatComponent destroyed, stopping SignalR connection');
+    this.chatService.stopConnection();
   }
 
   private startSignalRConnection(): void {
-    const token = this.authService.getToken();
-    if (!token) {
-      console.error('No JWT token found for SignalR connection.');
-      return;
-    }
+    console.log('🔌 Starting SignalR connection...');
+    this.chatService.startConnection();
 
-    this.hubConnection = new HubConnectionBuilder()
-      .withUrl('https://localhost:7083/chathub', {
-        accessTokenFactory: () => token
-      })
-      .withAutomaticReconnect()
-      .build();
+    // 🔴 إضافة debugging أكثر تفصيلاً
+    this.chatService.messages$.subscribe({
+      next: (messageData: ChatMessage) => {
+        console.log('📨 Component received message from service:', messageData);
+        console.log('🔍 Current selected chat user:', this.selectedChatUserId);
+        console.log('🔍 Current user ID:', this.currentUserId);
 
-    this.hubConnection.start()
-      .then(() => {
-        console.log('SignalR connection started.');
-      })
-      .catch(err => console.error('Error while starting SignalR connection: ' + err));
+        // التحقق من الرسالة
+        const isRelevantMessage = (
+          (this.selectedChatUserId === messageData.senderId && this.currentUserId === messageData.receiverId) ||
+          (this.selectedChatUserId === messageData.receiverId && this.currentUserId === messageData.senderId)
+        );
 
-    // 🔴🔴🔴 التغيير الأول: استقبال الكائن كاملاً من الـ Backend
-    // الـ Backend يرسل كائناً واحداً، وليس بارامترات منفصلة.
-    this.hubConnection.on('ReceiveMessage', (messageData: any) => {
-      console.log('Received message from SignalR:', messageData); // للـ Debugging
+        console.log('🔍 Is message relevant to current chat?', isRelevantMessage);
 
-      const receivedMessage: ChatMessage = {
-        senderId: messageData.senderId,
-        receiverId: messageData.receiverId,
-        // �🔴🔴 التغيير الثاني: استخدام أسماء الخصائص المطابقة من الـ Backend
-        // الـ Backend يرسل 'MessageContent' و 'TimeStamp'
-        messageContent: messageData.messageContent,
-        timeStamp: new Date(messageData.timeStamp)
-      };
+        if (isRelevantMessage) {
+          console.log('✅ Adding message to current chat');
+          console.log('📊 Messages before:', this.messages.length);
 
-      // Check if the received message is for the currently selected chat
-      if ((this.selectedChatUserId === receivedMessage.senderId && this.currentUserId === receivedMessage.receiverId) ||
-          (this.selectedChatUserId === receivedMessage.receiverId && this.currentUserId === receivedMessage.senderId))
-      {
-          // 🔴🔴🔴 التغيير الثالث: استخدام Spread Operator لتحديث المصفوفة بشكل لا يغيرها في مكانها
-          // هذا يضمن أن Angular سيكتشف التغيير ويعيد تحديث الـ UI تلقائياً.
-          this.messages = [...this.messages, receivedMessage];
-          this.shouldScrollToBottom = true; // Set flag to scroll after view update
+          this.ngZone.run(() => {
+            this.messages = [...this.messages, messageData];
+            console.log('📊 Messages after:', this.messages.length);
+            this.shouldScrollToBottom = true;
+            this.cdr.detectChanges();
+            console.log('🔄 UI updated');
+          });
+        }
+
+        // تحديث قائمة المحادثات
+        this.ngZone.run(() => {
+          this.fetchRecentChats();
+          this.cdr.detectChanges();
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error in messages subscription:', error);
       }
-
-      // Always fetch recent chats to update the inbox list (e.g., unread counts, last message preview)
-      this.fetchRecentChats();
     });
   }
 
-  // To fetch the list of recent conversations for the Inbox
   fetchRecentChats(): void {
     this.messagesService.getInboxMessages().subscribe({
       next: (inboxItems: InboxItem[]) => {
-        this.recentChats = inboxItems;
-        if (this.selectedChatUserId) {
-            this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === this.selectedChatUserId) || null;
-            // Only load messages if the current chat window is empty or explicitly needs refresh
-            // The real-time update logic above handles new messages for active chat
-            if (this.messages.length === 0) { // This condition ensures it only loads history once
-              this.loadMessagesForSelectedChat();
-            }
-        } else if (this.recentChats.length > 0) {
-            this.selectChat(this.recentChats[0].otherUserId);
-        }
+        this.ngZone.run(() => {
+          this.recentChats = inboxItems;
+          if (this.selectedChatUserId) {
+              this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === this.selectedChatUserId) || null;
+              if (this.messages.length === 0) {
+                this.loadMessagesForSelectedChat();
+              }
+          } else if (this.recentChats.length > 0 && !this.selectedChatUserId) {
+              this.selectChat(this.recentChats[0].otherUserId);
+          }
+          this.cdr.detectChanges();
+        });
       },
       error: (err) => {
         console.error('Error fetching recent chats:', err);
-        this.recentChats = []; // Clear list on error
+        this.ngZone.run(() => {
+            this.recentChats = [];
+            this.cdr.detectChanges();
+        });
       }
     });
   }
 
-  // When selecting a conversation from the Inbox
   selectChat(otherUserId: string): void {
+    console.log('💬 Selecting chat with user:', otherUserId);
     this.selectedChatUserId = otherUserId;
-    // Find the selected user's data in the Inbox list to update the header
     this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === otherUserId) || null;
-    this.messages = []; // Clear previous messages before loading new ones
-    this.newMessageContent = ''; // Clear message input box
+    this.messages = [];
+    this.newMessageContent = '';
 
-    this.loadMessagesForSelectedChat(); // Fetch messages for the selected conversation
+    this.loadMessagesForSelectedChat();
   }
 
-  // Method to fetch chat history for the selected user
   private loadMessagesForSelectedChat(): void {
     if (this.selectedChatUserId) {
+      console.log('📥 Loading chat history with:', this.selectedChatUserId);
       this.messagesService.getChatHistory(this.selectedChatUserId).subscribe({
         next: (messages: ChatMessage[]) => {
-          this.messages = messages; // Assign retrieved messages to the array displayed in HTML
-          this.shouldScrollToBottom = true; // Set flag to scroll after view update
-          console.log("The messages from chat.ts:", this.messages); // للـ Debugging
-          for (let message of this.messages) {
-            console.log(`Message from ${message.senderId} to ${message.receiverId}: ${message.messageContent} at ${message.timeStamp}`);
-          }
+          this.ngZone.run(() => {
+            this.messages = messages;
+            this.shouldScrollToBottom = true;
+            console.log("📚 Loaded messages count:", this.messages.length);
+            this.cdr.detectChanges();
+          });
         },
         error: (err) => {
           console.error('Error fetching conversation messages:', err);
-          this.messages = []; // Clear messages on error
+          this.ngZone.run(() => {
+            this.messages = [];
+            this.cdr.detectChanges();
+          });
         }
       });
     }
   }
 
-  // To send a new message
   sendMessage(): void {
     if (!this.newMessageContent.trim() || !this.selectedChatUserId) {
-      return; // Do not send empty message or if no user is selected
+      console.log('❌ Cannot send empty message or no chat selected');
+      return;
     }
-    console.log('Sending message:', this.selectedChatUserId, this.newMessageContent.trim()); // للـ Debugging
 
-    this.hubConnection.invoke('SendMessage', this.selectedChatUserId, this.newMessageContent.trim())
-      .then(() => {
-        this.newMessageContent = ''; // Clear input box after sending
-        // الرسالة سيتم إضافتها إلى الـ messages array عن طريق الـ 'ReceiveMessage' event من الـ Hub
-        // لذلك لا حاجة لإضافتها هنا يدوياً لتجنب التكرار
-      })
-      .catch(err => console.error('Error sending message via SignalR: ' + err));
+    console.log('📤 Sending message...');
+    console.log('📤 To:', this.selectedChatUserId);
+    console.log('📤 Content:', this.newMessageContent.trim());
+    console.log('📤 Connection state:', this.chatService.getConnectionState());
+
+    this.chatService.sendPrivateMessage(this.selectedChatUserId, this.newMessageContent.trim());
+    this.newMessageContent = '';
   }
 
-  // Method for auto-scrolling to the bottom of the messages box
   private scrollToBottom(): void {
     if (this.messagesContainer && this.messagesContainer.nativeElement) {
       this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }
   }
 }
-
