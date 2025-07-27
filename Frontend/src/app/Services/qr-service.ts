@@ -28,13 +28,13 @@ export class QrServise {
   }
 
   createQr(): Observable<{ message: string; qrId: number }> {
-    console.log('from podt in  service');
+    console.log('from post in service');
     let Qrdto: QrCodeDto = {
       BookingId: 2,
       TenantNationalId: '2341',
       VillageName: 'Mousa Cosst',
       UnitAddress: 'Alex',
-      OwnerName: 'mark  Owner',
+      OwnerName: 'mark Owner',
       TenantName: 'tenant name',
     };
     console.log(`${this.QrURL}/create`);
@@ -46,7 +46,7 @@ export class QrServise {
   }
 
   getQrCode(qrId: number): Observable<Blob> {
-    console.log('from get in  service');
+    console.log('from get in service');
 
     return this.http.get(`${this.QrURL}/${qrId}`, {
       headers: this.headers,
@@ -63,24 +63,16 @@ export class QrServise {
   // -------------------------
   // -------------------------
 
-  createQrCloud(): Observable<{
+  createQrCloud(qrData: QrCodeDto): Observable<{ // Modified to accept qrData parameter
     message: string;
     qrId: number;
     imgPath: string;
   }> {
-    console.log('from podt in  service');
-    let Qrdto: QrCodeDto = {
-      BookingId: 5,
-      TenantNationalId: '2341',
-      VillageName: 'Mousa Cosst',
-      UnitAddress: 'Alex',
-      OwnerName: 'new from angular',
-      TenantName: 'tenant name',
-    };
-    console.log(`${this.QrURL}/createCloud`);
+    console.log('from post in cloud service');
+    console.log('QR Data being sent:', qrData); // Log the data being sent
     return this.http.post<{ message: string; qrId: number; imgPath: string }>(
       `${this.QrURL}/createCloud`,
-      Qrdto,
+      qrData, // Use the passed qrData
       { headers: this.headers }
     );
   }

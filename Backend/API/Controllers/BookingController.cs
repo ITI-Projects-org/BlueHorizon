@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using API.Repositories.Implementations;
+using API.Repositories.Interfaces;
 
 namespace API.Controllers
 {
@@ -156,7 +158,13 @@ namespace API.Controllers
             var userBookings = bookings.Where(b => b.TenantId == tenantId).ToList();
             
             var bookingDTOs = _mapper.Map<List<BookingDTO>>(userBookings);
-
+            if (bookingDTOs == null || !bookingDTOs.Any())
+                return NotFound(new { msg = "No bookings found for this user" });
+            foreach (var booking in bookingDTOs)
+            {
+                var QrCode=( await _unit.QRCodeRepository.GetQrCodeByBookingId(booking.Id));
+                booking.QrCodeUrl = QrCode?.ImagePath??"";
+            }
             return Ok(bookingDTOs);
         }
     }

@@ -21,6 +21,7 @@ import { AuthGuard } from './Guards/auth-guard-guard';
 import { BookingList } from './Pages/booking-list/booking-list';
 import { BookingForm } from './Pages/booking-form/booking-form';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
+import { QrCreationComponent } from './Pages/qr-creation.component/qr-creation.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -38,6 +39,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
   { path: 'my-bookings', component: BookingList },
+    { path: 'create-qr', component: QrCreationComponent },
   // { path: 'add-booking', component: BookingForm },
 
   {

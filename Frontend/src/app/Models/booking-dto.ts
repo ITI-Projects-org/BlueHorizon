@@ -6,7 +6,7 @@ export interface BookingDTO {
 }
 
 export interface BookingResponseDTO {
-  id: number;
+ id: number;
   unitId: number;
   tenantId: string;
   checkInDate: Date;
@@ -19,6 +19,9 @@ export interface BookingResponseDTO {
   paymentStatus: string;
   unitReviewed: boolean;
   ownerReviewd: boolean;
+  tenantName?: string; // Make sure this line is present and uncommented
+  qrCodeUrl?: string;
+
   // Unit details (if populated)
   unit?: {
     id: number;

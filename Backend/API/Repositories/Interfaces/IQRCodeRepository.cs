@@ -6,5 +6,7 @@ namespace API.Repositories.Interfaces
     {
         //Task<IEnumerable<QRCode>> GetAllTenantQrCodes(string tenantId);
         Task<QRCode> GetQrCodeByBookingId(int BookinId);
+        
+
     }
 }

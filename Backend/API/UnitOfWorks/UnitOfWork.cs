@@ -201,15 +201,6 @@ namespace API.UnitOfWorks
 
 
 
-
-
-
-        
-
-
-
-
-
         public IUnitImagesRepository unitImagesRepository;
         public IUnitImagesRepository UnitImagesRepository
         {

@@ -23,6 +23,7 @@ namespace API.DTOs.BookingDTOs
         public string PaymentStatus { get; set; }
         public bool unitReviewed { get; set; }
         public UnitDetailsDTO Unit{ get; set; }
+        public string QrCodeUrl{ get; set; }
 
 
 
