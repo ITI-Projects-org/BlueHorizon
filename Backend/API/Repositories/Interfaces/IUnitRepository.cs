@@ -8,6 +8,6 @@ namespace API.Repositories.Interfaces
         Task<Unit> GetUnitWithDetailsAsync(int id);
         Task<IEnumerable<Unit>> GetAllValidUnits();
         Task<string> GetSingleImagePathByUnitId(int unitId);
-
+        Task<List<Unit>> GetAllPendingUnits();
     }
 }
