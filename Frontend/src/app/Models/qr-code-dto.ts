@@ -1,6 +1,5 @@
 export interface QrCodeDto {
-    BookingId :number,
-    // expirationDate :DateTime,
+    BookingId :number|undefined,
     TenantNationalId :string,
     VillageName :string,
     UnitAddress :string,
