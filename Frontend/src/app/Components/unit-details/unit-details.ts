@@ -9,6 +9,7 @@ import { BookingForm } from '../../Pages/booking-form/booking-form';
 import { BookingService } from '../../Services/booking-service';
 import { BookedSlotsDTO } from '../../Models/booked-slots-dto';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-unit-details',
@@ -34,7 +35,8 @@ export class UnitDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private unitService: Unit,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -56,14 +58,25 @@ export class UnitDetailsComponent implements OnInit {
       )
       .subscribe((unit) => {
         this.unit = unit;
+        console.log('Unit details loaded:', unit);
         this.loading = false;
         if (unit) {
           this.loadBookedSlots();
         }
       });
   }
-
-  loadBookedSlots(): void {
+  goToChatWithOwner(ownerId: string): void {
+    console.log('Navigating to chat with owner:', ownerId);
+    if (ownerId) {
+      // نستخدم Router.navigate للانتقال إلى مسار /chat
+      // ونمرر ownerId كـ query parameter باسم 'userId'
+      this.router.navigate(['/chat'], { queryParams: { userId: ownerId } });
+      console.log('Navigating to chat with ownerId:', ownerId);
+    } else {
+      console.warn('Owner ID is not available. Cannot navigate to chat.');
+      // يمكنك هنا عرض رسالة للمستخدم (مثلاً باستخدام خدمة Toast/Snackbar)
+    }
+  }  loadBookedSlots(): void {
     this.calendarLoading = true;
     this.bookingService
       .getBookedSlots(this.unitId)

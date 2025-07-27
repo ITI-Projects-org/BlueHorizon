@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Inject, PLATFORM_ID, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../Services/auth.service';
-import { Messages } from '../../Services/messages';
-import { ChatService } from '../../Services/chat.service';
-import { InboxItem, ChatMessage } from '../../Models/chat.models';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../Services/auth.service';
+import { Messages } from '../../Services/messages'; // خدمة HTTP لجلب الـ Inbox والـ History
+import { ChatService } from '../../Services/chat.service'; // 🔴🔴🔴 استيراد خدمة الشات الجديدة
+import { InboxItem, ChatMessage } from '../../Models/chat.models';
+import { Subscription } from 'rxjs'; // لإدارة الاشتراكات
 
 @Component({
   selector: 'app-chat',
@@ -28,16 +29,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private isBrowser: boolean;
   private shouldScrollToBottom: boolean = false;
+  private messageSubscription!: Subscription; // للاشتراك في رسائل SignalR
 
   constructor(
     private authService: AuthService,
     private messagesService: Messages,
-    private chatService: ChatService,
+    private chatService: ChatService, // 🔴🔴🔴 حقن خدمة الشات
     private route: ActivatedRoute,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private ngZone: NgZone,
-    private cdr: ChangeDetectorRef
+    private ngZone: NgZone, // لضمان تحديث الـ UI
+    private cdr: ChangeDetectorRef // لفرض تحديث الـ UI
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.currentUserId = this.authService.getCurrentUserId();
@@ -54,21 +56,44 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
-    console.log('🚀 ChatComponent initialized for user:', this.currentUserId);
-
-    this.fetchRecentChats();
-
+    // 🔴🔴🔴 بدء اتصال SignalR عبر الخدمة
     if (this.isBrowser) {
-      this.startSignalRConnection();
+      const token = this.authService.getToken();
+      if (token) {
+        this.chatService.startConnection(token);
+      } else {
+        console.error('JWT Token not found for ChatService connection. Redirecting to login.');
+        this.router.navigate(['/login']);
+      }
     }
 
+    // 🔴🔴🔴 الاشتراك في رسائل الـ Real-time من ChatService
+    this.messageSubscription = this.chatService.messages$.subscribe(
+      (message: ChatMessage) => {
+        // يتم تشغيل هذا الـ Callback داخل Angular Zone بواسطة NgZone
+        // لأننا نستخدم NgZone.run() في ChatService عند next()
+        // ولكن للتأكد التام من تحديث الـ UI، سنستخدم ngZone.run() و cdr.detectChanges() هنا أيضاً
+        this.ngZone.run(() => {
+          // إضافة الرسالة فقط إذا كانت تخص المحادثة المحددة حالياً
+          if ((this.selectedChatUserId === message.senderId && this.currentUserId === message.receiverId) ||
+              (this.selectedChatUserId === message.receiverId && this.currentUserId === message.senderId))
+          {
+              this.messages = [...this.messages, message]; // تحديث المصفوفة بشكل لا يغيرها في مكانها
+              this.shouldScrollToBottom = true;
+          }
+          this.fetchRecentChats(); // تحديث قائمة المحادثات لتعكس الرسائل الجديدة (مثل عدد غير المقروء)
+          this.cdr.detectChanges(); // فرض تحديث الـ UI
+        });
+      }
+    );
+
+    // 🔴🔴🔴 التعامل مع الـ userId من الـ queryParams عند تهيئة الـ Component
     this.route.queryParams.subscribe(params => {
       const userIdFromUrl = params['userId'];
-      if (userIdFromUrl && userIdFromUrl !== this.selectedChatUserId) {
-        this.selectChat(userIdFromUrl);
-      } else if (!userIdFromUrl && !this.selectedChatUserId && this.recentChats.length > 0) {
-        this.selectChat(this.recentChats[0].otherUserId);
+      if (userIdFromUrl) {
+        this.selectedChatUserId = userIdFromUrl; // تعيين الـ userId من الـ URL
       }
+      this.fetchRecentChats(); // جلب المحادثات بعد تحديد الـ userId
     });
   }
 
@@ -80,66 +105,47 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
-    console.log('🛑 ChatComponent destroyed, stopping SignalR connection');
-    this.chatService.stopConnection();
-  }
-
-  private startSignalRConnection(): void {
-    console.log('🔌 Starting SignalR connection...');
-    this.chatService.startConnection();
-
-    // 🔴 إضافة debugging أكثر تفصيلاً
-    this.chatService.messages$.subscribe({
-      next: (messageData: ChatMessage) => {
-        console.log('📨 Component received message from service:', messageData);
-        console.log('🔍 Current selected chat user:', this.selectedChatUserId);
-        console.log('🔍 Current user ID:', this.currentUserId);
-
-        // التحقق من الرسالة
-        const isRelevantMessage = (
-          (this.selectedChatUserId === messageData.senderId && this.currentUserId === messageData.receiverId) ||
-          (this.selectedChatUserId === messageData.receiverId && this.currentUserId === messageData.senderId)
-        );
-
-        console.log('🔍 Is message relevant to current chat?', isRelevantMessage);
-
-        if (isRelevantMessage) {
-          console.log('✅ Adding message to current chat');
-          console.log('📊 Messages before:', this.messages.length);
-
-          this.ngZone.run(() => {
-            this.messages = [...this.messages, messageData];
-            console.log('📊 Messages after:', this.messages.length);
-            this.shouldScrollToBottom = true;
-            this.cdr.detectChanges();
-            console.log('🔄 UI updated');
-          });
-        }
-
-        // تحديث قائمة المحادثات
-        this.ngZone.run(() => {
-          this.fetchRecentChats();
-          this.cdr.detectChanges();
-        });
-      },
-      error: (error) => {
-        console.error('❌ Error in messages subscription:', error);
-      }
-    });
+    // 🔴🔴🔴 إيقاف اتصال SignalR عبر الخدمة
+    if (this.isBrowser) {
+      this.chatService.stopConnection();
+    }
+    // 🔴🔴🔴 إلغاء الاشتراك لمنع تسرب الذاكرة
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
   }
 
   fetchRecentChats(): void {
     this.messagesService.getInboxMessages().subscribe({
       next: (inboxItems: InboxItem[]) => {
-        this.ngZone.run(() => {
+        this.ngZone.run(() => { // التأكد من تشغيل التحديث داخل Angular Zone
           this.recentChats = inboxItems;
+
+          // 🔴🔴🔴 منطق تحديد الشات عند التحميل أو عند جلب الـ Inbox
           if (this.selectedChatUserId) {
-              this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === this.selectedChatUserId) || null;
-              if (this.messages.length === 0) {
-                this.loadMessagesForSelectedChat();
-              }
-          } else if (this.recentChats.length > 0 && !this.selectedChatUserId) {
-              this.selectChat(this.recentChats[0].otherUserId);
+            // إذا كان هناك userId محدد (من الـ URL أو من اختيار سابق)
+            this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === this.selectedChatUserId) || null;
+
+            if (!this.selectedChatUser) {
+              // 🔴🔴🔴 إذا لم يتم العثور على المستخدم في الـ Inbox (محادثة جديدة)
+              // قم بإنشاء InboxItem مؤقت لعرض اسمه في الـ Header
+              this.selectedChatUser = {
+                otherUserId: this.selectedChatUserId,
+                otherUserName: `User: ${this.selectedChatUserId.substring(0, 8)}...`, // اسم مؤقت
+                lastMessageContent: '',
+                lastMessageTimestamp: new Date(),
+                unreadCount: 0,
+                lastMessageIsRead: true
+              };
+              // يمكنك هنا إضافة هذا الكائن المؤقت إلى this.recentChats إذا أردت أن يظهر في القائمة فوراً
+              // this.recentChats.unshift(this.selectedChatUser);
+            }
+
+            // تحميل الرسائل الخاصة بالمحادثة المحددة (سواء كانت جديدة أو موجودة)
+            this.loadMessagesForSelectedChat();
+          } else if (this.recentChats.length > 0) {
+            // إذا لم يتم تحديد أي محادثة، اختر أول محادثة في القائمة تلقائياً
+            this.selectChat(this.recentChats[0].otherUserId);
           }
           this.cdr.detectChanges();
         });
@@ -155,24 +161,38 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   selectChat(otherUserId: string): void {
-    console.log('💬 Selecting chat with user:', otherUserId);
     this.selectedChatUserId = otherUserId;
     this.selectedChatUser = this.recentChats.find(chat => chat.otherUserId === otherUserId) || null;
-    this.messages = [];
-    this.newMessageContent = '';
+
+    if (!this.selectedChatUser) {
+      // 🔴🔴🔴 إذا لم يتم العثور على المستخدم (محادثة جديدة)، قم بإنشاء InboxItem مؤقت
+      this.selectedChatUser = {
+        otherUserId: otherUserId,
+        otherUserName: `User: ${otherUserId.substring(0, 8)}...`, // اسم مؤقت
+        lastMessageContent: '',
+        lastMessageTimestamp: new Date(),
+        unreadCount: 0,
+        lastMessageIsRead: true
+      };
+    }
+
+    this.messages = []; // مسح الرسائل السابقة
+    this.newMessageContent = ''; // مسح مربع الكتابة
 
     this.loadMessagesForSelectedChat();
   }
 
   private loadMessagesForSelectedChat(): void {
     if (this.selectedChatUserId) {
-      console.log('📥 Loading chat history with:', this.selectedChatUserId);
       this.messagesService.getChatHistory(this.selectedChatUserId).subscribe({
         next: (messages: ChatMessage[]) => {
           this.ngZone.run(() => {
             this.messages = messages;
             this.shouldScrollToBottom = true;
-            console.log("📚 Loaded messages count:", this.messages.length);
+            console.log("The messages from chat.ts:", this.messages);
+            for (let message of this.messages) {
+              console.log(`Message from ${message.senderId} to ${message.receiverId}: ${message.messageContent} at ${message.timeStamp}`);
+            }
             this.cdr.detectChanges();
           });
         },
@@ -189,14 +209,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   sendMessage(): void {
     if (!this.newMessageContent.trim() || !this.selectedChatUserId) {
-      console.log('❌ Cannot send empty message or no chat selected');
       return;
     }
-
-    console.log('📤 Sending message...');
-    console.log('📤 To:', this.selectedChatUserId);
-    console.log('📤 Content:', this.newMessageContent.trim());
-    console.log('📤 Connection state:', this.chatService.getConnectionState());
+    console.log('Sending message to:', this.selectedChatUserId, 'Content:', this.newMessageContent.trim());
 
     this.chatService.sendPrivateMessage(this.selectedChatUserId, this.newMessageContent.trim());
     this.newMessageContent = '';

@@ -40,6 +40,7 @@ namespace API.Controllers
             {
                 unitdto.UnitId = unitdto.Id;
                 unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
+
             }
 
             return Ok(unitsdto);
@@ -186,6 +187,8 @@ namespace API.Controllers
             {
                 return Content("Unit Not Found");
             }
+            var x = _mapper.Map<UnitDetailsDTO>(unit);
+            Console.WriteLine("mooooooooomen"+x.ToString());
             return Ok(_mapper.Map<UnitDetailsDTO>(unit));
         }
 

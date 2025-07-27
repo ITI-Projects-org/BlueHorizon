@@ -24,6 +24,15 @@
       <i class="bi bi-person-badge me-1"></i>
       <span class="text-muted">Hosted by </span>
       <strong>{{ unit.ownerName }}</strong>
+
+      <!-- زر الدردشة الجديد -->
+      <button
+        class="btn btn-sm btn-outline-primary ms-2 chat-owner-btn"
+        (click)="goToChatWithOwner(unit?.ownerId ?? '')"
+        title="Chat with owner"
+      >chat with owner
+        <i class="bi bi-chat-dots"></i> <!-- أيقونة الشات -->
+      </button>
     </div>
   </div>
 
@@ -224,9 +233,9 @@
             'booked': day.isBooked,
             'available': day.isAvailable
           }"
-            [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') : 
-                   day.isBooked ? 'Booked' : 
-                   day.isAvailable ? 'Available' : 
+            [title]="day.isToday ? 'Today' + (day.isBooked ? ' (Booked)' : '') :
+                   day.isBooked ? 'Booked' :
+                   day.isAvailable ? 'Available' :
                    day.isPast ? 'Past' : 'Not Available'"
           >
             {{ day.day }}

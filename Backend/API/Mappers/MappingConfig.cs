@@ -43,10 +43,13 @@ namespace API.Mappers
 
             // UnitDTO to Unit ==> UpdateUnit
             CreateMap<UnitDetailsDTO, Unit>()
-                .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
-                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src=>src.OwnerName))
+                .ForMember(dest => dest.UnitImagesTable, opt => opt.MapFrom(src => src.ImagesPaths))
 
-            CreateMap<Unit,UnitDetailsDTO>().ReverseMap();
+                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()).ReverseMap(); // Ignore UnitAmenities for now
+
+            //CreateMap<Unit, UnitDetailsDTO>().ReverseMap();
+
             #endregion
 
             CreateMap<Message, MessageDto>()

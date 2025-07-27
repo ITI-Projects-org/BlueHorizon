@@ -12,20 +12,20 @@ export class ChatService {
 
   public messages$: Observable<ChatMessage> = this.messageSubject.asObservable();
 
-  constructor(private ngZone: NgZone) { } // 🔴 إضافة NgZone
+  constructor(private ngZone: NgZone) { }
 
-  public startConnection = () => {
-    const accessToken = localStorage.getItem('accessToken');
+  public startConnection = (accessToken: string) => {
     if (!accessToken) {
-      console.error("No accessToken found. Cannot start SignalR connection.");
+      console.error("No accessToken provided. Cannot start SignalR connection.");
       return;
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7083/chathub', {
+      .withUrl('https://localhost:7083/chathub', { // تأكد من الـ URL ده
         accessTokenFactory: () => accessToken
       })
       .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Debug) // لـ Debugging مفصل
       .build();
 
     this.hubConnection
@@ -36,17 +36,15 @@ export class ChatService {
       })
       .catch(err => console.error('❌ Error while starting SignalR connection: ' + err));
 
-    // 🔴 استقبال الرسائل داخل NgZone
     this.hubConnection.on('ReceiveMessage', (messageData: any) => {
       console.log("🔔 ChatService received message:", messageData);
 
-      // 🔴 تشغيل الكود داخل NgZone لضمان تحديث الUI
       this.ngZone.run(() => {
         const receivedMessage: ChatMessage = {
           senderId: messageData.senderId,
           receiverId: messageData.receiverId,
-          messageContent: messageData.messageContent,
-          timeStamp: new Date(messageData.timeStamp)
+          messageContent: messageData.messageContent, // 🔴 تطابق مع الباك إند
+          timeStamp: new Date(messageData.timeStamp) // 🔴 تطابق مع الباك إند
         };
 
         console.log("📨 Processed message:", receivedMessage);
@@ -55,7 +53,6 @@ export class ChatService {
       });
     });
 
-    // 🔴 إضافة error handling
     this.hubConnection.onclose((error) => {
       console.error('❌ SignalR connection closed:', error);
     });
@@ -69,12 +66,13 @@ export class ChatService {
     });
   }
 
+  // 🔴🔴🔴 هذا الاسم يجب أن يتطابق مع اسم الميثود في الـ Backend ChatHub.cs (SendMessage)
   public sendPrivateMessage = (receiverId: string, messageContent: string) => {
     console.log(`📤 Attempting to send message to ${receiverId}: "${messageContent}"`);
     console.log('Connection State:', this.hubConnection?.state);
 
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      this.hubConnection.invoke('SendMessage', receiverId, messageContent)
+      this.hubConnection.invoke('SendMessage', receiverId, messageContent) // 🔴🔴🔴 تأكد أن هذا 'SendMessage' ليتطابق مع الـ Backend
         .then(() => {
           console.log('✅ Message sent successfully via SignalR');
         })
@@ -94,7 +92,6 @@ export class ChatService {
     }
   }
 
-  // 🔴 إضافة method للتحقق من حالة الاتصال
   public getConnectionState(): string {
     return this.hubConnection?.state || 'Not initialized';
   }
