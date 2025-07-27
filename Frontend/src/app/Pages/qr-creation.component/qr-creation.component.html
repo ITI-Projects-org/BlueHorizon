@@ -57,13 +57,17 @@
 
             <div class="form-actions">
                 <button type="button" (click)="cancel()" class="btn btn-secondary" [disabled]="isGeneratingQr">
-                    Cancel
+                    Back
                 </button>
+
+
+                @if(!generatedQrCodeUrl){
                 <button type="submit" class="btn btn-primary" [disabled]="qrCodeDto.invalid || isGeneratingQr">
                     <span *ngIf="isGeneratingQr" class="spinner-border spinner-border-sm me-2" role="status"
                         aria-hidden="true"></span>
                     {{ isGeneratingQr ? 'Generating...' : 'Generate QR Code' }}
                 </button>
+                }
             </div>
         </form>
     </div>
