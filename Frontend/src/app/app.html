@@ -1,5 +1,14 @@
 <app-navbar />
-<router-outlet />
+
+<div
+  [ngStyle]="{
+    paddingTop: !isHomePage ? '90px' : '0',
+    paddingBottom: !isHomePage ? '30px' : '0',
+    backgroundColor: !isHomePage ? '#edf2fa' : 'transparent'
+  }"
+>
+  <router-outlet />
+</div>
+
 <app-footer />
 <app-ai-chat />
-<app-chat />
