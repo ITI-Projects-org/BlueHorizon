@@ -1,16 +1,246 @@
-<div class="container">
-  <div class="btn-btn-primary"><br /><a href="/login">Login</a></div>
-  <div class="btn-btn-primary"><br /><a href="/register">register</a></div>
-  <div class="btn-btn-primary"><br /><a href="/profile">profile</a></div>
-  <div class="btn-btn-primary">
-    <br /><a href="/VerifyOwner">VerifyOwner</a>
-  </div>
-  <div class="btn-btn-primary">
-    <br /><a href="/PendingOwners">PendingOwners</a>
-  </div>
-  <div class="btn-btn-primary"><br /><a href="/addReview">add review</a></div>
-  <div class="btn-btn-primary"><br /><a href="/createQr">createQr</a></div>
-  <div class="btn-btn-primary"><br /><a href="/units">units</a></div>
-  <div class="btn-btn-primary"><br /><a href="/addunit">add units</a></div>
+<!-- src/app/Pages/home/home.html -->
 
+<header class="hero-section">
+  <div class="slider-container">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      [class.active]="i === currentSlide"
+      class="slide"
+      [style.backgroundImage]="'url(' + slide.image + ')'"
+    ></div>
+    <div class="slider-dots">
+      <span
+        *ngFor="let slide of slides; let i = index"
+        [class.active]="i === currentSlide"
+        (click)="goToSlide(i)"
+      ></span>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <h1>Find Your Perfect Home Today</h1>
+    <p>Search thousands of properties for sale or rent</p>
+
+    <div class="search-form-container">
+      <form class="search-form" (submit)="applySearchFilters()">
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedVillage"
+            name="selectedVillageInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Village</option>
+            <option *ngFor="let village of villages" [value]="village">
+              {{ village }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select
+            class="form-select"
+            [(ngModel)]="selectedType"
+            name="selectedTypeInput"
+            (change)="applySearchFilters()"
+          >
+            <option [ngValue]="null">Select Type</option>
+            <option *ngFor="let type of unitTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-search" type="submit">Search</button>
+        </div>
+
+        <div class="col-12 text-center mt-2">
+          <a
+            href="#"
+            class="more-options-btn"
+            (click)="toggleMoreOptions($event)"
+          >
+            <i
+              class="fas"
+              [class.fa-plus]="!showMoreOptions"
+              [class.fa-times]="showMoreOptions"
+            ></i>
+            {{ showMoreOptions ? 'Less options' : 'More options' }}
+          </a>
+        </div>
+
+        <div class="more-options-content row g-3 mt-1" *ngIf="showMoreOptions">
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBedrooms"
+              name="selectedBedroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bedrooms (Any)</option>
+              <option value="1">1 Bedroom</option>
+              <option value="2">2 Bedrooms</option>
+              <option value="3">3 Bedrooms</option>
+              <option value="4+">4+ Bedrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="selectedBathrooms"
+              name="selectedBathroomsInput"
+              (change)="applySearchFilters()"
+            >
+              <option [ngValue]="null">Bathrooms (Any)</option>
+              <option value="1">1 Bathroom</option>
+              <option value="2">2 Bathrooms</option>
+              <option value="3+">3+ Bathrooms</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Min Price"
+                [(ngModel)]="minPrice"
+                name="minPriceInput"
+                (change)="applySearchFilters()"
+              />
+              <span class="input-group-text">-</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Max Price"
+                [(ngModel)]="maxPrice"
+                name="maxPriceInput"
+                (change)="applySearchFilters()"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</header>
+
+<div class="home-container">
+  <section class="featured-units-section section-padding">
+    <div class="container">
+      <h2>Featured Units</h2>
+      <p class="section-description">
+        Explore our hand-picked selection of the finest resort units.
+      </p>
+      <div class="units-grid">
+        <div class="unit-card">
+          <img
+            src="https://via.placeholder.com/400x250?text=Unit+Image+1"
+            alt="Unit Image"
+            class="unit-image"
+          />
+          <div class="unit-info">
+            <h3>Luxury Beachfront Villa</h3>
+            <p class="unit-location">
+              <i class="fas fa-map-marker-alt"></i> Miami Beach, FL
+            </p>
+            <div class="unit-details">
+              <span><i class="fas fa-bed"></i> 3 Beds</span>
+              <span><i class="fas fa-bath"></i> 3 Baths</span>
+              <span><i class="fas fa-ruler-combined"></i> 2500 SqFt</span>
+            </div>
+            <p class="unit-price">$1,200/night</p>
+            <button class="btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <img
+            src="https://via.placeholder.com/400x250?text=Unit+Image+2"
+            alt="Unit Image"
+            class="unit-image"
+          />
+          <div class="unit-info">
+            <h3>Mountain View Cabin</h3>
+            <p class="unit-location">
+              <i class="fas fa-map-marker-alt"></i> Aspen, CO
+            </p>
+            <div class="unit-details">
+              <span><i class="fas fa-bed"></i> 2 Beds</span>
+              <span><i class="fas fa-bath"></i> 2 Baths</span>
+              <span><i class="fas fa-ruler-combined"></i> 1800 SqFt</span>
+            </div>
+            <p class="unit-price">$850/night</p>
+            <button class="btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <img
+            src="https://via.placeholder.com/400x250?text=Unit+Image+3"
+            alt="Unit Image"
+            class="unit-image"
+          />
+          <div class="unit-info">
+            <h3>Downtown City Apartment</h3>
+            <p class="unit-location">
+              <i class="fas fa-map-marker-alt"></i> New York, NY
+            </p>
+            <div class="unit-details">
+              <span><i class="fas fa-bed"></i> 1 Bed</span>
+              <span><i class="fas fa-bath"></i> 1 Bath</span>
+              <span><i class="fas fa-ruler-combined"></i> 900 SqFt</span>
+            </div>
+            <p class="unit-price">$500/night</p>
+            <button class="btn-secondary">View Details</button>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <a routerLink="/units" class="btn-primary">View All Units</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-choose-us-section section-padding bg-light">
+    <div class="container">
+      <h2>Why Choose Blue Horizon?</h2>
+      <p class="section-description">
+        We offer unparalleled service and a wide selection of premium resort
+        units.
+      </p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <i class="fas fa-handshake feature-icon"></i>
+          <h3>Trusted & Reliable</h3>
+          <p>
+            We connect you with verified owners and secure booking processes.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-home feature-icon"></i>
+          <h3>Diverse Selection</h3>
+          <p>From cozy studios to luxurious villas, find your perfect match.</p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-star feature-icon"></i>
+          <h3>Exceptional Service</h3>
+          <p>Our dedicated support team is here to assist you 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section section-padding">
+    <div class="cta-overlay">
+      <div class="container text-center">
+        <h2>Ready to Find Your Dream Getaway?</h2>
+        <p>Browse our listings or contact us for personalized assistance.</p>
+        <a routerLink="/units" class="btn-primary btn-large">Browse Units</a>
+        <a routerLink="/contact" class="btn-secondary btn-large ml-3"
+          >Contact Us</a
+        >
+      </div>
+    </div>
+  </section>
 </div>

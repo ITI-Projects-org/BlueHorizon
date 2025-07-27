@@ -1,85 +1,386 @@
-/***** Harmonized with Bootstrap *****/
+/* src/app/Pages/home/home.css */
+
+/* Hero & Slider Styles */
 .hero-section {
-  background: linear-gradient(120deg, #e0e7ef 0%, #f8fafc 100%);
-  padding: 4rem 0 3rem 0;
+  position: relative;
+  height: 100vh;
+  color: white;
+  overflow: hidden;
+  /* padding-top is managed by JavaScript in navbar.ts */
+}
+
+.slider-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.slider { /* This class is not used in home.html, consider removing if not needed */
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover; /* Changed from img to background-image */
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+.slide::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  /* home.css - Additions if desired for .other-links cards */
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-  .other-links .card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    text-align: center;
-  }
+/* Search Form Styles */
+.search-form-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1100px;
+  margin: 20px auto 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
-  .other-links .card-title {
-    color: #007bff;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-  }
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
 
-  .other-links .card-text {
-    color: #6c757d;
-    font-size: 0.95rem;
-  }
+.search-form .form-group {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
 
-  .other-links .btn-outline-info {
-    color: #17a2b8;
-    border-color: #17a2b8;
-  }
-
-  .other-links .btn-outline-info:hover {
-    background-color: #17a2b8;
-    color: #fff;
-  }
-}
-.hero-section h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin-bottom: 0.7rem;
-}
-.hero-section p {
-  color: #64748b;
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e90ff;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-.property-card {
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
-  transition: box-shadow 0.2s;
-}
-.property-card:hover {
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.16);
-}
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-}
-.property-price {
-  font-size: 1.2em;
-  font-weight: 700;
-  color: #1e90ff;
-  margin-bottom: 0.5rem;
-}
-.property-features {
-  margin-bottom: 0.7rem;
-}
-.property-features i {
-  color: #1e90ff;
-}
-.btn-primary {
-  background: linear-gradient(90deg, #1e90ff 0%, #38b6ff 100%);
+.form-select,
+.btn-search {
+  height: 50px;
   border: none;
-  font-weight: 600;
+  width: 100%;
 }
+
+.btn-search {
+  background-color: #0066cc;
+  color: white;
+  padding: 0 30px;
+  font-weight: 500;
+}
+
+/* More Options Toggle Button */
+.more-options-btn {
+  display: inline-block;
+  margin-top: 15px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.more-options-btn i {
+  margin-right: 5px;
+}
+
+/* More Options Content */
+.more-options-content {
+  width: 100%;
+}
+
+/* Price Range Inputs */
+.price-range .form-control {
+  flex: 1;
+}
+
+.price-range .input-group-text {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+}
+
+/* Slider Indicators */
+.slider-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.slider-indicators button { /* This class is not used in home.html, consider removing if not needed */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-indicators button.active { /* This class is not used in home.html, consider removing if not needed */
+  background-color: white;
+  transform: scale(1.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .search-form {
+    flex-wrap: wrap;
+  }
+
+  .search-form .form-group {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-text { /* This style seems to be for Navbar, consider moving to navbar.css if not used for hero content */
+    font-size: 1.8rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .search-form-container {
+    padding: 20px;
+  }
+}
+
+/* General Home page content styles (below hero) */
+.home-container {
+  /* Add padding-top to account for fixed navbar if needed */
+  margin-top: 0; /* Hero section is 100vh, so no margin needed here */
+}
+
+.section-padding {
+  padding: 80px 0;
+}
+
+.section-description {
+  text-align: center;
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.unit-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.unit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.unit-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.unit-info {
+  padding: 20px;
+}
+
+.unit-info h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.unit-location {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.unit-location i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+.unit-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.unit-details span i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+.unit-price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
 .btn-primary:hover {
-  background: linear-gradient(90deg, #38b6ff 0%, #1e90ff 100%);
+  background-color: #0056b3;
+}
+
+/* Why Choose Us Section */
+.why-choose-us-section {
+  background-color: #f8f9fa;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+
+.feature-item {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+  font-size: 3em;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.feature-item h3 {
+  font-size: 1.4em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  color: #666;
+  font-size: 0.95em;
+}
+
+/* Call to Action Section */
+.cta-section {
+  background: url('https://via.placeholder.com/1500x500?text=CTA+Background') no-repeat center center/cover;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.cta-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 80px 0;
+}
+
+.cta-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.btn-large {
+  padding: 15px 30px;
+  font-size: 1.1em;
+}
+
+.ml-3 {
+  margin-left: 15px;
+}
+
+/* Responsive adjustments for Home page content */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 50px 0;
+  }
+
+  .units-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-section h2 {
+    font-size: 2em;
+  }
+
+  .cta-section p {
+    font-size: 1em;
+  }
 }

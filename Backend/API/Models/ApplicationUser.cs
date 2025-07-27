@@ -9,5 +9,6 @@ namespace API.Models
         public int PhoneNumber { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public string UserType { get; set; }
     }
 }

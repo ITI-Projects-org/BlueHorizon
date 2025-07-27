@@ -62,20 +62,57 @@ namespace API.Controllers
 
                 var name = email.Split("@")[0];
 
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
+                var Checkuser = await _userManager.FindByEmailAsync(email);
+                if (Checkuser == null)
                 {
 
                     var dto = new RegisterDTO { Email = email, Username = name ?? email, Password = Guid.NewGuid().ToString(), Role = desiredRole };
-                    user = _mapper.Map<Tenant>(dto);
-                    var createResult = await _userManager.CreateAsync(user);
-                    if (!createResult.Succeeded)
+                    if (dto.Role == "Tenant")
                     {
-                        var msg = "an error occured while creating your account";
-                        var encodedMsg = WebUtility.UrlEncode(msg);
-                        return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                        Tenant user = _mapper.Map<Tenant>(dto);
+                        var createResult = await _userManager.CreateAsync(user, dto.Password);
+                        if (!createResult.Succeeded)
+                        {
+                            var msg = "an error occured while creating your account";
+                            var encodedMsg = WebUtility.UrlEncode(msg);
+                            return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                        }
+                        await _userManager.AddToRoleAsync(user, desiredRole);
+
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var confirmUrl = Url.Action(
+                            "ConfirmEmail",
+                            "Authentication",
+                            new { userId = user.Id, token },
+                            Request.Scheme);
+
+                        await _authService.SendEmailConfirmation(user, confirmUrl);
+
+                        return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
                     }
-                    await _userManager.AddToRoleAsync(user, desiredRole);
+                    else
+                    {
+                        Owner user = _mapper.Map<Owner>(dto);
+                        var createResult = await _userManager.CreateAsync(user, dto.Password);
+                        if (!createResult.Succeeded)
+                        {
+                            var msg = "an error occured while creating your account";
+                            var encodedMsg = WebUtility.UrlEncode(msg);
+                            return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
+                        }
+                        await _userManager.AddToRoleAsync(user, desiredRole);
+
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var confirmUrl = Url.Action(
+                            "ConfirmEmail",
+                            "Authentication",
+                            new { userId = user.Id, token },
+                            Request.Scheme);
+
+                        await _authService.SendEmailConfirmation(user, confirmUrl);
+
+                        return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
+                    }
                 }
                 else
                 {
@@ -84,16 +121,7 @@ namespace API.Controllers
                     return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup-fail?msg={encodedMsg}");
                 }
 
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var confirmUrl = Url.Action(
-                    "ConfirmEmail",
-                    "Authentication",
-                    new { userId = user.Id, token },
-                    Request.Scheme);
 
-                await _authService.SendEmailConfirmation(user, confirmUrl);
-
-                return Redirect($"{_config["ClientApp:BaseUrl"]}/google-signup");
             }
             catch (Exception e)
             {

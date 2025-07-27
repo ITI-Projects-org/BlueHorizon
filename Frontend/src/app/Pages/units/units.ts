@@ -7,12 +7,12 @@ import { Unit } from '../../Models/unit.model';
 import { SearchService } from '../../Services/search.service'; // Using standard naming convention
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
-import { Navbar } from '../../Layout/navbar/navbar';
+import {NavbarComponent } from '../../Layout/navbar/navbar';
 
 @Component({
   selector: 'app-units',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   templateUrl: './units.html',
   styleUrl: './units.css',
   providers: [UnitsService],

@@ -1,5 +1,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { App } from './app/app'; // تأكد أن هذا هو اسم الـ Root Component بتاعك
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { routes } from './app/app.routes';
 
-bootstrapApplication(App, appConfig).catch((err) => console.error(err));
+// تأكد من وجود هذا السطر في بداية الملف
+import 'zone.js';
+
+bootstrapApplication(App, {
+  providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+    provideRouter(routes),
+    // لا تضع هنا أي providers لـ JwtHelperService أو JWT_OPTIONS أو APP_INITIALIZER
+    // لأننا نتعامل معها يدوياً في AuthService
+  ]
+});

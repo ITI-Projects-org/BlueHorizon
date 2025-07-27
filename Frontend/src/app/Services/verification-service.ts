@@ -21,7 +21,7 @@ export class Verification {
   VerifiyOwner(data: FormData) {
     const headers = new HttpHeaders().set(
       'Authorization',
-      'Bearer ' + localStorage.getItem('token')
+      'Bearer ' + localStorage.getItem('accessToken')
     );
     // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
     return this.http.post(this.verificationURL + '/AddRequest', data, {
