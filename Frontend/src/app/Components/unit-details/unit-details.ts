@@ -53,6 +53,7 @@ export class UnitDetailsComponent implements OnInit {
         catchError((err) => {
           this.error = 'Failed to load unit details.';
           this.loading = false;
+          
           return of(null);
         })
       )
@@ -60,9 +61,11 @@ export class UnitDetailsComponent implements OnInit {
         this.unit = unit;
         console.log('Unit details loaded:', unit);
         this.loading = false;
+        
         if (unit) {
           this.loadBookedSlots();
         }
+       
       });
   }
   goToChatWithOwner(ownerId: string): void {

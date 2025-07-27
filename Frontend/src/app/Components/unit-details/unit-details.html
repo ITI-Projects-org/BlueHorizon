@@ -26,11 +26,8 @@
       <strong>{{ unit.ownerName }}</strong>
 
       <!-- زر الدردشة الجديد -->
-      <button
-        class="btn btn-sm btn-outline-primary ms-2 chat-owner-btn"
-        (click)="goToChatWithOwner(unit?.ownerId ?? '')"
-        title="Chat with owner"
-      >chat with owner
+      <button class="btn btn-sm btn-outline-primary ms-2 chat-owner-btn"
+        (click)="goToChatWithOwner(unit?.ownerId ?? '')" title="Chat with owner">chat with owner
         <i class="bi bi-chat-dots"></i> <!-- أيقونة الشات -->
       </button>
     </div>
@@ -259,6 +256,8 @@
         </div>
       </div>
     </div>
+
+
 
     <!-- Image Gallery -->
     <div *ngIf="unit.imagesPaths && unit.imagesPaths.length" class="image-gallery mt-4">

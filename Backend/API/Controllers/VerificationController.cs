@@ -51,7 +51,7 @@ namespace API.Controllers
             //ownerVerificationDocument.OwnerId = userId;
             //_unit.OwnerVerificationDocumentRepository.AddAsync(ownerVerificationDocument);
 
-            owner.VerificationStatus = VerificationStatus.Pending; 
+            owner.VerificationStatus = VerificationStatus.Pending;
             owner.VerificationDate = DateTime.Now;
             #endregion
 
