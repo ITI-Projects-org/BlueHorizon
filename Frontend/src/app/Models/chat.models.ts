@@ -21,5 +21,3 @@ export interface InboxItem {
   unreadCount: number;
   lastMessageIsRead: boolean; // If you track the read status of the last message in the Inbox
 }
-
-// You can add more models here if needed

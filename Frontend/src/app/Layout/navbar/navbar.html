@@ -1,0 +1,118 @@
+<!-- src/app/Layout/navbar/navbar.html -->
+
+<nav
+  class="navbar navbar-expand-lg"
+  [class.scrolled]="isScrolled || !isHomePage"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand logo-text" routerLink="/home">BlueHorizon</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/units">Units</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/addunit" *ngIf="isLoggedIn()"
+            >Add Unit</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/my-bookings" *ngIf="isLoggedIn()"
+            >My Bookings</a
+          >
+        </li>
+        <li class="nav-item message-icon-container">
+          <a class="nav-link" (click)="toggleMessagePopup($event)">
+            <i class="fas fa-envelope"></i>
+            <span *ngIf="unreadMessagesCount > 0" class="message-count"
+              >{{ unreadMessagesCount }}</span
+            >
+          </a>
+
+          <div class="message-popup" [class.show]="showPopup">
+            <div class="popup-header">
+              <h5>Recent Chats</h5>
+              <button class="close-btn" (click)="toggleMessagePopup($event)">
+                &times;
+              </button>
+            </div>
+            <div class="popup-body">
+              <ng-container
+                *ngIf="recentChats && recentChats.length > 0; else noChatsPopup"
+              >
+                <div
+                  *ngFor="let chat of recentChats"
+                  class="chat-item"
+                  (click)="goToChat(chat.otherUserId)"
+                >
+                  <div class="chat-main-info">
+                    <div class="chat-user-name">{{ chat.otherUserName }}</div>
+                    <div class="last-message-preview">
+                      {{ chat.lastMessageContent | slice:0:30 }}{{
+                      chat.lastMessageContent.length > 30 ? '...' : '' }}
+                    </div>
+                  </div>
+                  <div class="chat-meta-info">
+                    <div class="message-time">
+                      {{ chat.lastMessageTimestamp | date:'shortTime' }}
+                    </div>
+                    <span
+                      *ngIf="chat.unreadCount && chat.unreadCount > 0"
+                      class="badge bg-primary rounded-pill unread-badge"
+                      >{{ chat.unreadCount }}</span
+                    >
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noChatsPopup>
+                <div class="no-chats-message">No recent chats.</div>
+              </ng-template>
+            </div>
+            <div class="popup-footer">
+              <a [routerLink]="['/chat']" (click)="goToChat('')"
+                >View All Chats</a
+              >
+            </div>
+          </div>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="nav-link" routerLink="/login">Login</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="nav-link" routerLink="/register">Register</a>
+        </li>
+        <li class="nav-item dropdown" *ngIf="isLoggedIn()">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ getCurrentUserName() || 'User' }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

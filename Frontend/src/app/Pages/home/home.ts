@@ -1,6 +1,18 @@
 // app/Pages/home/home.ts
-import { ChangeDetectorRef, Component, OnInit, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, InitialNavigation, RouterLink, Router } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import {
+  ActivatedRoute,
+  InitialNavigation,
+  RouterLink,
+  Router,
+} from '@angular/router';
 import { UnitsService } from '../../Services/units.service';
 import { SearchService } from '../../Services/searchService';
 import { Unit } from '../../Models/unit.model';
@@ -10,11 +22,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    FormsModule
-  ],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -23,7 +31,7 @@ export class Home implements OnInit, OnDestroy {
   slides = [
     { image: 'images/1.jpg' }, // Corrected path to 'imges/'
     { image: 'images/3.jpg' },
-    { image: 'images/2.jpeg' } // Corrected path to 'imges/'
+    { image: 'images/2.jpeg' }, // Corrected path to 'imges/'
   ];
   currentSlide = 0;
   slideInterval: any;
@@ -44,36 +52,45 @@ export class Home implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-      private unitsService: UnitsService,
-      private route: ActivatedRoute,
-      private searchService: SearchService,
-      private cdr: ChangeDetectorRef
+    private unitsService: UnitsService,
+    private activatedRoute: ActivatedRoute,
+    private searchService: SearchService,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-    filteredUnits: Unit[] = [];
-    paginatedUnits: Unit[] = [];
+  filteredUnits: Unit[] = [];
+  paginatedUnits: Unit[] = [];
 
-    isLoading = true;
-    error: string | null = null;
+  isLoading = true;
+  error: string | null = null;
 
-    ngOnInit(): void {
-        this.fetchUnits();
+  ngOnInit(): void {
+    this.fetchUnits();
     if (this.isBrowser) {
       this.startSlider();
     }
 
-    this.activatedRoute.queryParams.subscribe(params => {
+    this.activatedRoute.queryParams.subscribe((params) => {
       this.selectedVillage = params['village'] || null;
       this.selectedType = params['type'] || null;
       this.selectedBedrooms = params['bedrooms'] || null;
       this.selectedBathrooms = params['bathrooms'] || null;
-      this.minPrice = params['minPrice'] ? parseFloat(params['minPrice']) : null;
-      this.maxPrice = params['maxPrice'] ? parseFloat(params['maxPrice']) : null;
+      this.minPrice = params['minPrice']
+        ? parseFloat(params['minPrice'])
+        : null;
+      this.maxPrice = params['maxPrice']
+        ? parseFloat(params['maxPrice'])
+        : null;
 
-      if (this.selectedBedrooms || this.selectedBathrooms || this.minPrice || this.maxPrice) {
+      if (
+        this.selectedBedrooms ||
+        this.selectedBathrooms ||
+        this.minPrice ||
+        this.maxPrice
+      ) {
         this.showMoreOptions = true;
       }
     });
@@ -85,27 +102,27 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-    fetchUnits(): void {
-        this.isLoading = true;
-        this.unitsService.getUnits().subscribe({
-            next: (data) => {
-                this.isLoading = false;
+  fetchUnits(): void {
+    this.isLoading = true;
+    this.unitsService.getUnits().subscribe({
+      next: (data) => {
+        this.isLoading = false;
 
-                this.paginatedUnits = data.slice(-6);
-                console.log(this.paginatedUnits)
-                this.cdr.detectChanges()
-            },
-            error: (err) => {
-                console.error('Error fetching units', err);
-                this.error = 'Failed to load units. Please try again later.';
-                this.isLoading = false;
-            },
-        });
-    }
-    getUnitImagePath(unit: Unit): string {
-        // console.log('this is image paths');
-        return unit.imageURL ?? '';
-    }
+        this.paginatedUnits = data.slice(-6);
+        console.log(this.paginatedUnits);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching units', err);
+        this.error = 'Failed to load units. Please try again later.';
+        this.isLoading = false;
+      },
+    });
+  }
+  getUnitImagePath(unit: Unit): string {
+    // console.log('this is image paths');
+    return unit.imageURL ?? '';
+  }
 
   // Slider methods
   startSlider(): void {
@@ -161,7 +178,7 @@ export class Home implements OnInit, OnDestroy {
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
 
     console.log('Applying filters:', queryParams);

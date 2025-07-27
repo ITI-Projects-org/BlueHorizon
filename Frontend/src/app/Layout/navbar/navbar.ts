@@ -23,7 +23,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class Navbar implements OnInit, OnDestroy {
   isScrolled = false;
   private isBrowser: boolean;
   isHomePage: boolean = false; // Property to determine if we are on the Home page
@@ -45,12 +45,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.currentUserId = this.authService.getCurrentUserId();
 
     if (this.isBrowser) {
-      this.router.events.pipe(
-        filter(event => event instanceof NavigationEnd)
-      ).subscribe((event: NavigationEnd) => {
-        this.isHomePage = (event.urlAfterRedirects === '/' || event.urlAfterRedirects.startsWith('/home'));
-        this.updateNavbarStyle();
-      });
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          this.isHomePage =
+            event.urlAfterRedirects === '/' ||
+            event.urlAfterRedirects.startsWith('/home');
+          this.updateNavbarStyle();
+        });
     }
   }
 
@@ -74,7 +76,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       document.removeEventListener('click', this.onDocumentClick.bind(this));
     }
     if (this.hubConnection && this.hubConnection.state === 'Connected') {
-      this.hubConnection.stop().then(() => console.log('Navbar SignalR connection stopped.')).catch(err => console.error(err));
+      this.hubConnection
+        .stop()
+        .then(() => console.log('Navbar SignalR connection stopped.'))
+        .catch((err) => console.error(err));
     }
   }
 
@@ -116,7 +121,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       // Ensure elements exist before using contains
       if (popupElement && iconElement) {
         // If click is outside both the popup and the icon, close the popup
-        if (!popupElement.contains(event.target as Node) && !iconElement.contains(event.target as Node)) {
+        if (
+          !popupElement.contains(event.target as Node) &&
+          !iconElement.contains(event.target as Node)
+        ) {
           this.showPopup = false;
         }
       }
@@ -127,14 +135,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.messagesService.getInboxMessages().subscribe({
       next: (inboxItems: InboxItem[]) => {
         this.recentChats = inboxItems.slice(0, 5); // Display only top 5 recent chats in popup
-        this.unreadMessagesCount = inboxItems.reduce((sum, chat) => sum + chat.unreadCount, 0);
+        this.unreadMessagesCount = inboxItems.reduce(
+          (sum, chat) => sum + chat.unreadCount,
+          0
+        );
         console.log('Recent chats fetched for popup:', this.recentChats);
       },
       error: (err) => {
         console.error('Error fetching recent chats for navbar:', err);
         this.recentChats = [];
         this.unreadMessagesCount = 0;
-      }
+      },
     });
   }
 
@@ -152,16 +163,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     this.hubConnection = new HubConnectionBuilder()
       .withUrl('https://localhost:7083/chathub', {
-        accessTokenFactory: () => token
+        accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start()
+    this.hubConnection
+      .start()
       .then(() => {
         console.log('Navbar SignalR connection started.');
       })
-      .catch(err => console.error('Error while starting SignalR connection: ' + err));
+      .catch((err) =>
+        console.error('Error while starting SignalR connection: ' + err)
+      );
 
     this.hubConnection.on('ReceiveMessage', () => {
       this.fetchRecentChatsForPopup(); // Refresh recent chats on new message

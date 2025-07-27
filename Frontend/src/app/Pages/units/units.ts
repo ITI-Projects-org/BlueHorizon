@@ -12,7 +12,7 @@ import { SearchService } from '../../Services/searchService';
 @Component({
   selector: 'app-units',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './units.html',
   styleUrl: './units.css',
 })

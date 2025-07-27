@@ -12,7 +12,7 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
-import {  ChatComponent } from './Components/chat/chat';
+import { ChatComponent } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
