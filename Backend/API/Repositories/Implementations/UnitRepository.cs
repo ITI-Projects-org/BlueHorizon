@@ -42,6 +42,13 @@ namespace API.Repositories.Implementations
                 .Select(ui=>ui.ImageURL)
                 .FirstOrDefaultAsync();
         }
+        public async Task<List<Unit>> GetAllPendingUnits()
+        {
+            return await _context.Units
+                .Where(u => u.VerificationStatus == VerificationStatus.Pending)
+                .Include(u => u.Owner)
+                .ToListAsync();
+        }
 
 
 

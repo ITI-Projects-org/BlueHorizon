@@ -4,6 +4,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RespondVerificationDTO } from '../Models/respond-verification-dto';
 import { isPlatformBrowser } from '@angular/common';
+import { UnitVerificationDTO } from '../Models/unit-verification-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -82,5 +83,20 @@ export class Verification {
       return localStorage.getItem('token')?.toString();
     }
     return null;
+  }
+
+
+// ___________________________________
+// ___________________________________
+// _____________For Units_____________
+// ___________________________________
+// ___________________________________
+
+
+  GetPendingUnits(): Observable<UnitVerificationDTO[]> {
+    return this.http.get<UnitVerificationDTO[]>(
+      `${this.verificationURL}/UnitRequests`,
+      { headers: this.headers }
+    );
   }
 }
