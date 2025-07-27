@@ -41,6 +41,7 @@ namespace API.Models
             //// -------------------------------------------------------------------
             //// Data Seed Code
             //// -------------------------------------------------------------------
+            #region Database Seeder
 
             //var random = new Random();
 
@@ -164,7 +165,8 @@ namespace API.Models
 
             //builder.Entity<Unit>().HasData(unitsToSeed);
             //builder.Entity<UnitAmenity>().HasData(allUnitAmenitiesToSeed);
-            //builder.Entity<UnitImages>().HasData(allUnitImagesToSeed);
+            //builder.Entity<UnitImages>().HasData(allUnitImagesToSeed); 
+            #endregion
 
             // -------------------------------------------------------------------
             // Fluent API and Relationships (unchanged)

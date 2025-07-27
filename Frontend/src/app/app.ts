@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 import { Navbar } from './Layout/navbar/navbar';
 import { SecNavbar } from "./Layout/sec-navbar/sec-navbar";
+import { BookingForm } from "./Pages/booking-form/booking-form";
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import { SecNavbar } from "./Layout/sec-navbar/sec-navbar";
     FormsModule,
     ReactiveFormsModule,
     UnitDetailsComponent,
-    SecNavbar
+    SecNavbar,
+    BookingForm
 ],
   templateUrl: './app.html',
   styleUrl: './app.css',

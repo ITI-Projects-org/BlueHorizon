@@ -4,7 +4,6 @@ namespace API.DTOs.UnitDTO
 {
     public class UnitDetailsDTO
     {
-
         public string OwnerName { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

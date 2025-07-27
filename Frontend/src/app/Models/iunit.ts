@@ -1,4 +1,3 @@
-
 export interface IUnit {
   id:number|null,
   averageUnitRating:number|null,
@@ -8,9 +7,7 @@ export interface IUnit {
   distanceToSea:number|null,
   sleeps:number|null,
   unitType:number|null,
-  
   creationDate:Date|null,
-  
   ownerName:string|null,
   unitAmenities:string[]|null,
   ownerId:string|null,
@@ -19,7 +16,6 @@ export interface IUnit {
   description:string|null,
   villageName:string|null,
   imageURL:string|null,
-  unitImages:string[]|null
-
+  imagesPaths:string[]|null  
 }
 
