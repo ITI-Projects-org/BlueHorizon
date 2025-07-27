@@ -74,6 +74,8 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.loadSuggestions();
       }
 
+      this.cdr.detectChanges(); // Force UI update when opening chat
+
       setTimeout(() => {
         this.messageInput?.nativeElement?.focus();
       }, 100);
@@ -92,6 +94,7 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     // Add user message to UI immediately
     this.aiChatService.addUserMessage(messageText);
+    this.cdr.detectChanges(); // Force UI update
 
     // Send to backend
     this.aiChatService.sendMessage(messageText).subscribe({
@@ -104,6 +107,7 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           );
         }
         this.isLoading = false;
+        this.cdr.detectChanges(); // Force UI update to show bot response
       },
       error: (error) => {
         console.error('Error sending message:', error);
@@ -111,12 +115,14 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           "Sorry, I'm having trouble connecting. Please try again later."
         );
         this.isLoading = false;
+        this.cdr.detectChanges(); // Force UI update even on error
       },
     });
   }
 
   sendSuggestion(suggestion: string): void {
     this.currentMessage = suggestion;
+    this.cdr.detectChanges(); // Update input field
     this.sendMessage();
   }
 
@@ -124,7 +130,35 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     // Gracefully handle chat history loading
     this.aiChatService.getChatHistory().subscribe({
       next: (history) => {
-        this.aiChatService.setMessages(history.messages);
+        // Convert backend chat messages to separate user and bot messages for UI
+        const uiMessages: ChatMessage[] = [];
+
+        history.messages.forEach((chatMessage) => {
+          // Add user message
+          if (chatMessage.message && chatMessage.message.trim()) {
+            uiMessages.push({
+              id: chatMessage.id * 2, // Ensure unique IDs
+              message: chatMessage.message,
+              response: '',
+              createdAt: chatMessage.createdAt,
+              isFromUser: true,
+            });
+          }
+
+          // Add bot response
+          if (chatMessage.response && chatMessage.response.trim()) {
+            uiMessages.push({
+              id: chatMessage.id * 2 + 1, // Ensure unique IDs
+              message: '',
+              response: chatMessage.response,
+              createdAt: chatMessage.createdAt,
+              isFromUser: false,
+            });
+          }
+        });
+
+        this.aiChatService.setMessages(uiMessages);
+        this.cdr.detectChanges(); // Force UI update
       },
       error: (error) => {
         console.warn('Chat history unavailable:', error.message);
@@ -137,6 +171,7 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.aiChatService.getSuggestions().subscribe({
       next: (response) => {
         this.suggestions = response.suggestions;
+        this.cdr.detectChanges(); // Force UI update
       },
       error: (error) => {
         console.warn('Suggestions unavailable:', error.message);
@@ -148,6 +183,7 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           'How to contact support?',
           'Platform safety measures',
         ];
+        this.cdr.detectChanges(); // Force UI update even with default suggestions
       },
     });
   }
@@ -158,22 +194,27 @@ export class AIChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       text: 'Are you sure you want to delete the chat?',
       icon: 'question',
       draggable: true,
-    }).then(() => {
-      this.aiChatService.clearChatHistory().subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.aiChatService.clearLocalMessages();
-            this.showSuggestions = true;
-            // Reload chat history and suggestions after clearing
-            this.loadChatHistory();
-            this.loadSuggestions();
-            this.cdr.detectChanges();
-          }
-        },
-        error: (error) => {
-          console.error('Error clearing chat:', error);
-        },
-      });
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.aiChatService.clearChatHistory().subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.aiChatService.clearLocalMessages();
+              this.showSuggestions = true;
+              // Reload chat history and suggestions after clearing
+              this.loadChatHistory();
+              this.loadSuggestions();
+              this.cdr.detectChanges();
+            }
+          },
+          error: (error) => {
+            console.error('Error clearing chat:', error);
+          },
+        });
+      }
     });
   }
 

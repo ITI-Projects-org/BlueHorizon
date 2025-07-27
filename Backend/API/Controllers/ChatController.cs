@@ -144,7 +144,24 @@ namespace API.Controllers
             return Ok(new { suggestions });
         }
 
-        // Test endpoint for OpenAI integration (remove in production)
+        // Test endpoint for Gemini integration (remove in production)
+        [HttpPost("test-gemini")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestGemini([FromBody] string message)
+        {
+            try
+            {
+                var response = await _aiService.GenerateResponseAsync(message, "test-user", "tenant");
+                return Ok(new { success = true, response = response });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, error = ex.Message });
+            }
+        }
+
+        // Test endpoint for OpenAI integration (commented out)
+        /*
         [HttpPost("test-openai")]
         [AllowAnonymous]
         public async Task<IActionResult> TestOpenAI([FromBody] string message)
@@ -159,8 +176,9 @@ namespace API.Controllers
                 return Ok(new { success = false, error = ex.Message });
             }
         }
+        */
 
-        // Simple endpoint to check OpenAI API key configuration
+        // Simple endpoint to check Gemini API key configuration
         [HttpGet("test-config")]
         [AllowAnonymous]
         public IActionResult TestConfig()
@@ -168,12 +186,16 @@ namespace API.Controllers
             try
             {
                 var config = Request.HttpContext.RequestServices.GetService<IConfiguration>();
-                var apiKey = config["OpenAI:apiKey"];
+                var geminiApiKey = config["Gemini:apiKey"];
+                // var openaiApiKey = config["OpenAI:apiKey"]; // Commented out
                 
                 return Ok(new { 
-                    hasApiKey = !string.IsNullOrEmpty(apiKey),
-                    apiKeyPrefix = apiKey?.Substring(0, Math.Min(10, apiKey?.Length ?? 0)) + "...",
-                    apiKeyLength = apiKey?.Length ?? 0
+                    hasGeminiApiKey = !string.IsNullOrEmpty(geminiApiKey),
+                    geminiApiKeyPrefix = geminiApiKey?.Substring(0, Math.Min(10, geminiApiKey?.Length ?? 0)) + "...",
+                    geminiApiKeyLength = geminiApiKey?.Length ?? 0
+                    // hasOpenAIApiKey = !string.IsNullOrEmpty(openaiApiKey), // Commented out
+                    // openaiApiKeyPrefix = openaiApiKey?.Substring(0, Math.Min(10, openaiApiKey?.Length ?? 0)) + "...", // Commented out
+                    // openaiApiKeyLength = openaiApiKey?.Length ?? 0 // Commented out
                 });
             }
             catch (Exception ex)
