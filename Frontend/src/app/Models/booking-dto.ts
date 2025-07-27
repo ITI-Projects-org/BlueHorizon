@@ -6,7 +6,7 @@ export interface BookingDTO {
 }
 
 export interface BookingResponseDTO {
- id: number;
+  id: number;
   unitId: number;
   tenantId: string;
   checkInDate: Date;
@@ -32,7 +32,4 @@ export interface BookingResponseDTO {
     basePricePerNight: number;
     ownerName: string;
   };
-  // Additional fields
-  tenantName?: string;
-  qrCodeUrl?: string;
 }
