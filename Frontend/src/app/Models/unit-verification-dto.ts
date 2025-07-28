@@ -1,7 +1,5 @@
-import { config } from './../app.config.server';
 export interface UnitVerificationDTO {
-  
-  id:number,
+  id: number;
   documentType: number | string | null;
   uploadDate: Date | null;
   nationalId: string | null;
@@ -23,6 +21,5 @@ export interface UnitVerificationDTO {
   averageUnitRating: number;
   contract: number | string | null;
   contractPath: string | null;
-  contractFile: File | null;
   unitAmenities: number[] | null;
 }

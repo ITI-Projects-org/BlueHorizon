@@ -150,11 +150,10 @@ namespace API.Controllers
             var isVerified = user.VerificationStatus == VerificationStatus.Verified || user.VerificationStatus == VerificationStatus.Pending;
             return Ok(new { isVerified = isVerified });
         }
-        // ----------------for Units--
 
+        // ---------------- for Units --
         [HttpGet("UnitRequests")]
         [Authorize(Roles = "Admin")]
-
         public async Task<IActionResult> GetAllUnitsVerificationRequests()
         {
             // from DB to Angular    
@@ -164,8 +163,8 @@ namespace API.Controllers
             //IEnumerable<OwnerWithUnitVerificationDTO>? OwnersUnitsWaitingForVerification
             //    = await _unit.OwnerVerificationDocumentRepository.GetPendingOwnersWithUnitAsync();
 
-            var unitsDto= _mapper.Map<IEnumerable<UnitDTO>>(allVerificationRequests);  
-            return Ok(unitsDto);
+            var verificationDtos = _mapper.Map<IEnumerable<UnitVerificationDTO>>(allVerificationRequests);
+            return Ok(verificationDtos);
         }
 
 
