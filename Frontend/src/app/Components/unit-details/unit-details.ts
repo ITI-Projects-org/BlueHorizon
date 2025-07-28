@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Unit } from '../../Services/unit';
 import { IUnit } from '../../Models/iunit';
@@ -36,7 +36,8 @@ export class UnitDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private unitService: Unit,
     private bookingService: BookingService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +54,7 @@ export class UnitDetailsComponent implements OnInit {
         catchError((err) => {
           this.error = 'Failed to load unit details.';
           this.loading = false;
-          
+
           return of(null);
         })
       )
@@ -61,11 +62,10 @@ export class UnitDetailsComponent implements OnInit {
         this.unit = unit;
         console.log('Unit details loaded:', unit);
         this.loading = false;
-        
+        this.cdr.detectChanges();
         if (unit) {
           this.loadBookedSlots();
         }
-       
       });
   }
   goToChatWithOwner(ownerId: string): void {

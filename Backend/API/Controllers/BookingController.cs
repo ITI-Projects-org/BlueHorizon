@@ -36,7 +36,7 @@ namespace API.Controllers
 
         [HttpPost("Add")]
         [Authorize(Roles = "Admin,Tenant")]
-        public async Task<IActionResult> AddBooking(BookingDTO bookingdto)
+        public async Task<IActionResult> AddBooking(addBookingDTO bookingdto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -84,7 +84,7 @@ namespace API.Controllers
                 await _unit.BookingRepository.AddAsync(booking);
                 await _unit.SaveAsync();
 
-                // Send confirmation email
+                // Send confirmation email to tenant
                 var tenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = await _userManager.FindByIdAsync(tenantId);
 
@@ -124,6 +124,45 @@ namespace API.Controllers
                         emailBody);
                 }
 
+                // Send notification email to property owner
+                if (unit.Owner != null && !string.IsNullOrEmpty(unit.Owner.Email))
+                {
+                    var ownerEmailBody = $@"
+                        <h2>New Booking Notification</h2>
+                        <p>Dear {unit.Owner.UserName},</p>
+                        
+                        <p>Great news! You have received a new booking for your property:</p>
+                        
+                        <div style='background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #28a745;'>
+                            <h3>Booking Information</h3>
+                            <p><strong>Property:</strong> {unit.Title}</p>
+                            <p><strong>Guest Name:</strong> {user?.UserName ?? "N/A"}</p>
+                            <p><strong>Guest Email:</strong> {user?.Email ?? "N/A"}</p>
+                            <p><strong>Booking Date:</strong> {booking.BookingDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-in:</strong> {booking.CheckInDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-out:</strong> {booking.CheckOutDate:MMMM dd, yyyy}</p>
+                            <p><strong>Number of Nights:</strong> {(int)numberOfDays}</p>
+                            <p><strong>Your Payout:</strong> ${booking.OwnerPayoutAmount:F2}</p>
+                            <p><strong>Platform Commission:</strong> ${booking.PlatformComission:F2}</p>
+                            <p><strong>Total Booking Value:</strong> ${booking.TotalPrice:F2}</p>
+                            <p><strong>Booking ID:</strong> #{booking.Id}</p>
+                        </div>
+                        
+                        <p>Please ensure your property is ready for the guest's arrival.</p>
+                        
+                        <p>If you need to contact the guest or have any questions about this booking, please reach out to our support team.</p>
+                        
+                        <p>Thank you for being a valued BlueHorizon host!</p>
+                        
+                        <p>Best regards,<br>
+                        The BlueHorizon Team</p>";
+
+                    await _emailSender.SendEmailAsync(
+                        unit.Owner.Email,
+                        "New Booking Received - BlueHorizon",
+                        ownerEmailBody);
+                }
+
                 return Ok(new { 
                     msg = "Booking added successfully! A confirmation email has been sent.",
                     bookingId = booking.Id,
@@ -148,7 +187,7 @@ namespace API.Controllers
             return Ok(bookedSlots);
         }
 
-        // Optional: Add endpoint to get user's bookings
+        
         [HttpGet("my-bookings")]
         [Authorize(Roles = "Tenant")]
         public async Task<IActionResult> GetMyBookings()
@@ -166,6 +205,120 @@ namespace API.Controllers
                 booking.QrCodeUrl = QrCode?.ImagePath??"";
             }
             return Ok(bookingDTOs);
+        }
+
+        [HttpDelete("delete/{bookingId}")]
+        [Authorize(Roles = "Tenant")]
+        public async Task<IActionResult> DeleteBooking(int bookingId)
+        {
+            try
+            {
+                // Get the current tenant ID
+                var tenantId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                // Find the booking
+                var booking = await _unit.BookingRepository.GetByIdAsync(bookingId);
+                if (booking == null)
+                    return NotFound(new { msg = "Booking not found" });
+
+                // Verify the booking belongs to the current tenant
+                if (booking.TenantId != tenantId)
+                    return Unauthorized(new { msg = "You are not authorized to delete this booking" });
+
+                // Check if the booking can be cancelled (e.g., not too close to check-in date)
+                var daysDifference = (booking.CheckInDate - DateTime.Today).TotalDays;
+                if (daysDifference < 1) // Can't cancel if check-in is today or has passed
+                {
+                    return BadRequest(new { msg = "Cannot cancel booking. Check-in date is today or has passed." });
+                }
+
+                // Get unit details for email notification
+                var unit = await _unit.UnitRepository.GetByIdAsync(booking.UnitId);
+                
+                // Delete the booking (QR codes and access permissions will cascade delete)
+                await _unit.BookingRepository.DeleteByIdAsync(bookingId);
+                await _unit.SaveAsync();
+
+                // Send cancellation email to tenant
+                var user = await _userManager.FindByIdAsync(tenantId);
+                if (user != null && !string.IsNullOrEmpty(user.Email))
+                {
+                    var emailBody = $@"
+                        <h2>Booking Cancellation Confirmation</h2>
+                        <p>Dear {user.UserName},</p>
+                        
+                        <p>This email confirms that your booking has been successfully cancelled:</p>
+                        
+                        <div style='background-color: #ffe6e6; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #dc3545;'>
+                            <h3>Cancelled Booking Details</h3>
+                            <p><strong>Property:</strong> {unit?.Title ?? "N/A"}</p>
+                            <p><strong>Booking ID:</strong> #{booking.Id}</p>
+                            <p><strong>Check-in Date:</strong> {booking.CheckInDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-out Date:</strong> {booking.CheckOutDate:MMMM dd, yyyy}</p>
+                            <p><strong>Cancellation Date:</strong> {DateTime.Now:MMMM dd, yyyy}</p>
+                            <p><strong>Refund Amount:</strong> ${booking.TotalPrice:F2}</p>
+                        </div>
+                        
+                        <p>Your refund will be processed within 3-5 business days and will be credited back to your original payment method.</p>
+                        
+                        <p>If you have any questions about this cancellation or your refund, please don't hesitate to contact our support team.</p>
+                        
+                        <p>We're sorry to see you cancel and hope to serve you again in the future.</p>
+                        
+                        <p>Best regards,<br>
+                        The BlueHorizon Team</p>";
+
+                    await _emailSender.SendEmailAsync(
+                        user.Email,
+                        "Booking Cancellation Confirmation - BlueHorizon",
+                        emailBody);
+                }
+
+                // Send cancellation notification to property owner
+                if (unit?.Owner != null && !string.IsNullOrEmpty(unit.Owner.Email))
+                {
+                    var ownerEmailBody = $@"
+                        <h2>Booking Cancellation Notice</h2>
+                        <p>Dear {unit.Owner.UserName},</p>
+                        
+                        <p>We wanted to inform you that a booking for your property has been cancelled:</p>
+                        
+                        <div style='background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #ffc107;'>
+                            <h3>Cancelled Booking Information</h3>
+                            <p><strong>Property:</strong> {unit.Title}</p>
+                            <p><strong>Guest Name:</strong> {user?.UserName ?? "N/A"}</p>
+                            <p><strong>Booking ID:</strong> #{booking.Id}</p>
+                            <p><strong>Check-in Date:</strong> {booking.CheckInDate:MMMM dd, yyyy}</p>
+                            <p><strong>Check-out Date:</strong> {booking.CheckOutDate:MMMM dd, yyyy}</p>
+                            <p><strong>Cancellation Date:</strong> {DateTime.Now:MMMM dd, yyyy}</p>
+                            <p><strong>Lost Revenue:</strong> ${booking.OwnerPayoutAmount:F2}</p>
+                        </div>
+                        
+                        <p>This time slot is now available for new bookings. You may want to update your property calendar or promotional offers.</p>
+                        
+                        <p>If you have any questions about this cancellation, please reach out to our support team.</p>
+                        
+                        <p>Thank you for your understanding.</p>
+                        
+                        <p>Best regards,<br>
+                        The BlueHorizon Team</p>";
+
+                    await _emailSender.SendEmailAsync(
+                        unit.Owner.Email,
+                        "Booking Cancellation Notice - BlueHorizon",
+                        ownerEmailBody);
+                }
+
+                return Ok(new { 
+                    msg = "Booking cancelled successfully. Confirmation emails have been sent.",
+                    refundAmount = booking.TotalPrice,
+                    cancellationDate = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { msg = "An error occurred while cancelling the booking" });
+            }
         }
     }
 
