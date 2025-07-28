@@ -170,7 +170,14 @@ namespace API.Models
                 .HasOne(QRCode => QRCode.Booking)
                 .WithOne(b => b.QRCode)
                 .HasForeignKey<QRCode>(qr => qr.BookingId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            // AccessPermission relationships - cascade delete when booking is deleted
+            builder.Entity<AccessPermission>()
+                .HasOne(ap => ap.QRCode)
+                .WithMany()
+                .HasForeignKey(ap => ap.QRCodeId)
+                .OnDelete(DeleteBehavior.Cascade);
                 
             builder.Entity<Unit>()
                 .HasMany(u=>u.UnitImagesTable)

@@ -22,6 +22,7 @@ import { BookingList } from './Pages/booking-list/booking-list';
 import { BookingForm } from './Pages/booking-form/booking-form';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 import { QrCreationComponent } from './Pages/qr-creation.component/qr-creation.component';
+import { tenantGuardGuard } from './Guards/tenant-guard-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -39,7 +40,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
   { path: 'my-bookings', component: BookingList },
-    { path: 'create-qr', component: QrCreationComponent },
+  { path: 'create-qr', component: QrCreationComponent },
   // { path: 'add-booking', component: BookingForm },
 
   {
@@ -49,7 +50,11 @@ export const routes: Routes = [
   },
   // 4. Catch-all route: Redirects any unmatched URLs to the login page.
   //    This ensures users don't land on a blank page if they type a wrong URL.
-  { path: 'addReview', component: Review, canActivate: [AuthGuard] },
+  {
+    path: 'addReview',
+    component: Review,
+    canActivate: [AuthGuard],
+  },
   { path: 'createQr', component: CreateQr },
   { path: 'units', component: Units },
   { path: 'addunit', component: AddUnit },
