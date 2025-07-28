@@ -99,4 +99,17 @@ export class Verification {
       { headers: this.headers }
     );
   }
+
+
+
+
+  RespondUnitVerificationDTO(
+    ResoondVerificationDTO: RespondVerificationDTO
+  ): Observable<any> {
+    return this.http.post(
+      `${this.verificationURL}/UnitRespond`,
+      ResoondVerificationDTO,
+      { headers: this.headers }
+    );
+  }
 }
