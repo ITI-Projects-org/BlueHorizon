@@ -1,25 +1,28 @@
+import { config } from './../app.config.server';
 export interface UnitVerificationDTO {
-     DocumentType: number | string | null;
-  UploadDate: Date | null;
-  NationalId: string | null;
-  VerificationNotes: string | null;
-  VerificationStatus: number | string | null;
-  BankAccountDetails: string | null;
-  UnitId: number;
-  Title: string | null;
-  Description: string | null;
-  UnitType: number | string | null;
-  Bedrooms: number;
-  Bathrooms: number;
-  Sleeps: number;
-  DistanceToSea: number;
-  BasePricePerNight: number;
-  Address: string | null;
-  VillageName: string | null;
-  CreationDate: Date | null;
-  AverageUnitRating: number;
-  Contract: number | string | null;
-  ContractPath: string | null;
-  ContractFile: File | null;
-  UnitAmenities: number[] | null;
+  
+  id:number,
+  documentType: number | string | null;
+  uploadDate: Date | null;
+  nationalId: string | null;
+  verificationNotes: string | null;
+  verificationStatus: number | string | null;
+  bankAccountDetails: string | null;
+  unitId: number;
+  title: string | null;
+  description: string | null;
+  unitType: number | string | null;
+  bedrooms: number;
+  bathrooms: number;
+  sleeps: number;
+  distanceToSea: number;
+  basePricePerNight: number;
+  address: string | null;
+  villageName: string | null;
+  creationDate: Date | null;
+  averageUnitRating: number;
+  contract: number | string | null;
+  contractPath: string | null;
+  contractFile: File | null;
+  unitAmenities: number[] | null;
 }
