@@ -22,6 +22,7 @@ import { BookingList } from './Pages/booking-list/booking-list';
 import { BookingForm } from './Pages/booking-form/booking-form';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 import { QrCreationComponent } from './Pages/qr-creation.component/qr-creation.component';
+import { PendingUnits } from './Pages/Verification/pending-units/pending-units';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -35,6 +36,7 @@ export const routes: Routes = [
   { path: 'google-login-fail', component: GoogleLoginFail },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
+  { path: 'PendingUnits', component:PendingUnits },
   { path: 'profile', component: Profile },
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
