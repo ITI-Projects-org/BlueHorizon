@@ -37,6 +37,12 @@ export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق �
   hubConnection!: HubConnection;
   currentUserId: string | null = null;
 
+  // Role-based navigation properties
+  userRole: string = '';
+  isOwner: boolean = false;
+  isTenant: boolean = false;
+  isAdmin: boolean = false;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
@@ -56,6 +62,7 @@ export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق �
             event.urlAfterRedirects.startsWith('/home');
           this.updateNavbarStyle();
           this._isLoggedIn = this.authService.isLoggedIn(); // **تحديث حالة تسجيل الدخول عند تغيير المسار**
+          this.updateUserRole(); // Update role when route changes
         });
     }
   }
@@ -68,6 +75,7 @@ export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق �
 
     // **تحديث حالة تسجيل الدخول فورًا عند تهيئة المكون**
     this._isLoggedIn = this.authService.isLoggedIn();
+    this.updateUserRole(); // Update role on component initialization
 
     // جلب المحادثات وبدء SignalR فقط إذا كان المستخدم مسجلًا للدخول
     if (this._isLoggedIn) {
@@ -87,6 +95,42 @@ export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق �
         .then(() => console.log('Navbar SignalR connection stopped.'))
         .catch((err) => console.error(err));
     }
+  }
+
+  // Role-based navigation methods
+  private updateUserRole(): void {
+    if (this._isLoggedIn) {
+      this.userRole = this.authService.getCurrentUserRole() || '';
+      this.isOwner = this.userRole === 'Owner';
+      this.isTenant = this.userRole === 'Tenant';
+      this.isAdmin = this.userRole === 'Admin';
+    } else {
+      this.userRole = '';
+      this.isOwner = false;
+      this.isTenant = false;
+      this.isAdmin = false;
+    }
+  }
+
+  // Navigation visibility methods
+  canSeeAddUnit(): boolean {
+    return this._isLoggedIn && this.isOwner;
+  }
+
+  canSeeMyBookings(): boolean {
+    return this._isLoggedIn && this.isTenant;
+  }
+
+  canSeePendingRequests(): boolean {
+    return this._isLoggedIn && this.isAdmin;
+  }
+
+  canSeeMessages(): boolean {
+    return this._isLoggedIn; // All authenticated users can see messages
+  }
+
+  canSeeProfile(): boolean {
+    return this._isLoggedIn; // All authenticated users can see profile
   }
 
   @HostListener('window:scroll')
@@ -203,5 +247,6 @@ export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق �
     this.authService.logout();
     this.router.navigate(['/login']);
     this._isLoggedIn = false; // **تحديث الحالة عند تسجيل الخروج**
+    this.updateUserRole(); // Update role after logout
   }
 }

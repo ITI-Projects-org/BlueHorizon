@@ -104,6 +104,21 @@ export class AuthService {
     return null;
   }
 
+  getCurrentUserRole(): string | null {
+    const token = this.getToken(); // getToken already handles platform check
+    if (token && !this.isTokenExpired(token)) {
+      const decodedToken = this.decodeTokenPayload(token);
+      const roleClaim = decodedToken?.role ||
+                       decodedToken?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      if (Array.isArray(roleClaim)) {
+        return roleClaim[0] || null;
+      }
+      return roleClaim?.toString() || null;
+    }
+    return null;
+  }
+
   private decodeTokenPayload(token: string): any | null {
     try {
       const base64Url = token.split('.')[1];

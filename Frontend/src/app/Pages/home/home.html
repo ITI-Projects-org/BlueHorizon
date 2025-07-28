@@ -128,49 +128,58 @@
 <div class="home-container">
   <section class="featured-units-section section-padding">
     <div class="container">
-        <h2 class="section-title">Most Recent Units</h2>
-        <p class="section-description">
-            Explore our hand-picked selection of the finest resort units.
-        </p>
+      <h2 class="section-title">Most Recent Units</h2>
+      <p class="section-description">
+        Explore our hand-picked selection of the finest resort units.
+      </p>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div class="col" *ngFor="let unit of paginatedUnits">
-                <div class="card h-100 shadow-sm">
-                    <img [src]="getUnitImagePath(unit)" class="card-img-top" alt="Image of {{ unit.title }}" />
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ unit.title }}</h5>
-                        <p class="card-subtitle mb-2 text-muted">Unit ID: {{ unit.id }}</p>
-                        <p class="property-address">
-                            <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }},
-                            {{ unit.villageName }}
-                        </p>
-                        <p class="property-price">
-                            <strong>${{ unit.basePricePerNight | number : '1.2-2' }}</strong>
-                            / night
-                        </p>
-                        <div
-                            class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
-                            <div class="detail-item">
-                                <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
-                            </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a [routerLink]="['/unitDetails', unit.id]" class="btn btn-outline-primary btn-sm">View
-                                Details</a>
-                        </div>
-                    </div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" *ngFor="let unit of paginatedUnits">
+          <div class="card h-100 shadow-sm">
+            <img
+              [src]="getUnitImagePath(unit)"
+              class="card-img-top"
+              alt="Image of {{ unit.title }}"
+            />
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ unit.title }}</h5>
+              <p class="property-address">
+                <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }}, {{
+                unit.villageName }}
+              </p>
+              <p class="property-price">
+                <strong
+                  >EGP {{ unit.basePricePerNight | number : '1.2-2' }}</strong
+                >
+                / night
+              </p>
+              <div
+                class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top"
+              >
+                <div class="detail-item">
+                  <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
                 </div>
+                <div class="detail-item">
+                  <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <a
+                  [routerLink]="['/unitDetails', unit.id]"
+                  class="btn btn-outline-primary btn-sm"
+                  >View Details</a
+                >
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-        <div class="text-center mt-5">
-            <a routerLink="/units" class="btn btn-primary btn-lg">View All Units</a>
-        </div>
+      <div class="text-center mt-5">
+        <a routerLink="/units" class="btn btn-primary btn-lg">View All Units</a>
+      </div>
     </div>
-</section>
+  </section>
 
   <section class="why-choose-us-section section-padding bg-light">
     <div class="container">
@@ -201,16 +210,20 @@
     </div>
   </section>
 
-    <section class="cta-section section-padding">
-        <div class="cta-overlay">
-            <div class="container text-center">
-                <h2 class="text-white">Ready to Find Your Dream Getaway?</h2>
-                <p class="lead text-white-50 mb-4">
-                    Browse our listings or contact us for personalized assistance.
-                </p>
-                <a routerLink="/units" class="btn btn-light btn-lg me-3">Browse Units</a>
-                <a routerLink="/contact" class="btn btn-outline-light btn-lg">Contact Us</a>
-            </div>
-        </div>
-    </section>
+  <section class="cta-section section-padding">
+    <div class="cta-overlay">
+      <div class="container text-center">
+        <h2 class="text-white">Ready to Find Your Dream Getaway?</h2>
+        <p class="lead text-white-50 mb-4">
+          Browse our listings or contact us for personalized assistance.
+        </p>
+        <a routerLink="/units" class="btn btn-light btn-lg me-3"
+          >Browse Units</a
+        >
+        <a routerLink="/contact" class="btn btn-outline-light btn-lg"
+          >Contact Us</a
+        >
+      </div>
+    </div>
+  </section>
 </div>

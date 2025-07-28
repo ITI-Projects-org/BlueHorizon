@@ -1,4 +1,7 @@
+import { config } from './../app.config.server';
 export interface UnitVerificationDTO {
+  
+  id:number,
   documentType: number | string | null;
   uploadDate: Date | null;
   nationalId: string | null;

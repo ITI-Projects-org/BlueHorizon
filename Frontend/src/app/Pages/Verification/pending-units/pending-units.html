@@ -1,5 +1,71 @@
-<p>pending-units works!</p>
+<main class="pending-owners-page py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title mb-5 text-center">
+            Pending Unit Verification Requests
+        </h2>
 
-<br />Address: {{pendingUnits[0].title}} <br />BankAccountDetails:
-{{pendingUnits[0].averageUnitRating}} <br />Bedrooms:
-{{pendingUnits[0].bedrooms}} {{pendingUnits[0].address}}
+        <div *ngIf="!requests || requests.length === 0" class="alert alert-info" role="alert">
+            No pending owner verification requests at the moment.
+        </div>
+
+        <div class="row justify-content-center g-5" *ngIf="requests && requests.length > 0">
+            <div class="col-12 col-md-8 col-lg-6 d-flex align-items-stretch"
+                *ngFor="let request of requests; trackBy: trackById">
+                <div class="card shadow-lg border-0 pending-owner-card w-100 my-4" style="border-radius: 1.5rem">
+                    <div class="card-header bg-gradient-primary text-white text-center" style="
+              border-radius: 1.5rem 1.5rem 0 0;
+              background: linear-gradient(90deg, #1e90ff 0%, #38b6ff 100%);
+            ">
+
+                        <span class="badge bg-warning text-dark ms-2">Pending</span>
+                    </div>
+                    <div class="card-body p-4">
+
+
+                        <div class="mb-4 text-center">
+                            <img *ngIf="request.contractPath" [src]="request.contractPath" width="500" style="
+                  object-fit: cover;
+                  border-radius: 1rem;
+                  box-shadow: 0 4px 16px rgba(30, 144, 255, 0.1);
+                " alt="Contract" />
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Property:</strong>
+                            <div class="fw-semibold fs-5 mt-2">
+                                Title: {{ request.title }}
+                            </div>
+                            <div class="text-muted small mb-2">
+                                Description: {{ request.description }}
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-info me-1">Type: {{ request.unitType }}</span>
+                                <span class="badge bg-secondary me-1">Beds: {{ request.bedrooms }}</span>
+                                <span class="badge bg-secondary me-1">Baths: {{ request.bathrooms }}</span>
+                                <span class="badge bg-secondary me-1">Sleeps: {{ request.sleeps }}</span>
+                                <span class="badge bg-light text-dark me-1">Sea: {{ request.distanceToSea }}m</span>
+                                <span class="badge bg-success me-1">EGP {{ request.basePricePerNight }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted small">{{ request.address }}, {{ request.villageName }}</span>
+                            </div>
+                            <div>
+                                <span *ngFor="let amenity of request.unitAmenities"
+                                    class="badge bg-light text-dark me-1">{{ amenity }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center"
+                        style="border-radius: 0 0 1.5rem 1.5rem">
+                        <button class="btn btn-success btn-lg px-4" (click)="Respond(request.id, 2)">
+                            Approve
+                        </button>
+                        <button class="btn btn-danger btn-lg px-4" (click)="Respond(request.id, 3)">
+                            Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

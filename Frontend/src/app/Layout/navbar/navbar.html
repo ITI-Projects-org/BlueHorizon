@@ -24,16 +24,19 @@
           <a class="nav-link" routerLink="/units">Units</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/addunit" *ngIf="_isLoggedIn"
+          <a class="nav-link" routerLink="/addunit" *ngIf="canSeeAddUnit()"
             >Add Unit</a
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/my-bookings" *ngIf="_isLoggedIn"
+          <a
+            class="nav-link"
+            routerLink="/my-bookings"
+            *ngIf="canSeeMyBookings()"
             >My Bookings</a
           >
         </li>
-        <li class="nav-item message-icon-container">
+        <li class="nav-item message-icon-container" *ngIf="canSeeMessages()">
           <a class="nav-link" (click)="toggleMessagePopup($event)">
             <i class="fas fa-envelope"></i>
             <span *ngIf="unreadMessagesCount > 0" class="message-count"
@@ -93,7 +96,7 @@
         <li class="nav-item" *ngIf="!_isLoggedIn">
           <a class="nav-link" routerLink="/register">Register</a>
         </li>
-        <li class="nav-item dropdown" *ngIf="_isLoggedIn">
+        <li class="nav-item dropdown" *ngIf="canSeePendingRequests()">
           <a
             class="nav-link dropdown-toggle"
             href="#"
@@ -113,8 +116,11 @@
             <li>
               <hr class="dropdown-divider" />
             </li>
-            <li><a class="dropdown-item" routerLink="/PendingUnits">Pending Units</a></li>
-
+            <li>
+              <a class="dropdown-item" routerLink="/PendingUnits"
+                >Pending Units</a
+              >
+            </li>
           </ul>
         </li>
         <li class="nav-item dropdown" *ngIf="_isLoggedIn">
@@ -129,7 +135,14 @@
             {{ getCurrentUserName() || 'User' }}
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+            <li>
+              <a
+                class="dropdown-item"
+                routerLink="/profile"
+                *ngIf="canSeeProfile()"
+                >Profile</a
+              >
+            </li>
             <li>
               <hr class="dropdown-divider" />
             </li>

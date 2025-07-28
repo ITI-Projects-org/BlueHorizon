@@ -4,7 +4,6 @@ import { Footer } from './Layout/footer/footer';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Navbar } from './Layout/navbar/navbar';
 import { AIChatComponent } from './Components/ai-chat/ai-chat';
-import { ChatComponent } from "./Components/chat/chat";
 import { filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
@@ -17,9 +16,8 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     AIChatComponent,
-    ChatComponent,
-    CommonModule
-],
+    CommonModule,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -29,10 +27,11 @@ export class App {
 
   constructor(private router: Router) {
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.isHomePage =
-          event.urlAfterRedirects === '/' || event.urlAfterRedirects.startsWith('/home');
+          event.urlAfterRedirects === '/' ||
+          event.urlAfterRedirects.startsWith('/home');
       });
   }
 }
