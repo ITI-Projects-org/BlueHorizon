@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -39,11 +39,12 @@ export class Units implements OnInit, OnDestroy {
   maxPrice?: number | null = null;
   searchTerm?: string | null = null;
   sortOption?: string = 'default';
+  filtersFromHome: boolean = false;
 
   unitTypeMap: { [key: number]: string } = {
     0: 'Apartment',
-    1: 'Villa',
-    2: 'Chalet',
+    1: 'Chalet',
+    2: 'Villa',
   };
 
   private destroy$ = new Subject<void>();
@@ -51,7 +52,8 @@ export class Units implements OnInit, OnDestroy {
   constructor(
     private unitsService: UnitsService,
     private route: ActivatedRoute,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -66,23 +68,48 @@ export class Units implements OnInit, OnDestroy {
         this.maxPrice = criteria.maxPrice;
         this.currentPage = 1;
         this.applyAllFiltersAndSortAndPaginate();
+        this.cdr.detectChanges();
       });
 
-    this.route.queryParams.subscribe((params) => {
-      this.selectedVillage = params['village'] || null;
-      this.selectedType = params['type'] || null;
-      this.selectedBedrooms = params['bedrooms'] || null;
-      this.selectedBathrooms = params['bathrooms'] || null;
-      this.minPrice = params['minPrice']
-        ? parseFloat(params['minPrice'])
-        : null;
-      this.maxPrice = params['maxPrice']
-        ? parseFloat(params['maxPrice'])
-        : null;
-      this.searchTerm = params['search'] || null;
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        console.log('Query params received:', params);
 
-      this.fetchUnits();
-    });
+        // Check if filters are coming from home page
+        this.filtersFromHome = !!(
+          params['village'] ||
+          params['type'] ||
+          params['bedrooms'] ||
+          params['bathrooms'] ||
+          params['minPrice'] ||
+          params['maxPrice']
+        );
+
+        this.selectedVillage = params['village'] || null;
+        this.selectedType = params['type'] || null;
+        this.selectedBedrooms = params['bedrooms'] || null;
+        this.selectedBathrooms = params['bathrooms'] || null;
+        this.minPrice = params['minPrice']
+          ? parseFloat(params['minPrice'])
+          : null;
+        this.maxPrice = params['maxPrice']
+          ? parseFloat(params['maxPrice'])
+          : null;
+        this.searchTerm = params['search'] || null;
+
+        console.log('Filters applied:', {
+          village: this.selectedVillage,
+          type: this.selectedType,
+          bedrooms: this.selectedBedrooms,
+          bathrooms: this.selectedBathrooms,
+          minPrice: this.minPrice,
+          maxPrice: this.maxPrice,
+          fromHome: this.filtersFromHome,
+        });
+
+        this.fetchUnits();
+      });
   }
 
   ngOnDestroy(): void {
@@ -91,22 +118,26 @@ export class Units implements OnInit, OnDestroy {
   }
 
   fetchUnits(): void {
-    this.isLoading = true;
-    this.unitsService.getUnits().subscribe({
-      next: (data) => {
-        this.allUnits = data;
-        this.isLoading = false;
-        this.populateFilterOptions();
-        this.applyAllFiltersAndSortAndPaginate();
-        console.log('Units fetched successfully');
-        console.log(data);
-      },
-      error: (err) => {
-        console.error('Error fetching units', err);
-        this.error = 'Failed to load units. Please try again later.';
-        this.isLoading = false;
-      },
-    });
+    // Only fetch if we haven't already loaded the units
+    if (this.allUnits.length === 0) {
+      this.isLoading = true;
+      this.unitsService.getUnits().subscribe({
+        next: (data) => {
+          this.allUnits = data;
+          this.isLoading = false;
+          this.populateFilterOptions();
+          this.applyAllFiltersAndSortAndPaginate();
+          console.log('Units fetched successfully');
+          console.log(data);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error fetching units', err);
+          this.error = 'Failed to load units. Please try again later.';
+          this.isLoading = false;
+        },
+      });
+    }
   }
 
   populateFilterOptions(): void {
@@ -146,6 +177,7 @@ export class Units implements OnInit, OnDestroy {
           unit.villageName?.toLowerCase().includes(lower) ||
           unit.unitType?.toString().includes(lower)
       );
+      this.cdr.detectChanges();
     }
 
     if (this.selectedVillage) {
@@ -203,6 +235,14 @@ export class Units implements OnInit, OnDestroy {
     this.sortUnits();
     this.calculateTotalPages();
     this.paginate();
+
+    console.log('Filter results:', {
+      totalUnits: this.allUnits.length,
+      filteredUnits: this.filteredUnits.length,
+      paginatedUnits: this.paginatedUnits.length,
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+    });
   }
 
   sortUnits(): void {

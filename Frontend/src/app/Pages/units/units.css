@@ -358,6 +358,15 @@
   font-size: 0.9rem;
 }
 
+.filter-source {
+  font-size: 0.8rem;
+  color: #20c997;
+  background: rgba(32, 201, 151, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(32, 201, 151, 0.2);
+}
+
 /* Responsive Active Filters */
 @media (max-width: 768px) {
   .filter-tags {

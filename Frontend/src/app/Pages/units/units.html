@@ -93,7 +93,13 @@
     <div class="col-md-8">
       <!-- Active Filters Display -->
       <div class="active-filters mb-3" *ngIf="hasActiveFilters()">
-        <h6 class="mb-2">Active Filters:</h6>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Active Filters:</h6>
+          <span class="filter-source" *ngIf="filtersFromHome">
+            <i class="fas fa-home me-1"></i>
+            Applied from home page search
+          </span>
+        </div>
         <div class="filter-tags">
           <span class="filter-tag" *ngIf="selectedVillage">
             <i class="fas fa-map-marker-alt me-1"></i>

@@ -47,8 +47,8 @@ export class Home implements OnInit, OnDestroy {
   showMoreOptions = false;
 
   // Dummy data for dropdowns (replace with actual data from a service if needed)
-  villages: string[] = ['Village A', 'Village B', 'Village C'];
-  unitTypes: string[] = ['Apartment', 'Chalet', 'Villa'];
+  villages: string[] = [];
+  unitTypes: string[] = [];
 
   constructor(
     private router: Router,
@@ -76,6 +76,7 @@ export class Home implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchUnits();
+    this.populateFilterOptions();
     if (this.isBrowser) {
       this.startSlider();
     }
@@ -91,6 +92,8 @@ export class Home implements OnInit, OnDestroy {
       this.maxPrice = params['maxPrice']
         ? parseFloat(params['maxPrice'])
         : null;
+
+      this.cdr.detectChanges();
 
       if (
         this.selectedBedrooms ||
@@ -195,7 +198,11 @@ export class Home implements OnInit, OnDestroy {
     this.showMoreOptions = !this.showMoreOptions;
   }
 
-  applySearchFilters(): void {
+  applySearchFilters(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+
     const queryParams: any = {};
 
     if (this.selectedVillage) {
@@ -217,6 +224,8 @@ export class Home implements OnInit, OnDestroy {
       queryParams['maxPrice'] = this.maxPrice;
     }
 
+    this.cdr.detectChanges();
+
     // Navigate to units page with the selected filters
     this.router.navigate(['/units'], {
       queryParams: queryParams,
@@ -234,5 +243,47 @@ export class Home implements OnInit, OnDestroy {
       console.error('Minimum price cannot be greater than maximum price');
       this.maxPrice = null;
     }
+  }
+
+  populateFilterOptions(): void {
+    this.unitsService.getUnits().subscribe({
+      next: (data) => {
+        const villageSet = new Set<string>();
+        const unitTypeSet = new Set<string>();
+
+        // Unit type mapping (same as in units page)
+        const unitTypeMap: { [key: number]: string } = {
+          0: 'Apartment',
+          1: 'Chalet',
+          2: 'Villa',
+        };
+
+        data.forEach((unit) => {
+          if (unit.villageName) {
+            villageSet.add(unit.villageName);
+          }
+
+          if (unit.unitType !== undefined && unitTypeMap[unit.unitType]) {
+            unitTypeSet.add(unitTypeMap[unit.unitType]);
+          }
+        });
+
+        this.villages = Array.from(villageSet).sort();
+        this.unitTypes = Array.from(unitTypeSet).sort();
+
+        this.cdr.detectChanges();
+
+        console.log('Filter options populated:', {
+          villages: this.villages,
+          unitTypes: this.unitTypes,
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching filter options:', err);
+        // Fallback to default options if API fails
+        this.villages = ['Village A', 'Village B', 'Village C'];
+        this.unitTypes = ['Apartment', 'Chalet', 'Villa'];
+      },
+    });
   }
 }

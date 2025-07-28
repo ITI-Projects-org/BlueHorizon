@@ -22,13 +22,12 @@
     <h1>Find Your Favorite Property</h1>
 
     <div class="search-form-container">
-      <form class="search-form" (submit)="applySearchFilters()">
+      <form class="search-form" (submit)="applySearchFilters($event)">
         <div class="form-group">
           <select
             class="form-select"
             [(ngModel)]="selectedVillage"
             name="selectedVillageInput"
-            (change)="applySearchFilters()"
           >
             <option [ngValue]="null">Any Location</option>
             <option *ngFor="let village of villages" [value]="village">
@@ -42,7 +41,6 @@
             class="form-select"
             [(ngModel)]="selectedType"
             name="selectedTypeInput"
-            (change)="applySearchFilters()"
           >
             <option [ngValue]="null">Any Type</option>
             <option *ngFor="let type of unitTypes" [value]="type">
@@ -69,13 +67,12 @@
               class="form-select"
               [(ngModel)]="selectedBedrooms"
               name="selectedBedroomsInput"
-              (change)="applySearchFilters()"
             >
               <option [ngValue]="null">Bedrooms (Any)</option>
               <option value="1">1 Bedroom</option>
               <option value="2">2 Bedrooms</option>
               <option value="3">3 Bedrooms</option>
-              <option value="4+">4+ Bedrooms</option>
+              <option value="3+">3+ Bedrooms</option>
             </select>
           </div>
           <div class="col-md-4">
@@ -83,7 +80,6 @@
               class="form-select"
               [(ngModel)]="selectedBathrooms"
               name="selectedBathroomsInput"
-              (change)="applySearchFilters()"
             >
               <option [ngValue]="null">Bathrooms (Any)</option>
               <option value="1">1 Bathroom</option>
@@ -99,7 +95,6 @@
                 placeholder="Min Price"
                 [(ngModel)]="minPrice"
                 name="minPriceInput"
-                (change)="applySearchFilters()"
               />
               <span class="input-group-text">-</span>
               <input
@@ -108,7 +103,6 @@
                 placeholder="Max Price"
                 [(ngModel)]="maxPrice"
                 name="maxPriceInput"
-                (change)="applySearchFilters()"
               />
             </div>
           </div>
