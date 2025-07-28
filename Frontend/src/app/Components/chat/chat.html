@@ -9,6 +9,7 @@
           *ngFor="let chat of recentChats"
           [class.active]="chat.otherUserId === selectedChatUserId"
           (click)="selectChat(chat.otherUserId)"
+          class="clickable"
         >
           <div class="chat-item-info">
             <div class="chat-username">{{ chat.otherUserName }}</div>

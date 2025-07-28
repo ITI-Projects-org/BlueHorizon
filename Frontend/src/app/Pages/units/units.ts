@@ -293,4 +293,49 @@ export class Units implements OnInit, OnDestroy {
     console.log(unit.imageURL);
     return unit.imageURL ?? '';
   }
+
+  hasActiveFilters(): boolean {
+    return !!(
+      this.selectedVillage ||
+      this.selectedType ||
+      this.selectedBedrooms ||
+      this.selectedBathrooms ||
+      this.minPrice ||
+      this.maxPrice
+    );
+  }
+
+  removeFilter(filterType: string): void {
+    switch (filterType) {
+      case 'village':
+        this.selectedVillage = null;
+        break;
+      case 'type':
+        this.selectedType = null;
+        break;
+      case 'bedrooms':
+        this.selectedBedrooms = null;
+        break;
+      case 'bathrooms':
+        this.selectedBathrooms = null;
+        break;
+      case 'price':
+        this.minPrice = null;
+        this.maxPrice = null;
+        break;
+    }
+    this.currentPage = 1;
+    this.applyAllFiltersAndSortAndPaginate();
+  }
+
+  clearAllFilters(): void {
+    this.selectedVillage = null;
+    this.selectedType = null;
+    this.selectedBedrooms = null;
+    this.selectedBathrooms = null;
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.currentPage = 1;
+    this.applyAllFiltersAndSortAndPaginate();
+  }
 }

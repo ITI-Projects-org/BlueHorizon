@@ -26,6 +26,10 @@ namespace API.Mappers
 
             CreateMap<RegisterDTO,Admin>().ReverseMap();
 
+            // Unit Verification Mapping
+            CreateMap<Unit, UnitVerificationDTO>()
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UnitAmenities, opt => opt.MapFrom(src => src.UnitAmenities.Select(ua => ua.AmenityId).ToArray()));
 
             #region Unit Mapping
 

@@ -12,6 +12,8 @@ import { AuthenticationService } from './../../Services/authentication-service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import { Verification } from '../../Services/verification-service';
+import { ForgetPasswordRequest } from '../../Models/forget-password-request';
+import e from 'express';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule, RouterModule, NgxSpinnerModule],
@@ -19,6 +21,7 @@ import { Verification } from '../../Services/verification-service';
   styleUrl: './login.css',
 })
 export class Login {
+  // forgetRequest: ForgetPasswordRequest = { email: '' }; // Initialize the object
   constructor(
     private authenticationService: AuthenticationService,
     private spinner: NgxSpinnerService,
@@ -88,6 +91,41 @@ export class Login {
     this.authenticationService.googleLogin();
   }
 
+  OnForgotPassword() {
+    if (this.email.value) {
+      const forgetRequest: ForgetPasswordRequest = {
+        email: this.email.value ?? '',
+      };
+      console.log(forgetRequest);
+      this.spinner.show();
+      this.authenticationService.forgotPassword(forgetRequest).subscribe({
+        next: (res) => {
+          this.spinner.hide();
+          Swal.fire({
+            title: 'Success',
+            text: res.msg,
+            icon: 'success',
+            draggable: true,
+          });
+        },
+        error: (e) => {
+          this.spinner.hide();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An un excpected error ocurred',
+          });
+          console.log(e.error?.msg);
+        },
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'You have to enter your email first to reset your password',
+      });
+    }
+  }
   get password() {
     return this.loginForm.controls['password'];
   }
