@@ -63,6 +63,13 @@ export class Home implements OnInit, OnDestroy {
 
   filteredUnits: Unit[] = [];
   paginatedUnits: Unit[] = [];
+  allUnits: Unit[] = [];
+
+  // Properties carousel properties
+  currentPropertyPage = 0;
+  propertiesPerPage = 3;
+  totalPropertyPages = 0;
+  maxUnitsToShow = 9;
 
   isLoading = true;
   error: string | null = null;
@@ -107,8 +114,12 @@ export class Home implements OnInit, OnDestroy {
     this.unitsService.getUnits().subscribe({
       next: (data) => {
         this.isLoading = false;
-
-        this.paginatedUnits = data.slice(-6);
+        // Get only the latest 9 units
+        this.allUnits = data.slice(-this.maxUnitsToShow);
+        this.totalPropertyPages = Math.ceil(
+          this.allUnits.length / this.propertiesPerPage
+        );
+        this.updatePaginatedUnits();
         console.log(this.paginatedUnits);
         this.cdr.detectChanges();
       },
@@ -118,6 +129,12 @@ export class Home implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  updatePaginatedUnits(): void {
+    const startIndex = this.currentPropertyPage * this.propertiesPerPage;
+    const endIndex = startIndex + this.propertiesPerPage;
+    this.paginatedUnits = this.allUnits.slice(startIndex, endIndex);
   }
   getUnitImagePath(unit: Unit): string {
     // console.log('this is image paths');
@@ -144,6 +161,31 @@ export class Home implements OnInit, OnDestroy {
     this.currentSlide = index;
     if (this.isBrowser) {
       this.startSlider();
+    }
+  }
+
+  // Properties carousel methods
+  goToPropertyPage(pageIndex: number): void {
+    if (pageIndex >= 0 && pageIndex < this.totalPropertyPages) {
+      this.currentPropertyPage = pageIndex;
+      this.updatePaginatedUnits();
+      this.cdr.detectChanges();
+    }
+  }
+
+  nextPropertyPage(): void {
+    if (this.currentPropertyPage < this.totalPropertyPages - 1) {
+      this.currentPropertyPage++;
+      this.updatePaginatedUnits();
+      this.cdr.detectChanges();
+    }
+  }
+
+  previousPropertyPage(): void {
+    if (this.currentPropertyPage > 0) {
+      this.currentPropertyPage--;
+      this.updatePaginatedUnits();
+      this.cdr.detectChanges();
     }
   }
 
@@ -175,13 +217,12 @@ export class Home implements OnInit, OnDestroy {
       queryParams['maxPrice'] = this.maxPrice;
     }
 
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
+    // Navigate to units page with the selected filters
+    this.router.navigate(['/units'], {
       queryParams: queryParams,
-      queryParamsHandling: 'merge',
     });
 
-    console.log('Applying filters:', queryParams);
+    console.log('Navigating to units page with filters:', queryParams);
   }
 
   validatePriceRange() {

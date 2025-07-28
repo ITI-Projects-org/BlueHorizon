@@ -97,14 +97,14 @@
           <a
             class="nav-link dropdown-toggle"
             href="#"
-            id="navbarDropdown"
+            id="pendingRequestsDropdown"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             Pending Requests
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <ul class="dropdown-menu" aria-labelledby="pendingRequestsDropdown">
             <li>
               <a class="dropdown-item" routerLink="/PendingOwners"
                 >Pending Owners</a
@@ -113,22 +113,25 @@
             <li>
               <hr class="dropdown-divider" />
             </li>
-            <li><a class="dropdown-item" routerLink="/PendingUnits">Pending Units</a></li>
-
+            <li>
+              <a class="dropdown-item" routerLink="/PendingUnits"
+                >Pending Units</a
+              >
+            </li>
           </ul>
         </li>
         <li class="nav-item dropdown" *ngIf="_isLoggedIn">
           <a
             class="nav-link dropdown-toggle"
             href="#"
-            id="navbarDropdown"
+            id="userDropdown"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             {{ getCurrentUserName() || 'User' }}
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <ul class="dropdown-menu" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
             <li>
               <hr class="dropdown-divider" />

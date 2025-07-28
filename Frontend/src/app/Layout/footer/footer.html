@@ -1,43 +1,102 @@
 <footer class="footer">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4">
+      <!-- Company Info Column -->
+      <div class="col-lg-4 col-md-6">
         <div class="footer-brand">
-          <h3>BlueHorizon</h3>
-          <p>
+          <div class="brand-logo">
+            <i class="fas fa-home"></i>
+            <span class="brand-text">BlueHorizon</span>
+          </div>
+          <p class="company-description">
             Finding your dream home is our priority. We offer the best
-            properties at the best prices.
+            properties at the best prices for your perfect getaway.
           </p>
-          <div class="social-links">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <div class="contact-info">
+            <p><i class="fas fa-map-marker-alt"></i> Cairo, Egypt</p>
+            <p><i class="fas fa-phone"></i> +20 123 456 7890</p>
+            <p><i class="fas fa-envelope"></i> info&#64;bluehorizon.com</p>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-3 col-md-6">
+      <!-- Company Links Column -->
+      <div class="col-lg-2 col-md-6">
         <div class="footer-links">
-          <h4>Property Types</h4>
+          <h4>COMPANY</h4>
           <ul>
-            <li><a href="#">Apartments</a></li>
-            <li><a href="#">Chalet</a></li>
-            <li><a href="#">Villas</a></li>
+            <li><a routerLink="/about">About us</a></li>
+            <li><a routerLink="/career">Career</a></li>
+            <li><a routerLink="/services">Services</a></li>
+            <li><a routerLink="/units">Properties</a></li>
+            <li><a routerLink="/contact">Contact</a></li>
           </ul>
         </div>
       </div>
-      <div class="col-lg-3">
-        <div class="footer-contact">
-          <h4>Contact Us</h4>
-          <p><i class="fas fa-map-marker-alt"></i> Cairo, Egypt</p>
-          <p><i class="fas fa-phone"></i> +1 234 567 890</p>
-          <p><i class="fas fa-envelope"></i> info&#64;bluehorizon.com</p>
+
+      <!-- Learn More Column -->
+      <div class="col-lg-2 col-md-6">
+        <div class="footer-links">
+          <h4>LEARN MORE</h4>
+          <ul>
+            <li><a routerLink="/privacy">Privacy</a></li>
+            <li><a routerLink="/terms">Terms & Conditions</a></li>
+            <li><a routerLink="/profile">Account</a></li>
+            <li><a routerLink="/faq">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Newsletter & Social Column -->
+      <div class="col-lg-4 col-md-6">
+        <div class="footer-newsletter">
+          <h4>Newsletter</h4>
+          <p>Subscribe to our newsletter for the latest updates and offers.</p>
+          <form class="newsletter-form" (submit)="subscribeNewsletter($event)">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              class="newsletter-input"
+              required
+            />
+            <button type="submit" class="newsletter-btn">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+
+          <div class="social-section">
+            <h4>GET IN TOUCH</h4>
+            <div class="social-links">
+              <a
+                href="https://twitter.com/bluehorizon"
+                target="_blank"
+                class="social-link"
+              >
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a
+                href="https://facebook.com/bluehorizon"
+                target="_blank"
+                class="social-link"
+              >
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a
+                href="https://vimeo.com/bluehorizon"
+                target="_blank"
+                class="social-link"
+              >
+                <i class="fab fa-vimeo-v"></i>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Footer Bottom -->
     <div class="footer-bottom">
-      <p>&copy; 2025 BlueHorizon Real Estate. All rights reserved.</p>
+      <p>&copy; 2025 BlueHorizon. All Rights Reserved.</p>
     </div>
   </div>
 </footer>
