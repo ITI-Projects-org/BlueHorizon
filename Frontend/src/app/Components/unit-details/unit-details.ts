@@ -10,6 +10,7 @@ import { BookingService } from '../../Services/booking-service';
 import { BookedSlotsDTO } from '../../Models/booked-slots-dto';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-unit-details',
@@ -37,7 +38,8 @@ export class UnitDetailsComponent implements OnInit {
     private unitService: Unit,
     private bookingService: BookingService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -247,5 +249,9 @@ export class UnitDetailsComponent implements OnInit {
       this.closeBookingForm();
       this.loadBookedSlots();
     });
+  }
+
+  getCurrentUserRole(): string | null {
+    return this.authService.getCurrentUserRole();
   }
 }

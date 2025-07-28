@@ -144,6 +144,7 @@
   </div>
 
   <!-- Booking Section -->
+  @if(getCurrentUserRole() !== "Owner" && getCurrentUserRole() !== "owner") {
   <div class="booking-section mb-4">
     <div class="booking-card">
       <div class="booking-header">
@@ -165,6 +166,7 @@
       </button>
     </div>
   </div>
+  }
 
   <!-- Availability Calendar -->
   <div class="calendar-section mb-4">
