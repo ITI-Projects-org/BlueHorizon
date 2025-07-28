@@ -159,8 +159,8 @@ export class Home implements OnInit, OnDestroy {
     if (this.selectedType) {
       const typeMap: { [key: string]: number } = {
         Apartment: 0,
-        Villa: 1,
-        Chalet: 2,
+        Chalet: 1,
+        Villa: 2,
       };
       const selectedTypeNumber = typeMap[this.selectedType];
       if (selectedTypeNumber !== undefined) {

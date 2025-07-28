@@ -159,7 +159,7 @@
               <option value="1">Apartment</option>
               <option value="2">Chalet</option>
               <option value="3">Villa</option>
-              </select>
+            </select>
             <div
               *ngIf="UnitType.invalid && UnitType.touched"
               class="invalid-feedback"
@@ -285,7 +285,10 @@
             [class.is-invalid]="Address.invalid && Address.touched"
             placeholder="Street address, city, country"
           />
-          <div *ngIf="Address.invalid && Address.touched" class="invalid-feedback">
+          <div
+            *ngIf="Address.invalid && Address.touched"
+            class="invalid-feedback"
+          >
             Address is required.
           </div>
         </div>
