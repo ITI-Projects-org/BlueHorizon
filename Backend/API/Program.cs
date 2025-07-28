@@ -12,13 +12,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -124,6 +123,13 @@ namespace API
             });
 
             var app = builder.Build();
+
+            //// Seed all data (Identity and others)
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var services = scope.ServiceProvider;
+            //    await DataSeed.SeedAsync(services);
+            //}
 
             if (app.Environment.IsDevelopment())
             {
