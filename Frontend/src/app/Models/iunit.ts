@@ -17,4 +17,5 @@ export interface IUnit {
   villageName: string | null;
   imageURL: string | null;
   imagesPaths: string[] | null;
+  verificationStatus?: string;
 }

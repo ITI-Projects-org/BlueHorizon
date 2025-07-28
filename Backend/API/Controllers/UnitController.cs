@@ -47,7 +47,7 @@ namespace API.Controllers
 
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteUnit/{id}")]
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> DeleteById(int id)
         {
@@ -63,7 +63,8 @@ namespace API.Controllers
                 //{
                 //    return Forbid("You Cannot Delete This Unit.");
                 //}
-                _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+                await _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+                await _unitOfWork.SaveAsync();
 
                 return Ok(new { Message = "Unit Deleted successfully" });
             }
@@ -222,13 +223,28 @@ namespace API.Controllers
             }
             return Ok("Unit Updated Successfully");
         }
-
-        [HttpPut("DeleteUnit/{id}")]
-        public async Task<IActionResult> DeleteUnit(int id)
+        [HttpGet("MyUnits")]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult> GetMyUnits()
         {
-            _unitOfWork.UnitRepository.DeleteByIdAsync(id);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+            var units = await _unitOfWork.UnitRepository.GetUnitsByOwnerIdAsync(userId);
+            List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
+            foreach (var unitdto in unitsdto)
+            {
+                unitdto.UnitId = unitdto.Id;
+                unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
+            }
+            return Ok(unitsdto);
         }
+        //[HttpPut("DeleteUnit/{id}")]
+        //public async Task<IActionResult> DeleteUnit(int id)
+        //{
+        //    _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+        //    await _unitOfWork.SaveAsync();
+        //    return Ok();
+        //}
     }
 }

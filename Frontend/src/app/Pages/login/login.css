@@ -1,242 +1,256 @@
-.custom-login-bg {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(120deg, #e9f0fa 0%, #f5f6fa 100%);
-}
-.custom-login-card {
-  display: flex;
-  width: 900px;
-  min-height: 540px;
-  background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 12px 48px rgba(60, 72, 88, 0.18);
-  overflow: hidden;
-  animation: customFadeIn 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
-}
-@media (max-width: 900px) {
-  .custom-login-card {
-    flex-direction: column;
-    width: 98vw;
-    min-width: 0;
-  }
-  .custom-login-left,
-  .custom-login-right {
-    min-width: 0;
-    width: 100%;
-  }
-}
-.custom-login-left {
-  background: linear-gradient(120deg, #1a3353 60%, #2d4a7a 100%);
-  color: #fff;
-  width: 44%;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* Hero Section Styles */
+.hero-section {
   position: relative;
-  padding: 2.5rem 2rem 2rem 2rem;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #1e90ff;
 }
-.custom-login-branding {
-  z-index: 2;
-  text-align: center;
-}
-.custom-login-logo {
-  height: 54px;
-  width: auto;
-  margin-bottom: 1.2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.1);
-}
-.custom-login-branding h2 {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 800;
-  font-size: 1.7rem;
-  margin-bottom: 0.5rem;
-  letter-spacing: -1px;
-}
-.custom-login-branding p {
-  font-size: 1.08rem;
-  color: #e9e9f6;
-  margin-bottom: 1.5rem;
-}
-.custom-login-image {
+
+.slider-container {
   position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  height: 120px;
-  background: url("/assets/real-estate-login.jpg") no-repeat center center/cover;
-  opacity: 0.18;
-  border-bottom-left-radius: 22px;
-  border-bottom-right-radius: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
 }
-.custom-login-right {
-  width: 56%;
-  min-width: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  padding: 2.5rem 2.5rem 2rem 2.5rem;
-}
-.custom-login-form-wrapper {
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 340px;
+  height: 100%;
+}
+
+.slide.active {
+  z-index: 2;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem;
 }
-.custom-login-title {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 800;
-  color: #1a3353;
-  margin-bottom: 0.5rem;
-  font-size: 2.2rem;
-  letter-spacing: -1px;
-  text-align: left;
+
+/* Auth Container Styles */
+.auth-container {
+  max-width: 460px;
+  margin: 0 auto;
+  text-align: center;
 }
-.custom-login-subtitle {
-  color: #6c757d;
-  font-size: 1.08rem;
+
+.auth-header {
   margin-bottom: 2rem;
+  color: white;
+}
+
+.auth-logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.auth-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Auth Card Styles */
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.auth-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 500;
   text-align: left;
 }
-.custom-login-form .form-group {
-  margin-bottom: 1.15rem;
-}
-.custom-login-form label {
-  font-weight: 600;
-  color: #1a3353;
-  margin-bottom: 0.25rem;
-  display: block;
-  font-size: 1rem;
-}
-.custom-login-form .form-control {
-  border-radius: 7px;
-  border: 1.5px solid #e3e6ed;
-  padding: 0.85rem 1rem;
-  font-size: 1.08rem;
-  background: #f8fafc;
-  color: #1a3353;
-  transition: border-color 0.2s;
-  box-shadow: none;
-}
-.custom-login-form .form-control:focus {
-  border-color: #1a3353;
-  outline: none;
-}
-.custom-login-options {
+
+.input-group {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.2rem;
 }
-.custom-login-forgot {
-  color: #2d4a7a;
-  font-size: 0.98rem;
-  text-decoration: underline;
-  font-weight: 600;
+
+.input-group i {
+  position: absolute;
+  left: 1rem;
+  color: #7f8c8d;
 }
-.custom-login-btn {
+
+.input-group input {
   width: 100%;
-  background: linear-gradient(90deg, #1a3353 60%, #2d4a7a 100%);
-  color: #fff;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
   border: none;
-  border-radius: 7px;
-  font-weight: 700;
-  font-size: 1.08rem;
-  padding: 0.95rem 0;
-  margin-top: 0.2rem;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.04);
-  transition: background 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1e90ff 0%, #38b6ff 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.custom-login-btn:hover {
-  background: linear-gradient(90deg, #2d4a7a 60%, #1a3353 100%);
-  box-shadow: 0 4px 16px rgba(60, 72, 88, 0.1);
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(30, 144, 255, 0.3);
 }
-.custom-login-footer {
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-options {
+  margin: 1rem 0;
   text-align: center;
-  margin-top: 1.5rem;
-  color: #6c757d;
-  font-size: 1.01rem;
-}
-.custom-login-footer a {
-  color: #1a3353;
-  font-weight: 700;
-  margin-left: 0.25rem;
-  text-decoration: underline;
-}
-.is-invalid {
-  border-color: #e74c3c !important;
-}
-@keyframes customFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(40px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-  }
 }
 
-/* Google Signup Styles */
-.custom-google-signup {
-  margin-top: 1.5rem;
+.btn-link {
+  background: none;
+  border: none;
+  color: #1e90ff;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.divider {
+.separator {
   position: relative;
   text-align: center;
   margin: 1.5rem 0;
 }
 
-.divider::before {
+.separator::before,
+.separator::after {
   content: "";
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  width: calc(50% - 30px);
   height: 1px;
   background: #e0e0e0;
-  z-index: 0;
 }
 
-.divider span {
+.separator::before {
+  left: 0;
+}
+
+.separator::after {
+  right: 0;
+}
+
+.separator span {
   background: white;
   padding: 0 1rem;
-  color: #666;
+  color: #7f8c8d;
   font-size: 0.9rem;
-  position: relative;
-  z-index: 1;
 }
 
-.google-signup-btn {
+.btn-google {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid #db4437;
-  background: white;
-  color: #db4437;
+  padding: 0.8rem;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  background: white;
+  color: #333;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.google-signup-btn:hover {
-  background: #db4437;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(219, 68, 55, 0.3);
+.btn-google:hover {
+  background: #f8f9fa;
+  border-color: #1e90ff;
 }
 
-.google-signup-btn i {
-  font-size: 1.1rem;
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.auth-footer a {
+  color: #1e90ff;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .auth-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .auth-header h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Error States */
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  text-align: left;
 }

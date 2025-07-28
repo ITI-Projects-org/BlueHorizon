@@ -24,4 +24,8 @@ export class Unit {
   DeleteUnit(id: number): Observable<any> {
     return this.http.delete(`${this.baseurl}/DeleteUnit/${id}`);
   }
+  GetMyUnits(): Observable<IUnit[]> {
+    return this.http.get<IUnit[]>(`${this.baseurl}/MyUnits`);
+  }
 }
+  
