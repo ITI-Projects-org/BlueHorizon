@@ -86,14 +86,6 @@ export class BookingList implements OnInit {
     return this.qrCodeDto.controls['TenantName'];
   }
 
-  // NEW METHOD: Navigate to QR Creation Component
-  navigateToCreateQr(booking: BookingResponseDTO): void {
-    // Navigate to create-qr page with booking ID as query parameter
-    this.router.navigate(['/create-qr'], { 
-      queryParams: { bookingId: booking.id } 
-    });
-  }
-
   // KEEP THIS for modal functionality if you want both options
   openQrModal(booking: BookingResponseDTO): void {
     // Reset error state

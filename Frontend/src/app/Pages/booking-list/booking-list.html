@@ -139,11 +139,11 @@
           <div class="price-breakdown">
             <div class="price-row">
               <span class="price-label">
-                <i class="bi bi-currency-dollar me-1"></i>
+                <i class="bi bi-currency-pound me-1"></i>
                 Accommodation
               </span>
               <span class="price-value"
-                >${{ booking.ownerPayoutAmount | number:'1.2-2' }}</span
+                >EGP {{ booking.ownerPayoutAmount | number:'1.2-2' }}</span
               >
             </div>
             <div class="price-row">
@@ -152,7 +152,7 @@
                 Service Fee
               </span>
               <span class="price-value"
-                >${{ booking.platformComission | number:'1.2-2' }}</span
+                >EGP {{ booking.platformComission | number:'1.2-2' }}</span
               >
             </div>
             <div class="price-row total">
@@ -161,7 +161,7 @@
                 Total Amount
               </span>
               <span class="price-value total-amount"
-                >${{ booking.totalPrice | number:'1.2-2' }}</span
+                >EGP {{ booking.totalPrice | number:'1.2-2' }}</span
               >
             </div>
             <!-- Conditional display for Create QR button or QR Code image -->
@@ -180,16 +180,6 @@
                   class="img-fluid"
                   style="max-width: 100px"
                 />
-                <small class="text-muted mt-1">Scan for entry</small>
-              </div>
-            </div>
-            <!-- Conditional display for Create QR button or QR Code image -->
-            <div class="mt-3">
-              <button *ngIf="!booking.qrCodeUrl" (click)="navigateToCreateQr(booking)" class="btn btn-primary btn-sm">
-                <i class="bi bi-qr-code me-1"></i> Create QR
-              </button>
-              <div *ngIf="booking.qrCodeUrl" class="qr-code-display">
-                <img [src]="booking.qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 100px" />
                 <small class="text-muted mt-1">Scan for entry</small>
               </div>
             </div>

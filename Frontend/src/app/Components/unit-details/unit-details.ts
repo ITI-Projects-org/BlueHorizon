@@ -76,7 +76,8 @@ export class UnitDetailsComponent implements OnInit {
       console.warn('Owner ID is not available. Cannot navigate to chat.');
       // يمكنك هنا عرض رسالة للمستخدم (مثلاً باستخدام خدمة Toast/Snackbar)
     }
-  }  loadBookedSlots(): void {
+  }
+  loadBookedSlots(): void {
     this.calendarLoading = true;
     this.bookingService
       .getBookedSlots(this.unitId)
