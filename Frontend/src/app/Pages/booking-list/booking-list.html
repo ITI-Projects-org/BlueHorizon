@@ -22,30 +22,42 @@
     {{ error }}
     <button
       class="btn btn-sm btn-outline-danger ms-3"
-      (click)="loadMyBookings()"
+      (click)="refreshBookings()"
+      [disabled]="loading"
     >
-      <i class="bi bi-arrow-clockwise me-1"></i>
+      <i class="bi bi-arrow-clockwise me-1" [class.fa-spin]="loading"></i>
       Retry
     </button>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!loading && !error && bookings.length === 0" class="empty-state">
+  <div *ngIf="shouldShowEmptyState()" class="empty-state">
     <div class="empty-icon">
       <i class="bi bi-calendar-x"></i>
     </div>
     <h3 class="empty-title">No Bookings Found</h3>
     <p class="empty-text">
-      You haven't made any bookings yet. Start exploring our amazing properties!
+      You don't have any bookings at the moment. Start exploring our amazing
+      properties and make your first reservation!
     </p>
-    <a href="/properties" class="btn btn-primary btn-lg">
-      <i class="bi bi-search me-2"></i>
-      Browse Properties
-    </a>
+    <div class="empty-actions">
+      <a routerLink="/home" class="btn btn-primary btn-lg me-3">
+        <i class="bi bi-search me-2"></i>
+        Browse Properties
+      </a>
+      <button
+        class="btn btn-outline-primary btn-lg"
+        (click)="refreshBookings()"
+        [disabled]="loading"
+      >
+        <i class="bi bi-arrow-clockwise me-2" [class.fa-spin]="loading"></i>
+        Refresh
+      </button>
+    </div>
   </div>
 
   <!-- Bookings List -->
-  <div *ngIf="!loading && !error && bookings.length > 0" class="bookings-grid">
+  <div *ngIf="shouldShowBookingsList()" class="bookings-grid">
     <div
       *ngFor="let booking of bookings; trackBy: trackByBookingId"
       class="booking-card"
