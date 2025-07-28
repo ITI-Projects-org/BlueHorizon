@@ -85,7 +85,8 @@
                 <span
                   *ngFor="let amenity of request.unitAmenities"
                   class="badge bg-light text-dark me-1"
-                  >{{ amenity }}</span
+                  >{{ amenity == 1 ? 'WiFi' : amenity == 2 ? 'Pool' : amenity ==
+                  3 ? 'AC' : 'Unknown' }}</span
                 >
               </div>
             </div>
