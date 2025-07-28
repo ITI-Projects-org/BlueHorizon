@@ -1,248 +1,223 @@
 <app-navbar></app-navbar>
 
-<!-- Hero Section -->
-<section class="units-hero-section">
+<div class="units-hero-section">
   <div class="hero-overlay">
-    <div class="container">
-      <div class="hero-content">
-        <h1>Discover Your Perfect Getaway</h1>
-        <p>Explore our collection of premium vacation rentals</p>
-        <div class="hero-stats">
-          <div class="stat-item">
-            <span class="stat-number">{{ allUnits.length }}</span>
-            <span class="stat-label">Properties</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">{{ villageOptions.length }}</span>
-            <span class="stat-label">Villages</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">{{ unitTypeOptions.length }}</span>
-            <span class="stat-label">Types</span>
-          </div>
+    <div class="hero-content">
+      <h1>Discover Amazing Properties</h1>
+      <p>Find your perfect accommodation from our extensive collection</p>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ allUnits.length }}</span>
+          <span class="stat-label">Properties</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ villageOptions.length }}</span>
+          <span class="stat-label">Locations</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">Support</span>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<div class="container py-5">
+<div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <div class="card-body">
-          <h5 class="card-title">Villages</h5>
-          <ul class="list-unstyled city-list">
-            <li>
-              <a
-                href="javascript:void(0)"
-                (click)="filterByCity(null, $event)"
-                [class.active]="selectedVillage === null"
-                class="filter-link"
-              >
-                <i class="fas fa-chevron-right me-2"></i>All Villages ({{
-                allUnits.length }})
-              </a>
-            </li>
+    <div class="col-lg-3">
+      <div class="sidebar">
+        <h5 class="sidebar-title">Filter Properties</h5>
+
+        <div class="filter-section">
+          <h6>Location</h6>
+          <ul class="city-list">
             <li *ngFor="let village of villageOptions">
-              <a
-                href="javascript:void(0)"
-                (click)="filterByCity(village.name, $event)"
-                [class.active]="selectedVillage === village.name"
-                class="filter-link"
-              >
-                <i class="fas fa-chevron-right me-2"></i>{{ village.name }} ({{
-                village.count }})
+              <a href="#"
+                 [class.active]="selectedVillage === village.name"
+                 (click)="filterByCity(village.name, $event)">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ village.name }}
+                <span class="count">({{ village.count }})</span>
               </a>
             </li>
           </ul>
         </div>
-      </div>
 
-      <div class="card mb-4">
-        <div class="card-body">
-          <h5 class="card-title">Unit Types</h5>
-          <ul class="list-unstyled city-list">
-            <li>
-              <a
-                href="javascript:void(0)"
-                (click)="filterByType(null, $event)"
-                [class.active]="selectedType === null"
-                class="filter-link"
-              >
-                <i class="fas fa-chevron-right me-2"></i>All Types ({{
-                allUnits.length }})
-              </a>
-            </li>
+        <div class="filter-section">
+          <h6>Property Type</h6>
+          <ul class="city-list">
             <li *ngFor="let type of unitTypeOptions">
-              <a
-                href="javascript:void(0)"
-                (click)="filterByType(type.name, $event)"
-                [class.active]="selectedType === type.name"
-                class="filter-link"
-              >
-                <i class="fas fa-chevron-right me-2"></i>{{ type.name }} ({{
-                type.count }})
+              <a href="#"
+                 [class.active]="selectedType === type.name"
+                 (click)="filterByType(type.name, $event)">
+                <i class="fas fa-home"></i>
+                {{ type.name }}
+                <span class="count">({{ type.count }})</span>
               </a>
             </li>
           </ul>
+        </div>
+
+        <div class="filter-section">
+          <h6>Bedrooms</h6>
+          <select class="form-select" [(ngModel)]="selectedBedrooms" (change)="applyBedroomsBathroomsFilter()">
+            <option value="">Any</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4+">4+</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <h6>Bathrooms</h6>
+          <select class="form-select" [(ngModel)]="selectedBathrooms" (change)="applyBedroomsBathroomsFilter()">
+            <option value="">Any</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3+">3+</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <h6>Price Range</h6>
+          <div class="price-inputs">
+            <input type="number"
+                   class="form-control mb-2"
+                   placeholder="Min Price"
+                   [(ngModel)]="minPrice"
+                   (change)="applyPriceFilter()">
+            <input type="number"
+                   class="form-control"
+                   placeholder="Max Price"
+                   [(ngModel)]="maxPrice"
+                   (change)="applyPriceFilter()">
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-8">
-      <!-- Active Filters Display -->
-      <div class="active-filters mb-3" *ngIf="hasActiveFilters()">
-        <h6 class="mb-2">Active Filters:</h6>
-        <div class="filter-tags">
-          <span class="filter-tag" *ngIf="selectedVillage">
-            <i class="fas fa-map-marker-alt me-1"></i>
-            {{ selectedVillage }}
-            <button class="remove-filter" (click)="removeFilter('village')">
-              <i class="fas fa-times"></i>
-            </button>
-          </span>
-          <span class="filter-tag" *ngIf="selectedType">
-            <i class="fas fa-home me-1"></i>
-            {{ selectedType }}
-            <button class="remove-filter" (click)="removeFilter('type')">
-              <i class="fas fa-times"></i>
-            </button>
-          </span>
-          <span class="filter-tag" *ngIf="selectedBedrooms">
-            <i class="fas fa-bed me-1"></i>
-            {{ selectedBedrooms }} Bedrooms
-            <button class="remove-filter" (click)="removeFilter('bedrooms')">
-              <i class="fas fa-times"></i>
-            </button>
-          </span>
-          <span class="filter-tag" *ngIf="selectedBathrooms">
-            <i class="fas fa-bath me-1"></i>
-            {{ selectedBathrooms }} Bathrooms
-            <button class="remove-filter" (click)="removeFilter('bathrooms')">
-              <i class="fas fa-times"></i>
-            </button>
-          </span>
-          <span class="filter-tag" *ngIf="minPrice || maxPrice">
-            <i class="fas fa-dollar-sign me-1"></i>
-            {{ minPrice || 0 }} - {{ maxPrice || '∞' }}
-            <button class="remove-filter" (click)="removeFilter('price')">
-              <i class="fas fa-times"></i>
-            </button>
-          </span>
-          <button class="clear-all-filters" (click)="clearAllFilters()">
-            Clear All
-          </button>
-        </div>
-      </div>
+    <div class="col-lg-9">
+      <div class="main-content">
+        <div class="content-header d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4>All Properties</h4>
+            <p class="text-muted">{{ filteredUnits.length }} properties found</p>
+          </div>
 
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="results-info">
-          <span class="text-muted">
-            Showing {{ paginatedUnits.length }} of {{ filteredUnits.length }}
-            properties
-          </span>
+          <div class="sort-controls">
+            <label class="form-label me-2">Sort by:</label>
+            <select
+              #sortSelect
+              class="form-select w-auto"
+              (change)="sortBy(sortSelect.value)"
+            >
+              <option value="default">Default</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group d-flex align-items-center">
-          <label for="sort-by" class="me-2 text-nowrap">Sort By:</label>
-          <select
-            #sortSelect
-            class="form-select w-auto"
-            (change)="sortBy(sortSelect.value)"
-          >
-            <option value="default">Default</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
+
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading units...</p>
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+        <div *ngIf="error" class="alert alert-danger text-center" role="alert">
+          {{ error }}
         </div>
-        <p class="mt-2">Loading units...</p>
-      </div>
 
-      <div *ngIf="error" class="alert alert-danger text-center" role="alert">
-        {{ error }}
-      </div>
-
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" *ngFor="let unit of paginatedUnits">
-          <div class="card h-100">
-            <img
-              [src]="getUnitImagePath(unit)"
-              class="card-img-top"
-              alt="Unit Image"
-              style="height: 200px; object-fit: cover"
-            />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ unit.title }}</h5>
-              <p class="property-address">
-                <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }}, {{
-                unit.villageName }}
-              </p>
-              <p class="property-price">
-                EGP {{ unit.basePricePerNight | number:'1.2-2' }} / night
-              </p>
-              <div
-                class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top"
-              >
-                <div>
-                  <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
-                </div>
-                <div>
-                  <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          <div class="col" *ngFor="let unit of paginatedUnits">
+            <div
+              class="card h-100 unit-card"
+              (click)="viewUnitDetails(unit.id)"
+              (keydown.enter)="viewUnitDetails(unit.id)"
+              (keydown.space)="viewUnitDetails(unit.id)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'View details for ' + unit.title"
+              style="cursor: pointer;"
+            >
+              <img
+                [src]="getUnitImagePath(unit)"
+                class="card-img-top"
+                alt="Unit Image"
+                style="height: 200px; object-fit: cover"
+                (error)="onImageError($event)"
+              />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ unit.title }}</h5>
+                <p class="property-address">
+                  <i class="fas fa-map-marker-alt me-2"></i>{{ unit.address }}, {{
+                  unit.villageName }}
+                </p>
+                <p class="property-price">
+                  EGP {{ unit.basePricePerNight | number:'1.2-2' }} / night
+                </p>
+                <div
+                  class="property-details mt-auto d-flex justify-content-between align-items-center pt-3 border-top"
+                >
+                  <div>
+                    <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
+                  </div>
+                  <div>
+                    <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          *ngIf="paginatedUnits.length === 0 && !isLoading && !error"
-          class="col-12 text-center text-muted py-5"
-        >
-          No units found matching your criteria.
-        </div>
-      </div>
-
-      <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <a
-              class="page-link"
-              href="javascript:void(0)"
-              aria-label="Previous"
-              (click)="previousPage()"
-            >
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li
-            class="page-item"
-            *ngFor="let page of [].constructor(totalPages); let i = index"
-            [class.active]="(i + 1) === currentPage"
+          <div
+            *ngIf="paginatedUnits.length === 0 && !isLoading && !error"
+            class="col-12 text-center text-muted py-5"
           >
-            <a
-              class="page-link"
-              href="javascript:void(0)"
-              (click)="goToPage(i + 1)"
-              >{{ i + 1 }}</a
+            No units found matching your criteria.
+          </div>
+        </div>
+
+        <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a
+                class="page-link"
+                href="javascript:void(0)"
+                aria-label="Previous"
+                (click)="previousPage()"
+              >
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="(i + 1) === currentPage"
             >
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <a
-              class="page-link"
-              href="javascript:void(0)"
-              aria-label="Next"
-              (click)="nextPage()"
-            >
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+              <a
+                class="page-link"
+                href="javascript:void(0)"
+                (click)="goToPage(i + 1)"
+                >{{ i + 1 }}</a
+              >
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a
+                class="page-link"
+                href="javascript:void(0)"
+                aria-label="Next"
+                (click)="nextPage()"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </div>

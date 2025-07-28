@@ -1,4 +1,3 @@
-// app/Pages/home/home.ts
 import {
   ChangeDetectorRef,
   Component,
@@ -27,7 +26,6 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './home.css',
 })
 export class Home implements OnInit, OnDestroy {
-  // Hero Section - Slider properties
   slides = [
     { image: 'images/1.jpg' },
     { image: 'images/3.jpg' },
@@ -37,7 +35,6 @@ export class Home implements OnInit, OnDestroy {
   slideInterval: any;
   private isBrowser: boolean;
 
-  // Hero Section - Search form properties
   selectedVillage: string | null = null;
   selectedType: string | null = null;
   selectedBedrooms: string | null = null;
@@ -46,7 +43,6 @@ export class Home implements OnInit, OnDestroy {
   maxPrice: number | null = null;
   showMoreOptions = false;
 
-  // Dynamic data for dropdowns
   villages: string[] = [];
   unitTypes: string[] = ['Apartment', 'Chalet', 'Villa'];
 
@@ -65,7 +61,6 @@ export class Home implements OnInit, OnDestroy {
   paginatedUnits: Unit[] = [];
   allUnits: Unit[] = [];
 
-  // Properties carousel properties
   currentPropertyPage = 0;
   propertiesPerPage = 3;
   totalPropertyPages = 0;
@@ -78,6 +73,7 @@ export class Home implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchUnits();
+
     if (this.isBrowser) {
       this.startSlider();
     }
@@ -103,7 +99,6 @@ export class Home implements OnInit, OnDestroy {
         this.showMoreOptions = true;
       }
 
-      // Apply filters when parameters change
       this.applyFilters();
     });
   }
@@ -135,7 +130,6 @@ export class Home implements OnInit, OnDestroy {
   }
 
   populateVillages(): void {
-    // Extract unique villages from units
     const villageSet = new Set<string>();
     this.allUnits.forEach(unit => {
       if (unit.villageName) {
@@ -150,14 +144,12 @@ export class Home implements OnInit, OnDestroy {
 
     let filtered = [...this.allUnits];
 
-    // Filter by village
     if (this.selectedVillage) {
       filtered = filtered.filter(unit =>
         unit.villageName === this.selectedVillage
       );
     }
 
-    // Filter by unit type
     if (this.selectedType) {
       const typeMap: { [key: string]: number } = {
         'Apartment': 0,
@@ -170,7 +162,6 @@ export class Home implements OnInit, OnDestroy {
       }
     }
 
-    // Filter by bedrooms
     if (this.selectedBedrooms) {
       if (this.selectedBedrooms === '4+') {
         filtered = filtered.filter(unit => (unit.bedrooms ?? 0) >= 4);
@@ -180,7 +171,6 @@ export class Home implements OnInit, OnDestroy {
       }
     }
 
-    // Filter by bathrooms
     if (this.selectedBathrooms) {
       if (this.selectedBathrooms === '3+') {
         filtered = filtered.filter(unit => (unit.bathrooms ?? 0) >= 3);
@@ -190,7 +180,6 @@ export class Home implements OnInit, OnDestroy {
       }
     }
 
-    // Filter by price range
     if (this.minPrice !== null && this.minPrice !== undefined) {
       filtered = filtered.filter(unit => (unit.basePricePerNight ?? 0) >= this.minPrice!);
     }
@@ -205,11 +194,9 @@ export class Home implements OnInit, OnDestroy {
   }
 
   updatePaginatedUnits(): void {
-    // Get only the latest units up to maxUnitsToShow
     const limitedUnits = this.filteredUnits.slice(-this.maxUnitsToShow);
     this.totalPropertyPages = Math.ceil(limitedUnits.length / this.propertiesPerPage);
 
-    // Reset to first page if current page is out of bounds
     if (this.currentPropertyPage >= this.totalPropertyPages) {
       this.currentPropertyPage = 0;
     }
@@ -223,7 +210,6 @@ export class Home implements OnInit, OnDestroy {
     return unit.imageURL ?? '';
   }
 
-  // Slider methods
   startSlider(): void {
     if (this.isBrowser) {
       this.stopSlider();
@@ -246,7 +232,6 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-  // Properties carousel methods
   goToPropertyPage(pageIndex: number): void {
     if (pageIndex >= 0 && pageIndex < this.totalPropertyPages) {
       this.currentPropertyPage = pageIndex;
@@ -271,21 +256,17 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-  // Search form methods
   toggleMoreOptions(event: Event): void {
     event.preventDefault();
     this.showMoreOptions = !this.showMoreOptions;
   }
 
   applySearchFilters(): void {
-    // Validate price range
     this.validatePriceRange();
 
-    // Set searching state
     this.isSearching = true;
     this.searchPerformed = true;
 
-    // Update search service
     this.searchService.updateSearchCriteria({
       selectedVillage: this.selectedVillage,
       selectedType: this.selectedType,
@@ -295,14 +276,11 @@ export class Home implements OnInit, OnDestroy {
       maxPrice: this.maxPrice
     });
 
-    // Simulate search delay for better UX
     setTimeout(() => {
-      // Apply filters immediately
       this.applyFilters();
       this.isSearching = false;
       this.cdr.detectChanges();
 
-      // Navigate to units page with search parameters
       this.navigateToUnitsPage();
     }, 500);
   }
@@ -340,7 +318,6 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-  // Helper methods for search
   hasActiveFilters(): boolean {
     return !!(
       this.selectedVillage ||
@@ -374,19 +351,15 @@ export class Home implements OnInit, OnDestroy {
     return this.allUnits.length;
   }
 
-  // Enhanced search validation
   isSearchValid(): boolean {
-    // Check if at least one filter is applied
     if (!this.hasActiveFilters()) {
       return false;
     }
 
-    // Validate price range
     if (this.minPrice && this.maxPrice && this.minPrice > this.maxPrice) {
       return false;
     }
 
-    // Validate numeric inputs
     if (this.minPrice && this.minPrice < 0) {
       return false;
     }
@@ -398,8 +371,7 @@ export class Home implements OnInit, OnDestroy {
     return true;
   }
 
-  // Get search summary for display
-    getSearchSummary(): string {
+  getSearchSummary(): string {
     const filters = [];
 
     if (this.selectedVillage) {
@@ -428,6 +400,12 @@ export class Home implements OnInit, OnDestroy {
     const img = event.target as HTMLImageElement;
     if (img) {
       img.src = 'assets/images/default-unit.jpg';
+    }
+  }
+
+  viewUnitDetails(unitId: number | null): void {
+    if (unitId) {
+      this.router.navigate(['/unitDetails', unitId]);
     }
   }
 }

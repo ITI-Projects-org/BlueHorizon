@@ -30,10 +30,8 @@ export class Profile implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Add debug info
     this.authService.logTokenInfo();
 
-    // Get user role
     this.userRole = this.authService2.getCurrentUserRole() || '';
     this.isOwner = this.userRole === 'Owner';
 
@@ -43,7 +41,6 @@ export class Profile implements OnInit {
         this.email = res.email;
         this.username = res.username;
 
-        // Load owner's units if user is owner
         if (this.isOwner) {
           this.loadOwnerUnits();
         }
@@ -97,7 +94,6 @@ export class Profile implements OnInit {
               'Your unit has been deleted.',
               'success'
             );
-            // Reload units after deletion
             this.loadOwnerUnits();
           },
           error: (error) => {
@@ -115,12 +111,10 @@ export class Profile implements OnInit {
   }
 
   editUnit(unitId: number): void {
-    // Navigate to edit unit page or open edit modal
     this.router.navigate(['/edit-unit', unitId]);
   }
 
   viewUnitDetails(unitId: number): void {
-    // Navigate to unit details page
     this.router.navigate(['/unitDetails', unitId]);
   }
 

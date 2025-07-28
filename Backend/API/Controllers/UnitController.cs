@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using API.DTOs.UnitDTO;
 using API.Models;
 using API.UnitOfWorks;
-using API.DTOs.UnitDTO;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using API.Repositories.Interfaces;
+using AutoMapper;
+using System.IO;
 
 namespace API.Controllers
 {
@@ -13,9 +15,8 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
-
-        readonly IUnitOfWork _unitOfWork;
-        readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
 
         public UnitController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
@@ -25,204 +26,14 @@ namespace API.Controllers
             _photoService = photoService;
         }
 
-
-
-        [HttpGet("All")]
-        public async Task<ActionResult> GetAll()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UnitDTO>>> GetAllUnits()
         {
-
-            //var units = await _unitOfWork.UnitRepository.GetAllAsync();
-            var units = await _unitOfWork.UnitRepository.GetAllValidUnits();
-            //var units = await _unitOfWork.UnitRepository.GetAllFiltered();
-            List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
-
-            foreach (var unitdto in unitsdto)
-            {
-                unitdto.UnitId = unitdto.Id;
-                unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
-
-            }
-
-            return Ok(unitsdto);
-
+            var units = await _unitOfWork.UnitRepository.GetAllAsync();
+            var unitsDto = _mapper.Map<IEnumerable<UnitDTO>>(units);
+            return Ok(unitsDto);
         }
 
-        [HttpDelete("DeleteUnit/{id}")]
-        [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> DeleteById(int id)
-        {
-            try
-            {
-                var existingUnit = await _unitOfWork.UnitRepository.GetUnitWithDetailsAsync(id);
-                if (existingUnit == null)
-                {
-                    return NotFound("This Unit Does not exist");
-                }
-                //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                //if (existingUnit.OwnerId != currentUserId)
-                //{
-                //    return Forbid("You Cannot Delete This Unit.");
-                //}
-                await _unitOfWork.UnitRepository.DeleteByIdAsync(id);
-                await _unitOfWork.SaveAsync();
-
-                return Ok(new { Message = "Unit Deleted successfully" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
-
-
-
-        [Authorize(Roles = "Owner")]
-        [HttpPost("AddUnit")]
-        public async Task<IActionResult> AddUnit([FromForm] AddUnitDTO unitDto)
-        {
-            try
-            {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
-                var unit = _mapper.Map<Unit>(unitDto);
-                unit.OwnerId = userId;
-
-                unit.VerificationStatus = VerificationStatus.Pending;
-                unit.CreationDate = DateTime.Now;
-
-
-                //Handle contract document upload
-                //if (unitDto.ContractDocument != null)
-                //{
-                //    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                //    using (var stream = new FileStream(filePath, FileMode.Create))
-                //    {
-                //        await unitDto.ContractDocument.CopyToAsync(stream);
-                //    }
-                //    unit.ContractPath = filePath;
-                //}
-                if (unitDto.ContractDocument != null)
-                {
-                    var res = await _photoService.AddPhotoAsync(unitDto.ContractDocument);
-
-                    unit.ContractPath = res.Url.ToString();
-                }
-
-                await _unitOfWork.UnitRepository.AddAsync(unit);
-                await _unitOfWork.SaveAsync();
-                if (unitDto.UnitImages != null && unitDto.UnitImages.Any())
-                {
-                    foreach (var image in unitDto.UnitImages)
-                    {
-                        var res = await _photoService.AddPhotoAsync(image);
-                        //res.Url
-                        UnitImages unitImage = new UnitImages()
-                        {
-                            UnitID = unit.Id,
-                            ImageURL = res.Url.ToString()
-                        };
-                        await _unitOfWork.UnitImagesRepository.AddAsync(unitImage);
-                    }
-                }
-
-
-
-                // Add amenities
-                if (unitDto.AmenityIds != null && unitDto.AmenityIds.Any())
-                {
-                    foreach (var amenityId in unitDto.AmenityIds)
-                    {
-                        var unitAmenity = new UnitAmenity
-                        {
-                            UnitId = unit.Id,
-                            AmenityId = amenityId
-                        };
-                        await _unitOfWork.UnitAmenityRepository.AddAsync(unitAmenity);
-                    }
-
-                    await _unitOfWork.SaveAsync();
-                }
-
-                unit.VerificationStatus = VerificationStatus.Pending;
-                await _unitOfWork.SaveAsync();
-                return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unitDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
-            }
-        }
-
-        [Authorize(Roles = "Owner")]
-        [HttpPost("VerifyUnit/{id:int}")]
-        public async Task<IActionResult> VerifyUnit(int id)
-        {
-            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
-            _mapper.Map<Unit>(unit);
-            unit.Id = id;
-            if (unit != null)
-            {
-                unit.VerificationStatus = VerificationStatus.Verified;
-                _unitOfWork.UnitRepository.UpdateByIdAsync(unit.Id, unit);
-                _unitOfWork.SaveAsync();
-                return CreatedAtAction(nameof(VerifyUnit), new { id = unit.Id }, _mapper.Map<UnitDetailsDTO>(unit));
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        // Get By Id
-        [HttpGet("GetUnitById/{id}")]
-        public async Task<IActionResult> GetUnitById(int id)
-        {
-
-            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
-            if (unit == null)
-            {
-                return Content("Unit Not Found");
-            }
-            var unitDetailsDto = _mapper.Map<UnitDetailsDTO>(unit);
-
-            unitDetailsDto.ImagesPaths = await _unitOfWork.UnitImagesRepository.GetImagesByUnitId(unit.Id);
-
-            return Ok(unitDetailsDto);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUnit([FromBody] UnitDetailsDTO unitDto, int id)
-        {
-
-            if (unitDto == null || !ModelState.IsValid)
-            {
-                return BadRequest("Unit data is null");
-            }
-
-            var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
-            if (existingUnit == null)
-            {
-                return NotFound("Unit Not Found");
-            }
-
-            var unit = _mapper.Map<Unit>(unitDto);
-            try
-            {
-                _unitOfWork.UnitRepository.UpdateByIdAsync(id, unit);
-                await _unitOfWork.SaveAsync();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest($"Error updating unit: {ex.Message}");
-            }
-            return Ok("Unit Updated Successfully");
-        }
         [HttpGet("MyUnits")]
         [Authorize(Roles = "Owner")]
         public async Task<ActionResult> GetMyUnits()
@@ -239,12 +50,135 @@ namespace API.Controllers
             }
             return Ok(unitsdto);
         }
-        //[HttpPut("DeleteUnit/{id}")]
-        //public async Task<IActionResult> DeleteUnit(int id)
-        //{
-        //    _unitOfWork.UnitRepository.DeleteByIdAsync(id);
-        //    await _unitOfWork.SaveAsync();
-        //    return Ok();
-        //}
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UnitDTO>> GetUnitById(int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (unit == null)
+                return NotFound();
+
+            var unitDto = _mapper.Map<UnitDTO>(unit);
+            unitDto.UnitId = unitDto.Id;
+            unitDto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitDto.Id);
+            return Ok(unitDto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<UnitDTO>> CreateUnit([FromForm] AddUnitDTO unitDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var unit = _mapper.Map<Unit>(unitDto);
+            unit.OwnerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            unit.VerificationStatus = "Pending";
+
+            if (unitDto.Images != null && unitDto.Images.Any())
+            {
+                var imageUrls = new List<string>();
+                foreach (var image in unitDto.Images)
+                {
+                    var res = await _photoService.AddPhotoAsync(image);
+                    if (res.Error != null)
+                        return BadRequest(res.Error.Message);
+                    imageUrls.Add(res.SecureUrl.AbsoluteUri);
+                }
+                unit.ImagesPaths = string.Join(",", imageUrls);
+            }
+
+            await _unitOfWork.UnitRepository.AddAsync(unit);
+            await _unitOfWork.SaveAsync();
+
+            var createdUnitDto = _mapper.Map<UnitDTO>(unit);
+            createdUnitDto.UnitId = createdUnitDto.Id;
+            return CreatedAtAction(nameof(GetUnitById), new { id = unit.Id }, createdUnitDto);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> UpdateUnit(int id, [FromForm] UpdateUnitDTO unitDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUnit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (existingUnit == null)
+                return NotFound();
+
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (existingUnit.OwnerId != currentUserId)
+                return Forbid();
+
+            _mapper.Map(unitDto, existingUnit);
+
+            if (unitDto.Images != null && unitDto.Images.Any())
+            {
+                var imageUrls = new List<string>();
+                foreach (var image in unitDto.Images)
+                {
+                    var res = await _photoService.AddPhotoAsync(image);
+                    if (res.Error != null)
+                        return BadRequest(res.Error.Message);
+                    imageUrls.Add(res.SecureUrl.AbsoluteUri);
+                }
+                existingUnit.ImagesPaths = string.Join(",", imageUrls);
+            }
+
+            await _unitOfWork.SaveAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("DeleteUnit/{id}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            var unit = await _unitOfWork.UnitRepository.GetByIdAsync(id);
+            if (unit == null)
+                return NotFound();
+
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (unit.OwnerId != currentUserId)
+                return Forbid();
+
+            await _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+            await _unitOfWork.SaveAsync();
+            return NoContent();
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<UnitDTO>>> GetFilteredUnits(
+            [FromQuery] string? village = null,
+            [FromQuery] int? unitType = null,
+            [FromQuery] int? bedrooms = null,
+            [FromQuery] int? bathrooms = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null)
+        {
+            var units = await _unitOfWork.UnitRepository.GetAllAsync();
+            var filteredUnits = units.AsQueryable();
+
+            if (!string.IsNullOrEmpty(village))
+                filteredUnits = filteredUnits.Where(u => u.VillageName == village);
+
+            if (unitType.HasValue)
+                filteredUnits = filteredUnits.Where(u => u.UnitType == unitType.Value);
+
+            if (bedrooms.HasValue)
+                filteredUnits = filteredUnits.Where(u => u.Bedrooms == bedrooms.Value);
+
+            if (bathrooms.HasValue)
+                filteredUnits = filteredUnits.Where(u => u.Bathrooms == bathrooms.Value);
+
+            if (minPrice.HasValue)
+                filteredUnits = filteredUnits.Where(u => u.BasePricePerNight >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                filteredUnits = filteredUnits.Where(u => u.BasePricePerNight <= maxPrice.Value);
+
+            var unitsDto = _mapper.Map<IEnumerable<UnitDTO>>(filteredUnits);
+            return Ok(unitsDto);
+        }
     }
 }

@@ -111,7 +111,8 @@
   border: none;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  overflow: hidden; /* لمنع المحتوى من تجاوز حدود البطاقة المستديرة */
+  overflow: hidden;
+  /* لمنع المحتوى من تجاوز حدود البطاقة المستديرة */
 }
 
 .card-title {
@@ -132,17 +133,20 @@
 }
 
 .city-list li a:hover {
-  color: #007bff; /* أو اللون الأزرق الخاص بمشروعك */
+  color: #007bff;
+  /* أو اللون الأزرق الخاص بمشروعك */
   transform: translateX(5px);
 }
 
 .city-list li a i {
-  color: #bbb; /* لون رمادي للأيقونة */
+  color: #bbb;
+  /* لون رمادي للأيقونة */
   transition: color 0.2s ease;
 }
 
 .city-list li a:hover i {
-  color: #007bff; /* تغيير لون الأيقونة عند التحويم */
+  color: #007bff;
+  /* تغيير لون الأيقونة عند التحويم */
 }
 
 /* Property Card Styling (هذا يطبق على بطاقات الوحدات) */
@@ -152,7 +156,8 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s ease;
-  height: 100%; /* تأكد من أن البطاقات بنفس الارتفاع */
+  height: 100%;
+  /* تأكد من أن البطاقات بنفس الارتفاع */
   display: flex;
   flex-direction: column;
 }
@@ -164,7 +169,8 @@
 .property-image-container {
   position: relative;
   width: 100%;
-  padding-top: 60%; /* نسبة عرض إلى ارتفاع 5:3 */
+  padding-top: 60%;
+  /* نسبة عرض إلى ارتفاع 5:3 */
   overflow: hidden;
 }
 
@@ -181,7 +187,8 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background-color: #007bff; /* أو لون مميز مثل الأخضر الفيروزي */
+  background-color: #007bff;
+  /* أو لون مميز مثل الأخضر الفيروزي */
   color: white;
   padding: 5px 10px;
   border-radius: 4px;
@@ -192,7 +199,8 @@
 
 .property-body {
   padding: 20px;
-  flex-grow: 1; /* لجعل المحتوى يملأ المساحة المتاحة */
+  flex-grow: 1;
+  /* لجعل المحتوى يملأ المساحة المتاحة */
   display: flex;
   flex-direction: column;
 }
@@ -211,36 +219,42 @@
 }
 
 .property-address i {
-  color: #007bff; /* لون الأيقونة */
+  color: #007bff;
+  /* لون الأيقونة */
 }
 
 .property-price {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #007bff; /* لون السعر مميز */
+  color: #007bff;
+  /* لون السعر مميز */
   margin-bottom: 15px;
 }
 
 .property-details {
-  margin-top: auto; /* يدفع هذا العنصر إلى الأسفل */
+  margin-top: auto;
+  /* يدفع هذا العنصر إلى الأسفل */
   font-size: 0.85rem;
   color: #555;
-  padding-top: 15px; /* مسافة من الخط الفاصل */
+  padding-top: 15px;
+  /* مسافة من الخط الفاصل */
 }
 
 .property-details i {
-  color: #007bff; /* لون الأيقونة */
+  color: #007bff;
+  /* لون الأيقونة */
   margin-right: 5px;
 }
 
-.property-details > div {
+.property-details>div {
   display: flex;
   align-items: center;
 }
 
 /* Sort By Section */
 .form-select.w-auto {
-  width: auto !important; /* لتصغير عرض الـ select */
+  width: auto !important;
+  /* لتصغير عرض الـ select */
   min-width: 150px;
 }
 
@@ -254,7 +268,8 @@
 }
 
 .pagination .page-item.active .page-link {
-  background-color: #007bff; /* لون أخضر/فيروزي مطابق للأزرار الرئيسية */
+  background-color: #007bff;
+  /* لون أخضر/فيروزي مطابق للأزرار الرئيسية */
   border-color: #007bff;
   color: white;
 }
@@ -373,4 +388,77 @@
     font-size: 0.8rem;
     padding: 5px 10px;
   }
+}
+
+/* Clickable Unit Cards */
+.unit-card {
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.unit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(32, 201, 151, 0.1), rgba(23, 162, 184, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 0.375rem;
+}
+
+.unit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.unit-card:hover::before {
+  opacity: 1;
+}
+
+.unit-card:hover .card-title {
+  color: #20c997;
+}
+
+.unit-card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Focus states for accessibility */
+.unit-card:focus {
+  outline: 3px solid #20c997;
+  outline-offset: 2px;
+  transform: translateY(-2px);
+}
+
+.unit-card:focus-visible {
+  outline: 3px solid #20c997;
+  outline-offset: 2px;
+}
+
+/* Click effect */
+.unit-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Enhanced interaction */
+.unit-card * {
+  pointer-events: none;
+}
+
+.unit-card:focus *,
+.unit-card:hover * {
+  pointer-events: none;
+}
+
+/* Card image transition */
+.card-img-top {
+  transition: transform 0.3s ease;
 }

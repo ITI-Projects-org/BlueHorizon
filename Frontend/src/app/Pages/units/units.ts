@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { UnitsService } from '../../Services/units.service';
 import { Unit } from '../../Models/unit.model';
 import { Subject } from 'rxjs';
@@ -42,8 +42,8 @@ export class Units implements OnInit, OnDestroy {
 
   unitTypeMap: { [key: number]: string } = {
     0: 'Apartment',
-    2: 'Villa',
-    1: 'Chalet',
+    1: 'Villa',
+    2: 'Chalet',
   };
 
   private destroy$ = new Subject<void>();
@@ -51,10 +51,13 @@ export class Units implements OnInit, OnDestroy {
   constructor(
     private unitsService: UnitsService,
     private route: ActivatedRoute,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.fetchUnits();
+
     this.searchService.searchCriteria$
       .pipe(takeUntil(this.destroy$), debounceTime(200))
       .subscribe((criteria) => {
@@ -81,7 +84,9 @@ export class Units implements OnInit, OnDestroy {
         : null;
       this.searchTerm = params['search'] || null;
 
-      this.fetchUnits();
+      if (this.allUnits.length > 0) {
+        this.applyAllFiltersAndSortAndPaginate();
+      }
     });
   }
 
@@ -92,6 +97,8 @@ export class Units implements OnInit, OnDestroy {
 
   fetchUnits(): void {
     this.isLoading = true;
+    this.error = null;
+
     this.unitsService.getUnits().subscribe({
       next: (data) => {
         this.allUnits = data;
@@ -155,48 +162,40 @@ export class Units implements OnInit, OnDestroy {
     }
 
     if (this.selectedType) {
-      tempUnits = tempUnits.filter(
-        (unit) =>
-          unit.unitType !== undefined &&
-          this.unitTypeMap[unit.unitType] === this.selectedType
+      const selectedTypeNumber = Object.keys(this.unitTypeMap).find(
+        (key) => this.unitTypeMap[parseInt(key)] === this.selectedType
       );
-    }
-
-    if (this.minPrice !== null) {
-      tempUnits = tempUnits.filter(
-        (unit) =>
-          unit.basePricePerNight !== undefined &&
-          unit.basePricePerNight >= this.minPrice!
-      );
-    }
-    if (this.maxPrice !== null) {
-      tempUnits = tempUnits.filter(
-        (unit) =>
-          unit.basePricePerNight !== undefined &&
-          unit.basePricePerNight <= this.maxPrice!
-      );
+      if (selectedTypeNumber) {
+        tempUnits = tempUnits.filter(
+          (unit) => unit.unitType === parseInt(selectedTypeNumber)
+        );
+      }
     }
 
     if (this.selectedBedrooms) {
-      if (this.selectedBedrooms === '3+') {
-        tempUnits = tempUnits.filter(
-          (unit) => unit.bedrooms !== undefined && unit.bedrooms >= 3
-        );
+      if (this.selectedBedrooms === '4+') {
+        tempUnits = tempUnits.filter(unit => (unit.bedrooms ?? 0) >= 4);
       } else {
-        const num = parseInt(this.selectedBedrooms, 10);
-        tempUnits = tempUnits.filter((unit) => unit.bedrooms === num);
+        const bedrooms = parseInt(this.selectedBedrooms);
+        tempUnits = tempUnits.filter(unit => (unit.bedrooms ?? 0) === bedrooms);
       }
     }
 
     if (this.selectedBathrooms) {
       if (this.selectedBathrooms === '3+') {
-        tempUnits = tempUnits.filter(
-          (unit) => unit.bathrooms !== undefined && unit.bathrooms >= 3
-        );
+        tempUnits = tempUnits.filter(unit => (unit.bathrooms ?? 0) >= 3);
       } else {
-        const num = parseInt(this.selectedBathrooms, 10);
-        tempUnits = tempUnits.filter((unit) => unit.bathrooms === num);
+        const bathrooms = parseInt(this.selectedBathrooms);
+        tempUnits = tempUnits.filter(unit => (unit.bathrooms ?? 0) === bathrooms);
       }
+    }
+
+    if (this.minPrice !== null && this.minPrice !== undefined) {
+      tempUnits = tempUnits.filter(unit => (unit.basePricePerNight ?? 0) >= this.minPrice!);
+    }
+
+    if (this.maxPrice !== null && this.maxPrice !== undefined) {
+      tempUnits = tempUnits.filter(unit => (unit.basePricePerNight ?? 0) <= this.maxPrice!);
     }
 
     this.filteredUnits = tempUnits;
@@ -207,28 +206,33 @@ export class Units implements OnInit, OnDestroy {
 
   sortUnits(): void {
     switch (this.sortOption) {
-      case 'price-asc':
+      case 'price-low':
         this.filteredUnits.sort(
-          (a, b) => (a.basePricePerNight || 0) - (b.basePricePerNight || 0)
+          (a, b) => (a.basePricePerNight ?? 0) - (b.basePricePerNight ?? 0)
         );
         break;
-      case 'price-desc':
+      case 'price-high':
         this.filteredUnits.sort(
-          (a, b) => (b.basePricePerNight || 0) - (a.basePricePerNight || 0)
+          (a, b) => (b.basePricePerNight ?? 0) - (a.basePricePerNight ?? 0)
         );
         break;
-      default:
+      case 'name':
         this.filteredUnits.sort((a, b) =>
           (a.title || '').localeCompare(b.title || '')
         );
+        break;
+      case 'location':
+        this.filteredUnits.sort((a, b) =>
+          (a.villageName || '').localeCompare(b.villageName || '')
+        );
+        break;
+      default:
         break;
     }
   }
 
   calculateTotalPages(): void {
     this.totalPages = Math.ceil(this.filteredUnits.length / this.pageSize);
-    if (this.totalPages === 0) this.totalPages = 1;
-    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
   }
 
   filterByCity(name: string | null, event: Event): void {
@@ -268,9 +272,10 @@ export class Units implements OnInit, OnDestroy {
   }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.paginate();
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginate();
+    }
   }
 
   previousPage(): void {
@@ -288,9 +293,6 @@ export class Units implements OnInit, OnDestroy {
   }
 
   getUnitImagePath(unit: Unit): string {
-    // return unit.imagePath && unit.imagePath.length > 0 ? unit.imagePath : 'assets/placeholder.jpg';
-    // console.log('this is image paths');
-    console.log(unit.imageURL);
     return unit.imageURL ?? '';
   }
 
@@ -301,7 +303,8 @@ export class Units implements OnInit, OnDestroy {
       this.selectedBedrooms ||
       this.selectedBathrooms ||
       this.minPrice ||
-      this.maxPrice
+      this.maxPrice ||
+      this.searchTerm
     );
   }
 
@@ -323,6 +326,9 @@ export class Units implements OnInit, OnDestroy {
         this.minPrice = null;
         this.maxPrice = null;
         break;
+      case 'search':
+        this.searchTerm = null;
+        break;
     }
     this.currentPage = 1;
     this.applyAllFiltersAndSortAndPaginate();
@@ -335,7 +341,22 @@ export class Units implements OnInit, OnDestroy {
     this.selectedBathrooms = null;
     this.minPrice = null;
     this.maxPrice = null;
+    this.searchTerm = null;
+    this.sortOption = 'default';
     this.currentPage = 1;
     this.applyAllFiltersAndSortAndPaginate();
+  }
+
+  viewUnitDetails(unitId: number | null): void {
+    if (unitId) {
+      this.router.navigate(['/unitDetails', unitId]);
+    }
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = 'assets/images/default-unit.jpg';
+    }
   }
 }
