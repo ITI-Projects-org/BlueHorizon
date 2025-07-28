@@ -36,7 +36,7 @@ namespace API.Controllers
 
         [HttpPost("Add")]
         [Authorize(Roles = "Admin,Tenant")]
-        public async Task<IActionResult> AddBooking(BookingDTO bookingdto)
+        public async Task<IActionResult> AddBooking(addBookingDTO bookingdto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

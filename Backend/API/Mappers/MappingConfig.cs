@@ -72,6 +72,7 @@ namespace API.Mappers
 
 
             CreateMap<Booking, BookingDTO>().ReverseMap();
+            CreateMap<Booking, addBookingDTO>().ReverseMap();
 
             CreateMap<Booking, BookingSlotDTO>()
                  .ForMember(dest => dest.CheckInDate, opt => opt.MapFrom(src => src.CheckInDate))
