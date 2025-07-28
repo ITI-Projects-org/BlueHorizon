@@ -42,8 +42,8 @@ export class Units implements OnInit, OnDestroy {
 
   unitTypeMap: { [key: number]: string } = {
     0: 'Apartment',
-    1: 'Villa',
-    2: 'Chalet',
+    2: 'Villa',
+    1: 'Chalet',
   };
 
   private destroy$ = new Subject<void>();
