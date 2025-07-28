@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
@@ -39,11 +39,12 @@ export class Units implements OnInit, OnDestroy {
   maxPrice?: number | null = null;
   searchTerm?: string | null = null;
   sortOption?: string = 'default';
+  filtersFromHome: boolean = false;
 
   unitTypeMap: { [key: number]: string } = {
     0: 'Apartment',
-    1: 'Villa',
-    2: 'Chalet',
+    1: 'Chalet',
+    2: 'Villa',
   };
 
   private destroy$ = new Subject<void>();
@@ -52,7 +53,7 @@ export class Units implements OnInit, OnDestroy {
     private unitsService: UnitsService,
     private route: ActivatedRoute,
     private searchService: SearchService,
-    private router: Router
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -69,20 +70,35 @@ export class Units implements OnInit, OnDestroy {
         this.maxPrice = criteria.maxPrice;
         this.currentPage = 1;
         this.applyAllFiltersAndSortAndPaginate();
+        this.cdr.detectChanges();
       });
 
-    this.route.queryParams.subscribe((params) => {
-      this.selectedVillage = params['village'] || null;
-      this.selectedType = params['type'] || null;
-      this.selectedBedrooms = params['bedrooms'] || null;
-      this.selectedBathrooms = params['bathrooms'] || null;
-      this.minPrice = params['minPrice']
-        ? parseFloat(params['minPrice'])
-        : null;
-      this.maxPrice = params['maxPrice']
-        ? parseFloat(params['maxPrice'])
-        : null;
-      this.searchTerm = params['search'] || null;
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        console.log('Query params received:', params);
+
+        // Check if filters are coming from home page
+        this.filtersFromHome = !!(
+          params['village'] ||
+          params['type'] ||
+          params['bedrooms'] ||
+          params['bathrooms'] ||
+          params['minPrice'] ||
+          params['maxPrice']
+        );
+
+        this.selectedVillage = params['village'] || null;
+        this.selectedType = params['type'] || null;
+        this.selectedBedrooms = params['bedrooms'] || null;
+        this.selectedBathrooms = params['bathrooms'] || null;
+        this.minPrice = params['minPrice']
+          ? parseFloat(params['minPrice'])
+          : null;
+        this.maxPrice = params['maxPrice']
+          ? parseFloat(params['maxPrice'])
+          : null;
+        this.searchTerm = params['search'] || null;
 
       if (this.allUnits.length > 0) {
         this.applyAllFiltersAndSortAndPaginate();
@@ -106,7 +122,9 @@ export class Units implements OnInit, OnDestroy {
         this.populateFilterOptions();
         this.applyAllFiltersAndSortAndPaginate();
         console.log('Units fetched successfully');
-        console.log(data);
+            console.log(data);
+            this.cdr.detectChanges();
+
       },
       error: (err) => {
         console.error('Error fetching units', err);
@@ -153,6 +171,7 @@ export class Units implements OnInit, OnDestroy {
           unit.villageName?.toLowerCase().includes(lower) ||
           unit.unitType?.toString().includes(lower)
       );
+      this.cdr.detectChanges();
     }
 
     if (this.selectedVillage) {
@@ -202,6 +221,14 @@ export class Units implements OnInit, OnDestroy {
     this.sortUnits();
     this.calculateTotalPages();
     this.paginate();
+
+    console.log('Filter results:', {
+      totalUnits: this.allUnits.length,
+      filteredUnits: this.filteredUnits.length,
+      paginatedUnits: this.paginatedUnits.length,
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+    });
   }
 
   sortUnits(): void {

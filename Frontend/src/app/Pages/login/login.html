@@ -1,100 +1,99 @@
-<!-- Custom Modern Lalan-Inspired Login Page -->
-<div class="custom-login-bg ">
-  <div class="custom-login-card">
-    <div class="custom-login-left">
-      <div class="custom-login-branding">
-        <img
-          src="images/Gemini_Generated_Image_avuwquavuwquavuw.png" style="width: 100px;height: 100px;"
-          alt="BlueHorizon"
-          class="custom-login-logo"
-        />
-        <h2>Welcome to BlueHorizon</h2>
-        <p>Your gateway to premium real estate.</p>
-      </div>
-      <div class="custom-login-image"></div>
+<!-- Modern Login Page with Hero Section -->
+<div class="hero-section">
+  <div class="slider-container">
+    <div class="slide active">
+      <img src="/images/3.jpg" alt="Background" class="background-image" />
     </div>
-    <div class="custom-login-right">
-      <div class="custom-login-form-wrapper">
-        <h1 class="custom-login-title">Sign In</h1>
-        <p class="custom-login-subtitle">
-          Access your account to explore properties and more.
-        </p>
-        <form
-          [formGroup]="loginForm"
-          (ngSubmit)="onLogin()"
-          class="custom-login-form"
-        >
+  </div>
+
+  <div class="hero-content">
+    <div class="auth-container">
+      <div class="auth-header">
+        <img
+          src="/images/Gemini_Generated_Image_avuwquavuwquavuw.png"
+          alt="BlueHorizon"
+          class="auth-logo"
+        />
+        <h1>Welcome Back</h1>
+        <p>Your gateway to premium real estate</p>
+      </div>
+
+      <div class="auth-card">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
           <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              class="form-control"
-              formControlName="email"
-              placeholder="Enter your email"
-              [ngClass]="{'is-invalid': email.invalid && email.touched}"
-            />
+            <label for="email">Email Address</label>
+            <div class="input-group">
+              <i class="bi bi-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                [ngClass]="{'is-invalid': email.invalid && email.touched}"
+              />
+            </div>
+            <div
+              class="invalid-feedback"
+              *ngIf="email.invalid && email.touched"
+            >
+              Please enter a valid email address
+            </div>
           </div>
+
           <div class="form-group">
             <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              class="form-control"
-              formControlName="password"
-              placeholder="Enter your password"
-              [ngClass]="{'is-invalid': password.invalid && password.touched}"
-            />
+            <div class="input-group">
+              <i class="bi bi-lock"></i>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                [ngClass]="{'is-invalid': password.invalid && password.touched}"
+              />
+            </div>
+            <div
+              class="invalid-feedback"
+              *ngIf="password.invalid && password.touched"
+            >
+              Password is required
+            </div>
           </div>
 
           <button
-            class="custom-login-btn"
-            [disabled]="loginForm.invalid"
             type="submit"
+            class="btn-primary"
+            [disabled]="loginForm.invalid"
           >
-            Login
+            <i class="bi bi-box-arrow-in-right"></i>
+            Sign In
           </button>
 
-          <!-- Forgot Password Button -->
-          <div class="text-center mt-3">
-            <button
-              type="button"
-              class="btn btn-link text-primary p-0"
-              (click)="OnForgotPassword()"
-              style="text-decoration: none; font-size: 14px; font-weight: 500"
-            >
-              <i class="bi bi-key me-1"></i>
-              Forgot your password?
+          <div class="auth-options">
+            <button type="button" class="btn-link" (click)="OnForgotPassword()">
+              <i class="bi bi-key"></i>
+              Forgot Password?
             </button>
           </div>
-        </form>
 
-        <!-- Google login Section -->
-        <div class="custom-google-signup">
-          <div class="divider">
-            <span>Or continue with</span>
+          <div class="separator">
+            <span>or continue with</span>
           </div>
-          <button
-            type="button"
-            class="google-signup-btn"
-            (click)="OnGoogleLogin()"
-          >
-            <i class="bi bi-google"></i>
-            login with Google
-          </button>
-        </div>
 
-        <div class="custom-login-footer">
-          <span>Don't have an account?</span>
-          <a routerLink="/register">Sign up</a>
-        </div>
+          <button type="button" class="btn-google" (click)="OnGoogleLogin()">
+            <i class="bi bi-google"></i>
+            Sign in with Google
+          </button>
+
+          <div class="auth-footer">
+            Don't have an account? <a routerLink="/register">Sign up</a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
-<!-- End Custom Login Page -->
 
-<!-- Spinner Component -->
 <ngx-spinner
   bdColor="rgba(0, 0, 0, 0.8)"
   size="medium"
