@@ -18,4 +18,5 @@ export interface IUnit {
   imageURL: string | null;
   imagesPaths: string[] | null;
   verificationStatus?: string;
+  verificationStatusString?: string;
 }

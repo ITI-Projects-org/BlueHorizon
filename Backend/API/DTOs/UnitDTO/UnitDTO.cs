@@ -22,5 +22,7 @@ namespace API.DTOs.UnitDTO
         public string ContractPath { get; set; }
         public float AverageUnitRating { get; set; }
         public string? imageURL { get; set; }
+        public VerificationStatus VerificationStatus { get; set; }
+        public string VerificationStatusString { get; set; }
     }
 }

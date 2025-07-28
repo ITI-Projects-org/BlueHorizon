@@ -63,7 +63,8 @@ export class Profile implements OnInit {
       next: (units) => {
         console.log(units);
         this.ownerUnits = units;
-        console.log('Owner units loaded:', units);
+        // console.log('Owner units loaded:', units);
+        console.log('Owner units loaded:', this.ownerUnits);
         this.spinner.hide();
         this.cdr.detectChanges();
       },

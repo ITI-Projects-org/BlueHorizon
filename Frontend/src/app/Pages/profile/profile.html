@@ -24,9 +24,9 @@
                   <div class="position-absolute top-0 end-0 m-2">
                     <span
                       class="badge"
-                      [class]="unit.verificationStatus === 'Verified' ? 'bg-success' : unit.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger'"
+                      [class]="unit.verificationStatusString === 'Verified' ? 'bg-success' : unit.verificationStatusString === 'Pending' ? 'bg-warning' : 'bg-danger'"
                     >
-                      {{ unit.verificationStatus || 'Not Verified' }}
+                      {{ unit.verificationStatusString || 'Not Verified' }}
                     </span>
                   </div>
                 </div>

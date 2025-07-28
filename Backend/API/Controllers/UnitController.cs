@@ -235,8 +235,10 @@ namespace API.Controllers
             foreach (var unitdto in unitsdto)
             {
                 unitdto.UnitId = unitdto.Id;
+                unitdto.VerificationStatusString = unitdto.VerificationStatus.ToString();
                 unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
             }
+            
             return Ok(unitsdto);
         }
         //[HttpPut("DeleteUnit/{id}")]
