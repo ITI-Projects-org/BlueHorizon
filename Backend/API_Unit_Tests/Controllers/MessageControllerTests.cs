@@ -314,6 +314,156 @@ namespace API_Unit_Tests.Controllers
             Assert.IsInstanceOfType(badRequestResult.Value, typeof(SerializableError));
         }
 
+        [TestMethod]
+        public async Task GetInbox_SingleMessage_ReturnsCorrectCount()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "user123")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            var messages = new List<Message>
+            {
+                new Message { Id = 1, ReceiverId = "user123", MessageContent = "Test message" }
+            };
+
+            MockUnitOfWork.Setup(u => u.MessageRepository.GetInboxAsync("user123"))
+                         .ReturnsAsync(messages);
+
+            MockMapper.Setup(m => m.Map<IEnumerable<MessageDto>>(It.IsAny<IEnumerable<Message>>()))
+                      .Returns(new List<MessageDto> { new MessageDto() });
+
+            // Act
+            var result = await _controller.GetInbox();
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var resultList = okResult.Value as IEnumerable<MessageDto>;
+            Assert.IsNotNull(resultList);
+            Assert.AreEqual(1, resultList.Count());
+        }
+
+        [TestMethod]
+        public async Task GetChat_ValidCall_ReturnsOkResult()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "user123")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            var messages = new List<Message>();
+            MockUnitOfWork.Setup(u => u.MessageRepository.GetChatBetweenUsersAsync("user123", "other-user"))
+                         .ReturnsAsync(messages);
+
+            MockMapper.Setup(m => m.Map<List<MessageDto>>(It.IsAny<List<Message>>()))
+                      .Returns(new List<MessageDto>());
+
+            // Act
+            var result = await _controller.GetChat("other-user");
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+
+        [TestMethod]
+        public async Task SendMessage_ValidMessage_CallsCorrectMethods()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "user123")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            var messageDto = new SendMessageDTO 
+            { 
+                MessageContent = "Test message", 
+                ReceiverId = "receiver123" 
+            };
+
+            MockUnitOfWork.Setup(u => u.MessageRepository.AddAsync(It.IsAny<Message>()))
+                         .ReturnsAsync(new Message());
+            MockUnitOfWork.Setup(u => u.SaveAsync())
+                         .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.SendMessage(messageDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+            MockUnitOfWork.Verify(u => u.MessageRepository.AddAsync(It.IsAny<Message>()), Times.Once);
+            MockUnitOfWork.Verify(u => u.SaveAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetChat_VerifiesRepositoryCall()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "user123")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            MockUnitOfWork.Setup(u => u.MessageRepository.GetChatBetweenUsersAsync("user123", "other-user"))
+                         .ReturnsAsync(new List<Message>());
+
+            MockMapper.Setup(m => m.Map<List<MessageDto>>(It.IsAny<List<Message>>()))
+                      .Returns(new List<MessageDto>());
+
+            // Act
+            await _controller.GetChat("other-user");
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.MessageRepository.GetChatBetweenUsersAsync("user123", "other-user"), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetInbox_VerifiesRepositoryCall()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "user123")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            MockUnitOfWork.Setup(u => u.MessageRepository.GetInboxAsync("user123"))
+                         .ReturnsAsync(new List<Message>());
+
+            // Act
+            await _controller.GetInbox();
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.MessageRepository.GetInboxAsync("user123"), Times.Once);
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

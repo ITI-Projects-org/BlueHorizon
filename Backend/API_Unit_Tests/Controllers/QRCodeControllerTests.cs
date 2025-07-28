@@ -195,6 +195,109 @@ namespace API_Unit_Tests.Controllers
             );
         }
 
+        [TestMethod]
+        public async Task CreateQr_ValidData_VerifiesMapperCall()
+        {
+            // Arrange
+            var qrDto = new QRDTO { BookingId = 1 };
+            var qrCode = new QRCode { Id = 1, BookingId = 1 };
+
+            MockMapper.Setup(m => m.Map<QRCode>(qrDto))
+                     .Returns(qrCode);
+            MockUnitOfWork.Setup(u => u.QRCodeRepository.AddAsync(It.IsAny<QRCode>()))
+                         .ReturnsAsync(qrCode);
+            MockUnitOfWork.Setup(u => u.SaveAsync())
+                         .Returns(Task.CompletedTask);
+
+            // Act
+            await _controller.CreateQr(qrDto);
+
+            // Assert
+            MockMapper.Verify(m => m.Map<QRCode>(qrDto), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task CreateQrCloud_ValidData_VerifiesPhotoServiceCall()
+        {
+            // Arrange
+            var qrDto = new QRDTO { BookingId = 1 };
+            var qrCode = new QRCode { Id = 1, BookingId = 1 };
+
+            var mockUploadResult = new ImageUploadResult
+            {
+                Url = new Uri("https://cloudinary.com/test-image.png"),
+                Error = null
+            };
+
+            MockMapper.Setup(m => m.Map<QRCode>(qrDto))
+                     .Returns(qrCode);
+            _mockPhotoService.Setup(p => p.AddPhotoAsync(It.IsAny<IFormFile>()))
+                           .ReturnsAsync(mockUploadResult);
+            MockUnitOfWork.Setup(u => u.QRCodeRepository.AddAsync(It.IsAny<QRCode>()))
+                         .ReturnsAsync(qrCode);
+            MockUnitOfWork.Setup(u => u.SaveAsync())
+                         .Returns(Task.CompletedTask);
+
+            // Act
+            await _controller.CreateQrCloud(qrDto);
+
+            // Assert
+            _mockPhotoService.Verify(p => p.AddPhotoAsync(It.IsAny<IFormFile>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetQRCodeById_ValidId_VerifiesRepositoryCall()
+        {
+            // Arrange
+            int qrId = 1;
+            var qrCode = new QRCode { Id = qrId, QRCodeValue = "SGVsbG8gV29ybGQ=" }; // Valid Base64 for "Hello World"
+            
+            MockUnitOfWork.Setup(u => u.QRCodeRepository.GetByIdAsync(qrId))
+                         .ReturnsAsync(qrCode);
+
+            // Act
+            await _controller.GetQRCodeById(qrId);
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.QRCodeRepository.GetByIdAsync(qrId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task CreateQr_VerifiesRepositoryCall()
+        {
+            // Arrange
+            var qrDto = new QRDTO { BookingId = 1 };
+            var qrCode = new QRCode { Id = 1, BookingId = 1 };
+
+            MockMapper.Setup(m => m.Map<QRCode>(qrDto))
+                     .Returns(qrCode);
+            MockUnitOfWork.Setup(u => u.QRCodeRepository.AddAsync(It.IsAny<QRCode>()))
+                         .ReturnsAsync(qrCode);
+            MockUnitOfWork.Setup(u => u.SaveAsync())
+                         .Returns(Task.CompletedTask);
+
+            // Act
+            await _controller.CreateQr(qrDto);
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.QRCodeRepository.AddAsync(It.IsAny<QRCode>()), Times.Once);
+            MockUnitOfWork.Verify(u => u.SaveAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetQRCodeById_InvalidId_ThrowsException()
+        {
+            // Arrange
+            int invalidQrId = -1;
+            MockUnitOfWork.Setup(u => u.QRCodeRepository.GetByIdAsync(invalidQrId))
+                         .ReturnsAsync((QRCode)null!);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<NullReferenceException>(
+                async () => await _controller.GetQRCodeById(invalidQrId)
+            );
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

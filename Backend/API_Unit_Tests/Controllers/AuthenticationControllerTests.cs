@@ -256,6 +256,118 @@ namespace API_Unit_Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
 
+        [TestMethod]
+        public async Task Register_NullRequest_ReturnsBadRequest()
+        {
+            // Arrange
+            RegisterDTO? nullRequest = null;
+            _controller.ModelState.AddModelError("", "Model is null");
+
+            // Act
+            var result = await _controller.Register(nullRequest!);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task Login_NullRequest_ReturnsBadRequest()
+        {
+            // Arrange
+            LoginDTO? nullRequest = null;
+            _controller.ModelState.AddModelError("", "Model is null");
+
+            // Act
+            var result = await _controller.Login(nullRequest!);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task Register_InvalidModelState_ReturnsBadRequest()
+        {
+            // Arrange
+            var registerDto = new RegisterDTO();
+            _controller.ModelState.AddModelError("Email", "Email is required");
+
+            // Act
+            var result = await _controller.Register(registerDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task Login_InvalidModelState_ReturnsBadRequest()
+        {
+            // Arrange
+            var loginDto = new LoginDTO();
+            _controller.ModelState.AddModelError("Email", "Email is required");
+
+            // Act
+            var result = await _controller.Login(loginDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task Register_UserCreationFails_ReturnsBadRequest()
+        {
+            // Arrange
+            var registerDto = new RegisterDTO
+            {
+                Email = "test@example.com",
+                Username = "testuser",
+                Password = "Password123!",
+                ConfirmPassword = "Password123!",
+                Role = "Tenant"
+            };
+
+            var tenant = new Tenant
+            {
+                Email = registerDto.Email,
+                UserName = registerDto.Username
+            };
+
+            MockUserManager.Setup(um => um.FindByEmailAsync(registerDto.Email))
+                          .ReturnsAsync((ApplicationUser)null!);
+            MockMapper.Setup(m => m.Map<Tenant>(registerDto))
+                     .Returns(tenant);
+            MockUserManager.Setup(um => um.CreateAsync(It.IsAny<Tenant>(), registerDto.Password))
+                          .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Creation failed" }));
+
+            // Act
+            var result = await _controller.Register(registerDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task Login_EmailNotConfirmed_ReturnsBadRequest()
+        {
+            // Arrange
+            var loginDto = new LoginDTO
+            {
+                Email = "test@example.com",
+                Password = "Password123!"
+            };
+
+            var user = new Tenant { Email = loginDto.Email, UserName = "testuser", EmailConfirmed = false };
+            MockUserManager.Setup(um => um.FindByEmailAsync(loginDto.Email))
+                           .ReturnsAsync(user);
+            MockUserManager.Setup(um => um.IsEmailConfirmedAsync(user))
+                           .ReturnsAsync(false);
+
+            // Act
+            var result = await _controller.Login(loginDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

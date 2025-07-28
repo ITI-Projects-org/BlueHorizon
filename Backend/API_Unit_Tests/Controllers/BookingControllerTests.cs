@@ -295,6 +295,80 @@ namespace API_Unit_Tests.Controllers
             Assert.AreEqual("No bookings found for this user", msgProperty.GetValue(resultValue));
         }
 
+        [TestMethod]
+        public async Task AddBooking_NullRequest_ReturnsBadRequest()
+        {
+            // Arrange
+            BookingDTO? nullRequest = null;
+
+            // Act
+            var result = await _controller.AddBooking(nullRequest!);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task AddBooking_InvalidModelStateCheck_ReturnsBadRequest()
+        {
+            // Arrange
+            var bookingDto = new BookingDTO();
+            _controller.ModelState.AddModelError("UnitId", "Unit ID is required");
+
+            // Act
+            var result = await _controller.AddBooking(bookingDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public async Task GetMyBookings_VerifiesRepositoryCall()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "test-tenant-id"),
+                new Claim(ClaimTypes.Role, "Tenant")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            MockUnitOfWork.Setup(u => u.BookingRepository.GetAllAsync())
+                         .ReturnsAsync(new List<Booking>());
+            MockMapper.Setup(m => m.Map<List<BookingDTO>>(It.IsAny<List<Booking>>()))
+                     .Returns(new List<BookingDTO>());
+
+            // Act
+            await _controller.GetMyBookings();
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.BookingRepository.GetAllAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetBookedSlots_ValidUnitIdCheck_ReturnsOkResult()
+        {
+            // Arrange
+            int unitId = 1;
+            var unit = new Unit { Id = unitId, Title = "Test Unit" };
+            var bookedSlotsDto = new BookedSlotsDTO();
+            
+            MockUnitOfWork.Setup(u => u.UnitRepository.GetByIdAsync(unitId))
+                         .ReturnsAsync(unit);
+            MockMapper.Setup(m => m.Map<BookedSlotsDTO>(unit))
+                     .Returns(bookedSlotsDto);
+
+            // Act
+            var result = await _controller.GetBookedSlots(unitId);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

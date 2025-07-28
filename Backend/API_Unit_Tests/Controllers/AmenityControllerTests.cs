@@ -93,6 +93,90 @@ namespace API_Unit_Tests.Controllers
             );
         }
 
+        [TestMethod]
+        public async Task GetAllAmenities_EmptyRepository_ReturnsEmptyList()
+        {
+            // Arrange
+            MockUnitOfWork.Setup(u => u.AmenityRepository.GetAllAsync())
+                         .ReturnsAsync(new List<Amenity>());
+            MockMapper.Setup(m => m.Map<List<AmenityDTO>>(It.IsAny<List<Amenity>>()))
+                     .Returns(new List<AmenityDTO>());
+
+            // Act
+            var result = await _controller!.GetAllAmenities();
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var returnedAmenities = okResult.Value as List<AmenityDTO>;
+            Assert.AreEqual(0, returnedAmenities!.Count);
+        }
+
+        [TestMethod]
+        public async Task GetAllAmenities_SingleAmenity_ReturnsSingleItem()
+        {
+            // Arrange
+            var amenities = new List<Amenity>
+            {
+                new Amenity { Id = 1, Name = AmenityName.WIFI }
+            };
+
+            var amenityDTOs = new List<AmenityDTO>
+            {
+                new AmenityDTO { Id = 1, Name = "WiFi" }
+            };
+
+            MockUnitOfWork.Setup(u => u.AmenityRepository.GetAllAsync())
+                         .ReturnsAsync(amenities);
+            MockMapper.Setup(m => m.Map<List<AmenityDTO>>(amenities))
+                     .Returns(amenityDTOs);
+
+            // Act
+            var result = await _controller!.GetAllAmenities();
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var returnedAmenities = okResult.Value as List<AmenityDTO>;
+            Assert.AreEqual(1, returnedAmenities!.Count);
+            Assert.AreEqual("WiFi", returnedAmenities[0].Name);
+        }
+
+        [TestMethod]
+        public async Task GetAllAmenities_VerifiesRepositoryCall()
+        {
+            // Arrange
+            MockUnitOfWork.Setup(u => u.AmenityRepository.GetAllAsync())
+                         .ReturnsAsync(new List<Amenity>());
+            MockMapper.Setup(m => m.Map<List<AmenityDTO>>(It.IsAny<List<Amenity>>()))
+                     .Returns(new List<AmenityDTO>());
+
+            // Act
+            await _controller!.GetAllAmenities();
+
+            // Assert
+            MockUnitOfWork.Verify(u => u.AmenityRepository.GetAllAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetAllAmenities_VerifiesMapperCall()
+        {
+            // Arrange
+            var amenities = new List<Amenity>();
+            MockUnitOfWork.Setup(u => u.AmenityRepository.GetAllAsync())
+                         .ReturnsAsync(amenities);
+            MockMapper.Setup(m => m.Map<List<AmenityDTO>>(amenities))
+                     .Returns(new List<AmenityDTO>());
+
+            // Act
+            await _controller!.GetAllAmenities();
+
+            // Assert
+            MockMapper.Verify(m => m.Map<List<AmenityDTO>>(amenities), Times.Once);
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

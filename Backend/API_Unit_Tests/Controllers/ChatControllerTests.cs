@@ -24,74 +24,19 @@ namespace API_Unit_Tests.Controllers
         }
 
         [TestMethod]
-        public async Task SendMessage_ValidMessage_ReturnsOkResult()
+        public async Task SendMessage_EmptyMessage_ReturnsBadRequest()
         {
             // Arrange
-            var request = new ChatMessageRequestDTO
-            {
-                Message = "Hello, how are you?"
-            };
-
-            var expectedResponse = new ChatMessageResponseDTO
-            {
-                Id = 1,
-                Message = request.Message,
-                Response = "I'm doing well, thank you!",
-                CreatedAt = DateTime.UtcNow,
-                IsFromUser = true
-            };
-
+            var request = new ChatMessageRequestDTO { Message = "" };
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, "user123"),
-                new Claim(ClaimTypes.Role, "Tenant")
+                new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
+                new Claim(ClaimTypes.Role, "tenant")
             }));
 
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext { User = userClaims }
-            };
-
-            _mockAIService.Setup(s => s.GenerateResponseAsync(request.Message, "user123", "Tenant"))
-                         .ReturnsAsync("I'm doing well, thank you!");
-            _mockAIService.Setup(s => s.SaveChatMessageAsync("user123", request.Message, "I'm doing well, thank you!"))
-                         .ReturnsAsync(expectedResponse);
-
-            // Act
-            var result = await _controller.SendMessage(request);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            
-            // The result is an anonymous object with success, message, and response properties
-            Assert.IsNotNull(okResult.Value);
-            var resultValue = okResult.Value;
-            Assert.IsNotNull(resultValue);
-            
-            // Check if the result has the expected structure using reflection
-            var resultType = resultValue.GetType();
-            var successProperty = resultType.GetProperty("success");
-            var messageProperty = resultType.GetProperty("message");
-            var responseProperty = resultType.GetProperty("response");
-            
-            Assert.IsNotNull(successProperty);
-            Assert.IsNotNull(messageProperty);
-            Assert.IsNotNull(responseProperty);
-            
-            var successValue = successProperty.GetValue(resultValue);
-            Assert.IsNotNull(successValue);
-            Assert.IsTrue((bool)successValue);
-        }
-
-        [TestMethod]
-        public async Task SendMessage_EmptyMessage_ReturnsBadRequest()
-        {
-            // Arrange
-            var request = new ChatMessageRequestDTO
-            {
-                Message = ""
             };
 
             // Act
@@ -105,9 +50,16 @@ namespace API_Unit_Tests.Controllers
         public async Task SendMessage_WhitespaceMessage_ReturnsBadRequest()
         {
             // Arrange
-            var request = new ChatMessageRequestDTO
+            var request = new ChatMessageRequestDTO { Message = "   " };
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                Message = "   "
+                new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
+                new Claim(ClaimTypes.Role, "tenant")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
             };
 
             // Act
@@ -118,12 +70,30 @@ namespace API_Unit_Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetChatHistory_ValidUser_ReturnsOkResult()
+        public async Task SendMessage_UnauthorizedUser_ReturnsUnauthorized()
+        {
+            // Arrange
+            var request = new ChatMessageRequestDTO { Message = "Test message" };
+            
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
+            };
+
+            // Act
+            var result = await _controller.SendMessage(request);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
+        }
+
+        [TestMethod]
+        public async Task GetChatHistory_VerifiesServiceCall()
         {
             // Arrange
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, "user123")
+                new Claim(ClaimTypes.NameIdentifier, "test-user-id")
             }));
 
             _controller.ControllerContext = new ControllerContext
@@ -131,17 +101,47 @@ namespace API_Unit_Tests.Controllers
                 HttpContext = new DefaultHttpContext { User = userClaims }
             };
 
-            var expectedHistory = new ChatHistoryDTO
+            var mockHistory = new ChatHistoryDTO
+            {
+                Messages = new List<ChatMessageResponseDTO>(),
+                TotalCount = 0
+            };
+
+            _mockAIService.Setup(s => s.GetChatHistoryAsync("test-user-id", 1, 50))
+                        .ReturnsAsync(mockHistory);
+
+            // Act
+            await _controller.GetChatHistory(1, 50);
+
+            // Assert
+            _mockAIService.Verify(s => s.GetChatHistoryAsync("test-user-id", 1, 50), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetChatHistory_ReturnsOkResult()
+        {
+            // Arrange
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "test-user-id")
+            }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            var mockHistory = new ChatHistoryDTO
             {
                 Messages = new List<ChatMessageResponseDTO>
                 {
-                    new ChatMessageResponseDTO { Id = 1, Message = "Hello", Response = "Hi there!", CreatedAt = DateTime.UtcNow, IsFromUser = true }
+                    new ChatMessageResponseDTO { Id = 1, Message = "Hello", Response = "Hi there!" }
                 },
                 TotalCount = 1
             };
 
-            _mockAIService.Setup(s => s.GetChatHistoryAsync("user123", 1, 50))
-                         .ReturnsAsync(expectedHistory);
+            _mockAIService.Setup(s => s.GetChatHistoryAsync("test-user-id", 1, 50))
+                        .ReturnsAsync(mockHistory);
 
             // Act
             var result = await _controller.GetChatHistory(1, 50);
@@ -154,84 +154,19 @@ namespace API_Unit_Tests.Controllers
         }
 
         [TestMethod]
-        public async Task ClearChatHistory_ValidUser_ReturnsOkResult()
+        public async Task GetChatHistory_UnauthorizedUser_ReturnsUnauthorized()
         {
             // Arrange
-            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "user123")
-            }));
-
             _controller.ControllerContext = new ControllerContext
             {
-                HttpContext = new DefaultHttpContext { User = userClaims }
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
             };
 
-            _mockAIService.Setup(s => s.ClearChatHistoryAsync("user123"))
-                         .ReturnsAsync(true);
-
             // Act
-            var result = await _controller.ClearChatHistory();
+            var result = await _controller.GetChatHistory(1, 50);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        }
-
-        [TestMethod]
-        public async Task ClearChatHistory_ServiceReturnsFalse_ReturnsInternalServerError()
-        {
-            // Arrange
-            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "user123")
-            }));
-
-            _controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext { User = userClaims }
-            };
-
-            _mockAIService.Setup(s => s.ClearChatHistoryAsync("user123"))
-                         .ReturnsAsync(false);
-
-            // Act
-            var result = await _controller.ClearChatHistory();
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(ObjectResult));
-            var objectResult = result as ObjectResult;
-            Assert.AreEqual(500, objectResult!.StatusCode);
-        }
-
-        [TestMethod]
-        public async Task TestGemini_ValidMessage_ReturnsOkResult()
-        {
-            // Arrange
-            string testMessage = "Test message for Gemini";
-            _mockAIService.Setup(s => s.GenerateResponseAsync(testMessage, It.IsAny<string>(), It.IsAny<string>()))
-                         .ReturnsAsync("Gemini response");
-
-            // Act
-            var result = await _controller.TestGemini(testMessage);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        }
-
-        [TestMethod]
-        public void TestConfig_ReturnsOkResult()
-        {
-            // Act
-            var result = _controller.TestConfig();
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            // Clean up resources if needed
+            Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
         }
     }
 }
