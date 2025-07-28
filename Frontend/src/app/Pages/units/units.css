@@ -374,3 +374,72 @@
     padding: 5px 10px;
   }
 }
+
+/* Unit Card Clickable Styles */
+.unit-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #e3e6f0;
+}
+
+.unit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.unit-card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.unit-card .card-img-top {
+  transition: transform 0.3s ease;
+  object-fit: cover;
+}
+
+.unit-card .card-title {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.unit-card:hover .card-title {
+  color: #007bff;
+}
+
+.property-address {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.property-price {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.detail-item i {
+  color: #007bff;
+}
+
+/* View Details Button */
+.unit-card .btn {
+  transition: all 0.3s ease;
+}
+
+.unit-card:hover .btn-outline-primary {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}

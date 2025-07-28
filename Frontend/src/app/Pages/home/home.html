@@ -1,349 +1,352 @@
-<!-- src/app/Pages/home/home.html -->
-
-<!-- Hero Section -->
-<header class="hero-section">
-  <div class="slider-container">
-    <div
-      *ngFor="let slide of slides; let i = index"
-      [class.active]="i === currentSlide"
-      class="slide"
-      [style.backgroundImage]="'url(' + slide.image + ')'"
-    ></div>
-    <div class="slider-dots">
-      <span
+<div class="home-container">
+  <div class="hero-section">
+    <div class="hero-slider">
+      <div
+        class="slide"
         *ngFor="let slide of slides; let i = index"
         [class.active]="i === currentSlide"
-        (click)="goToSlide(i)"
-      ></span>
-    </div>
-  </div>
-
-  <div class="hero-content">
-    <h1>Find Your Favorite Property</h1>
-
-    <div class="search-form-container">
-      <form
-        class="search-form"
-        (submit)="applySearchFilters()"
-        #searchForm="ngForm"
       >
-        <div class="form-group">
-          <label for="villageSelect" class="form-label">Location</label>
-          <select
-            id="villageSelect"
-            class="form-select"
-            [(ngModel)]="selectedVillage"
-            name="selectedVillageInput"
-          >
-            <option [ngValue]="null">Any Location</option>
-            <option *ngFor="let village of villages" [value]="village">
-              {{ village }}
-            </option>
-          </select>
-        </div>
+        <img [src]="slide.image" alt="Hero Image" />
+      </div>
+    </div>
 
-        <div class="form-group">
-          <label for="typeSelect" class="form-label">Property Type</label>
-          <select
-            id="typeSelect"
-            class="form-select"
-            [(ngModel)]="selectedType"
-            name="selectedTypeInput"
-          >
-            <option [ngValue]="null">Any Type</option>
-            <option *ngFor="let type of unitTypes" [value]="type">
-              {{ type }}
-            </option>
-          </select>
-        </div>
+    <div class="hero-content">
+      <h1>Find Your Perfect Stay</h1>
+      <p>Discover amazing properties in the most beautiful locations</p>
 
-        <div class="form-group">
-          <label class="form-label">&nbsp;</label>
+      <form
+        #searchForm="ngForm"
+        class="search-form"
+        (ngSubmit)="applySearchFilters()"
+      >
+        <div class="search-row">
+          <div class="form-group">
+            <label for="village" class="form-label">
+              <i class="fas fa-map-marker-alt me-1"></i>
+              Location
+            </label>
+            <select
+              id="village"
+              name="village"
+              [(ngModel)]="selectedVillage"
+              class="form-select"
+            >
+              <option value="">Any Location</option>
+              <option *ngFor="let village of villages" [value]="village">
+                {{ village }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="type" class="form-label">
+              <i class="fas fa-home me-1"></i>
+              Property Type
+            </label>
+            <select
+              id="type"
+              name="type"
+              [(ngModel)]="selectedType"
+              class="form-select"
+            >
+              <option value="">Any Type</option>
+              <option *ngFor="let type of unitTypes" [value]="type">
+                {{ type }}
+              </option>
+            </select>
+          </div>
+
           <button
-            class="btn btn-search"
             type="submit"
-            [disabled]="isLoading || isSearching || !isSearchValid()"
+            class="btn btn-primary btn-search"
+            [disabled]="isLoading || isSearching"
             [class.btn-loading]="isSearching"
           >
-            <span
-              *ngIf="isSearching"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-            <i *ngIf="!isSearching" class="fas fa-search me-2"></i>
-            {{ isSearching ? 'SEARCHING...' : 'SEARCH' }}
+            <i class="fas fa-search me-2"></i>
+            <span *ngIf="!isSearching">SEARCH</span>
+            <span *ngIf="isSearching">SEARCHING...</span>
           </button>
+        </div>
+
+        <div class="more-options">
+          <a
+            href="#"
+            class="more-options-link"
+            (click)="toggleMoreOptions($event)"
+          >
+            <i class="fas fa-sliders-h me-2"></i>
+            {{ showMoreOptions ? 'Hide' : 'More' }} Options
+          </a>
+        </div>
+
+        <div *ngIf="showMoreOptions" class="advanced-options">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bedrooms" class="form-label">
+                <i class="fas fa-bed me-1"></i>
+                Bedrooms
+              </label>
+              <select
+                id="bedrooms"
+                name="bedrooms"
+                [(ngModel)]="selectedBedrooms"
+                class="form-select"
+              >
+                <option value="">Any</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4+">4+</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="bathrooms" class="form-label">
+                <i class="fas fa-bath me-1"></i>
+                Bathrooms
+              </label>
+              <select
+                id="bathrooms"
+                name="bathrooms"
+                [(ngModel)]="selectedBathrooms"
+                class="form-select"
+              >
+                <option value="">Any</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3+">3+</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="minPrice" class="form-label">
+                <i class="fas fa-dollar-sign me-1"></i>
+                Min Price
+              </label>
+              <input
+                id="minPrice"
+                type="number"
+                name="minPrice"
+                [(ngModel)]="minPrice"
+                class="form-control"
+                placeholder="Min Price (EGP)"
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="maxPrice" class="form-label">
+                <i class="fas fa-dollar-sign me-1"></i>
+                Max Price
+              </label>
+              <input
+                id="maxPrice"
+                type="number"
+                name="maxPrice"
+                [(ngModel)]="maxPrice"
+                class="form-control"
+                placeholder="Max Price (EGP)"
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="searchPerformed && hasActiveFilters()"
+          class="search-summary mt-3"
+        >
+          <i class="fas fa-filter me-2"></i>
+          <strong>Active Filters:</strong> {{ getSearchSummary() }}
         </div>
       </form>
-
-      <div class="more-options-link">
-        <a href="javascript:void(0)" (click)="toggleMoreOptions($event)">
-          <i class="fas fa-sliders-h me-1"></i>
-          {{ showMoreOptions ? 'Hide' : 'Show' }} Advanced Options
-        </a>
-      </div>
-
-      <!-- Error Message -->
-      <div *ngIf="error" class="alert alert-danger mt-3" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        {{ error }}
-      </div>
-
-      <!-- Search Validation Message -->
-      <div
-        *ngIf="searchPerformed && !isSearchValid()"
-        class="alert alert-warning mt-3"
-        role="alert"
-      >
-        <i class="fas fa-info-circle me-2"></i>
-        Please select at least one search criteria and ensure valid price range.
-      </div>
-
-      <div class="more-options-content" *ngIf="showMoreOptions">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label for="bedroomsSelect" class="form-label">Bedrooms</label>
-            <select
-              id="bedroomsSelect"
-              class="form-select"
-              [(ngModel)]="selectedBedrooms"
-              name="selectedBedroomsInput"
-            >
-              <option [ngValue]="null">Any</option>
-              <option value="1">1 Bedroom</option>
-              <option value="2">2 Bedrooms</option>
-              <option value="3">3 Bedrooms</option>
-              <option value="4+">4+ Bedrooms</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label for="bathroomsSelect" class="form-label">Bathrooms</label>
-            <select
-              id="bathroomsSelect"
-              class="form-select"
-              [(ngModel)]="selectedBathrooms"
-              name="selectedBathroomsInput"
-            >
-              <option [ngValue]="null">Any</option>
-              <option value="1">1 Bathroom</option>
-              <option value="2">2 Bathrooms</option>
-              <option value="3+">3+ Bathrooms</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Price Range</label>
-            <div class="input-group">
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Min Price"
-                [(ngModel)]="minPrice"
-                name="minPriceInput"
-                min="0"
-                step="0.01"
-              />
-              <span class="input-group-text">-</span>
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Max Price"
-                [(ngModel)]="maxPrice"
-                name="maxPriceInput"
-                min="0"
-                step="0.01"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search Summary -->
-      <div
-        *ngIf="searchPerformed && hasActiveFilters()"
-        class="search-summary mt-3"
-      >
-        <div class="alert alert-info" role="alert">
-          <i class="fas fa-filter me-2"></i>
-          <strong>Search Criteria:</strong> {{ getSearchSummary() }}
-        </div>
-      </div>
     </div>
   </div>
-</header>
 
-<div class="home-container">
-  <!-- Latest Properties Section -->
-  <section class="latest-properties-section section-padding">
-    <div class="container">
-      <div class="section-header">
-        <h2>Latest Properties</h2>
-        <p *ngIf="!searchPerformed">
-          Discover our hand-picked selection of premium properties
-        </p>
-        <p *ngIf="searchPerformed && !hasActiveFilters()">
-          Showing all available properties
-        </p>
-        <p *ngIf="searchPerformed && hasActiveFilters()">
-          Showing {{ getFilteredUnitsCount() }} of {{ getTotalUnitsCount() }}
-          properties matching your criteria
-          <button
-            class="btn btn-sm btn-outline-secondary ms-2"
-            (click)="clearFilters()"
-          >
-            <i class="fas fa-times"></i> Clear Filters
-          </button>
-        </p>
-      </div>
-
-      <!-- Loading State -->
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-3">Loading properties...</p>
-      </div>
-
-      <!-- Error State -->
-      <div *ngIf="error && !isLoading" class="text-center py-5">
-        <i
-          class="fas fa-exclamation-triangle text-danger"
-          style="font-size: 3rem"
-        ></i>
-        <h4 class="mt-3 text-danger">Failed to Load Properties</h4>
-        <p class="text-muted">{{ error }}</p>
-        <button class="btn btn-primary" (click)="fetchUnits()">
-          <i class="fas fa-redo me-2"></i>Try Again
+  <div class="container mt-5">
+    <div class="section-header text-center mb-5">
+      <h2 *ngIf="!searchPerformed">
+        Discover our hand-picked selection of premium properties
+      </h2>
+      <h2 *ngIf="searchPerformed && hasActiveFilters()">
+        Showing {{ getFilteredUnitsCount() }} of {{ getTotalUnitsCount() }}
+        properties
+        <button
+          class="btn btn-outline-secondary btn-sm ms-3"
+          (click)="clearFilters()"
+        >
+          <i class="fas fa-times me-1"></i>Clear Filters
         </button>
-      </div>
+      </h2>
+    </div>
 
-      <!-- Properties Grid -->
-      <div *ngIf="!isLoading && !error" class="properties-carousel">
-        <div class="carousel-navigation">
-          <button
-            class="nav-btn prev-btn"
-            (click)="previousPropertyPage()"
-            [disabled]="currentPropertyPage === 0"
-          >
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <button
-            class="nav-btn next-btn"
-            (click)="nextPropertyPage()"
-            [disabled]="currentPropertyPage === totalPropertyPages - 1"
-          >
-            <i class="fas fa-chevron-right"></i>
-          </button>
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading properties...</p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger text-center" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {{ error }}
+      <button class="btn btn-outline-danger btn-sm ms-3" (click)="fetchUnits()">
+        <i class="fas fa-redo me-1"></i>Try Again
+      </button>
+    </div>
+
+    <div *ngIf="!isLoading && !error" class="properties-section">
+      <div class="properties-carousel">
+        <div
+          class="carousel-header d-flex justify-content-between align-items-center mb-4"
+        >
+          <h3>Latest Properties</h3>
+          <div class="carousel-controls">
+            <button
+              class="btn btn-outline-primary btn-sm"
+              (click)="previousPropertyPage()"
+              [disabled]="currentPropertyPage === 0"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="mx-3">
+              {{ currentPropertyPage + 1 }} of {{ totalPropertyPages }}
+            </span>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              (click)="nextPropertyPage()"
+              [disabled]="currentPropertyPage >= totalPropertyPages - 1"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="properties-grid">
-          <div class="property-card" *ngFor="let unit of paginatedUnits">
-            <div class="property-image">
-              <img
-                [src]="getUnitImagePath(unit)"
-                alt="Image of {{ unit.title }}"
-                (error)="onImageError($event)"
-              />
-              <div class="property-tag">For Rent</div>
-            </div>
-            <div class="property-content">
-              <h3 class="property-title">{{ unit.title }}</h3>
-              <p class="property-address">
-                <i class="fas fa-map-marker-alt"></i>
-                {{ unit.address }}, {{ unit.villageName }}
-              </p>
-              <div class="property-price">
-                EGP {{ unit.basePricePerNight | number : '1.2-2' }} / night
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          <div class="col" *ngFor="let unit of paginatedUnits">
+            <div
+              class="property-card"
+              (click)="viewUnitDetails(unit.id)"
+              (keydown.enter)="viewUnitDetails(unit.id)"
+              (keydown.space)="viewUnitDetails(unit.id)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'View details for ' + unit.title"
+              style="cursor: pointer"
+            >
+              <div class="property-image-container">
+                <img
+                  [src]="getUnitImagePath(unit)"
+                  class="property-image"
+                  alt="Property Image"
+                  (error)="onImageError($event)"
+                />
+                <div class="property-status">
+                  <span class="badge bg-success">Available</span>
+                </div>
               </div>
-              <div class="property-details">
-                <div class="detail-item">
-                  <i class="fas fa-bed"></i>
-                  <span>{{ unit.bedrooms }} Beds</span>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-bath"></i>
-                  <span>{{ unit.bathrooms }} Baths</span>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-ruler-combined"></i>
-                  <span>1120 sq ft</span>
+
+              <div class="property-body">
+                <h5 class="property-title">{{ unit.title }}</h5>
+                <p class="property-address">
+                  <i class="fas fa-map-marker-alt me-2"></i>
+                  {{ unit.address }}, {{ unit.villageName }}
+                </p>
+                <p class="property-price">
+                  EGP {{ unit.basePricePerNight | number:'1.2-2' }} / night
+                </p>
+
+                <div class="property-details">
+                  <div>
+                    <i class="fas fa-bed me-1"></i> {{ unit.bedrooms }} Beds
+                  </div>
+                  <div>
+                    <i class="fas fa-bath me-1"></i> {{ unit.bathrooms }} Baths
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- No Results Message -->
         <div
           *ngIf="searchPerformed && paginatedUnits.length === 0"
           class="text-center py-5"
         >
-          <i class="fas fa-search text-muted" style="font-size: 3rem"></i>
-          <h4 class="mt-3 text-muted">No Properties Found</h4>
-          <p class="text-muted">
-            Try adjusting your search criteria to find more properties.
-          </p>
-          <button class="btn btn-outline-primary" (click)="clearFilters()">
-            <i class="fas fa-redo me-2"></i>Clear Filters
-          </button>
-        </div>
-
-        <div class="carousel-dots">
-          <span
-            *ngFor="let page of [].constructor(totalPropertyPages); let i = index"
-            class="dot"
-            [class.active]="i === currentPropertyPage"
-            (click)="goToPropertyPage(i)"
-          ></span>
+          <div class="no-results">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No Properties Found</h4>
+            <p class="text-muted">
+              Try adjusting your search criteria to find more properties.
+            </p>
+            <button class="btn btn-primary" (click)="clearFilters()">
+              <i class="fas fa-redo me-2"></i>Clear Filters
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Simple Steps Section -->
-  <section class="simple-steps-section section-padding bg-light">
+  <div class="how-it-works-section">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header text-center mb-5">
         <h2>How It Works</h2>
-        <p>Find your perfect property in just a few simple steps</p>
+        <p class="text-muted">
+          Simple steps to find your perfect accommodation
+        </p>
       </div>
 
-      <div class="steps-grid">
-        <div class="step-item">
-          <div class="step-icon">
-            <i class="fas fa-search"></i>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="step-card text-center">
+            <div class="step-icon">
+              <i class="fas fa-search fa-2x"></i>
+            </div>
+            <h4>Search</h4>
+            <p>
+              Browse through our extensive collection of properties using
+              advanced filters
+            </p>
           </div>
-          <h3>Search</h3>
-          <p>
-            Use our advanced search filters to find properties that match your
-            criteria
-          </p>
         </div>
 
-        <div class="step-item">
-          <div class="step-icon">
-            <i class="fas fa-eye"></i>
+        <div class="col-md-4">
+          <div class="step-card text-center">
+            <div class="step-icon">
+              <i class="fas fa-calendar-check fa-2x"></i>
+            </div>
+            <h4>Book</h4>
+            <p>
+              Select your preferred dates and complete your booking securely
+            </p>
           </div>
-          <h3>Browse</h3>
-          <p>
-            View detailed information and high-quality images of each property
-          </p>
         </div>
 
-        <div class="step-item">
-          <div class="step-icon">
-            <i class="fas fa-calendar-check"></i>
+        <div class="col-md-4">
+          <div class="step-card text-center">
+            <div class="step-icon">
+              <i class="fas fa-home fa-2x"></i>
+            </div>
+            <h4>Enjoy</h4>
+            <p>Arrive at your chosen property and enjoy your perfect stay</p>
           </div>
-          <h3>Book</h3>
-          <p>Reserve your chosen property with our secure booking system</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Call to Action Section -->
-  <section class="cta-section section-padding">
-    <div class="container">
-      <h2>Ready to Find Your Perfect Property?</h2>
-      <a href="/units" class="btn btn-cta">Browse All Properties</a>
+  <div class="cta-section">
+    <div class="container text-center">
+      <h2>Ready to Find Your Perfect Stay?</h2>
+      <p class="lead">
+        Join thousands of satisfied guests who found their ideal accommodation
+      </p>
+      <a href="/units" class="btn btn-primary btn-lg">
+        <i class="fas fa-search me-2"></i>Browse All Properties
+      </a>
     </div>
-  </section>
+  </div>
 </div>

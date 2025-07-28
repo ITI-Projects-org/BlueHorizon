@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../Services/authentication-service';
 import { AuthService } from '../../Services/auth.service';
 import { Unit } from '../../Services/unit';
@@ -26,7 +26,8 @@ export class Profile implements OnInit {
     private authService2: AuthService,
     private unitService: Unit,
     private spinner: NgxSpinnerService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -60,9 +61,11 @@ export class Profile implements OnInit {
     this.spinner.show();
     this.unitService.GetMyUnits().subscribe({
       next: (units) => {
+        console.log(units);
         this.ownerUnits = units;
         console.log('Owner units loaded:', units);
         this.spinner.hide();
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading owner units:', error);
@@ -85,29 +88,21 @@ export class Profile implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
     }).then((result) => {
       if (result.isConfirmed) {
         this.spinner.show();
         this.unitService.DeleteUnit(unitId).subscribe({
           next: (response) => {
             this.spinner.hide();
-            Swal.fire(
-              'Deleted!',
-              'Your unit has been deleted.',
-              'success'
-            );
+            Swal.fire('Deleted!', 'Your unit has been deleted.', 'success');
             // Reload units after deletion
             this.loadOwnerUnits();
           },
           error: (error) => {
             this.spinner.hide();
             console.error('Error deleting unit:', error);
-            Swal.fire(
-              'Error!',
-              'Failed to delete unit.',
-              'error'
-            );
+            Swal.fire('Error!', 'Failed to delete unit.', 'error');
           },
         });
       }

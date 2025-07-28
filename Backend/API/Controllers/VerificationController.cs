@@ -166,7 +166,14 @@ namespace API.Controllers
             var verificationDtos = _mapper.Map<IEnumerable<UnitVerificationDTO>>(allVerificationRequests);
             return Ok(verificationDtos);
         }
-
+        [HttpPost("UnitRespond")]
+        [Authorize(Roles = "Admin")]
+        public async Task RespondUnitRespondToVerificationRequest([FromBody] RespondToVerificationRequestDTO respondDTO)
+        {
+            Unit unit = await _unit.UnitRepository.GetByIdAsync(respondDTO.UnitId);
+            unit.VerificationStatus = respondDTO.VerificationStatus;
+            await _unit.SaveAsync();
+        }
 
 
     }

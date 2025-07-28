@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Unit } from '../../Services/unit';
+import { Router } from '@angular/router';
 
 enum UnitType {
   Apartment = 0,
@@ -43,7 +44,8 @@ export class AddUnit implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private unitService: Unit
+    private unitService: Unit,
+    private router: Router
   ) {
     this.unitForm = this.fb.group({
       title: ['', Validators.required],
@@ -82,6 +84,7 @@ export class AddUnit implements OnInit {
     }
     console.log('Submitted form data:', this.unitForm.value);
     this.submitForm();
+    this.router.navigateByUrl('/profile');
   }
 
   onContractFileSelected(event: Event) {
