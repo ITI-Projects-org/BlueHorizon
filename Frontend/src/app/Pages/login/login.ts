@@ -41,6 +41,7 @@ export class Login {
       email: this.email.value,
       password: this.password.value,
       // role: this.role.value,
+      
     };
     console.log(this.loginDTO);
     this.spinner.show();
@@ -72,6 +73,7 @@ export class Login {
             },
           });
         });
+        this.router.navigateByUrl('/home');
       },
       error: (error) => {
         this.spinner.hide();

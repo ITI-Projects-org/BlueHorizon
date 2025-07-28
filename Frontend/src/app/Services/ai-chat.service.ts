@@ -7,7 +7,7 @@ import {
   ChatMessageResponse,
   ChatHistory,
   ChatSuggestion,
-} from '../Models/chat.models';
+} from '../Models/ai.chat.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,51 +21,49 @@ export class AIChatService {
 
   sendMessage(message: string): Observable<ChatMessageResponse> {
     const request: ChatMessageRequest = { message };
-    return this.http.post<ChatMessageResponse>(
-      `${this.baseUrl}/message`,
-      request
-    ).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<ChatMessageResponse>(`${this.baseUrl}/message`, request)
+      .pipe(catchError(this.handleError));
   }
 
   getChatHistory(
     page: number = 1,
     pageSize: number = 50
   ): Observable<ChatHistory> {
-    return this.http.get<ChatHistory>(
-      `${this.baseUrl}/history?page=${page}&pageSize=${pageSize}`
-    ).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<ChatHistory>(
+        `${this.baseUrl}/history?page=${page}&pageSize=${pageSize}`
+      )
+      .pipe(catchError(this.handleError));
   }
 
   clearChatHistory(): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/clear`).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .delete(`${this.baseUrl}/clear`)
+      .pipe(catchError(this.handleError));
   }
 
   getSuggestions(): Observable<ChatSuggestion> {
-    return this.http.get<ChatSuggestion>(`${this.baseUrl}/suggestions`).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<ChatSuggestion>(`${this.baseUrl}/suggestions`)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred';
-    
+
     if (error.error instanceof ErrorEvent) {
       // Client-side error
       errorMessage = `Error: ${error.error.message}`;
     } else if (error.status === 0) {
       // Network error or SSL certificate issue
-      errorMessage = 'Unable to connect to server. Please check if the backend is running and SSL certificates are properly configured.';
+      errorMessage =
+        'Unable to connect to server. Please check if the backend is running and SSL certificates are properly configured.';
     } else {
       // Server-side error
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    
+
     console.error('HTTP Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }

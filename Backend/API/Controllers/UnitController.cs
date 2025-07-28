@@ -40,6 +40,7 @@ namespace API.Controllers
             {
                 unitdto.UnitId = unitdto.Id;
                 unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
+
             }
 
             return Ok(unitsdto);
@@ -73,7 +74,7 @@ namespace API.Controllers
 
         }
 
-       
+
 
         [Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
@@ -107,7 +108,7 @@ namespace API.Controllers
                 //}
                 if (unitDto.ContractDocument != null)
                 {
-                    var res =await _photoService.AddPhotoAsync(unitDto.ContractDocument);
+                    var res = await _photoService.AddPhotoAsync(unitDto.ContractDocument);
 
                     unit.ContractPath = res.Url.ToString();
                 }
@@ -120,7 +121,8 @@ namespace API.Controllers
                     {
                         var res = await _photoService.AddPhotoAsync(image);
                         //res.Url
-                        UnitImages unitImage = new UnitImages(){
+                        UnitImages unitImage = new UnitImages()
+                        {
                             UnitID = unit.Id,
                             ImageURL = res.Url.ToString()
                         };
@@ -128,7 +130,7 @@ namespace API.Controllers
                     }
                 }
 
-                
+
 
                 // Add amenities
                 if (unitDto.AmenityIds != null && unitDto.AmenityIds.Any())
@@ -186,7 +188,11 @@ namespace API.Controllers
             {
                 return Content("Unit Not Found");
             }
-            return Ok(_mapper.Map<UnitDetailsDTO>(unit));
+            var unitDetailsDto = _mapper.Map<UnitDetailsDTO>(unit);
+
+            unitDetailsDto.ImagesPaths = await _unitOfWork.UnitImagesRepository.GetImagesByUnitId(unit.Id);
+
+            return Ok(unitDetailsDto);
         }
 
         [HttpPut("{id}")]

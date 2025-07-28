@@ -6,7 +6,7 @@ export interface BookingDTO {
 }
 
 export interface BookingResponseDTO {
- id: number;
+  id: number;
   unitId: number;
   tenantId: string;
   checkInDate: Date;

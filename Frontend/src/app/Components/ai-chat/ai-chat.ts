@@ -10,7 +10,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AIChatService } from '../../Services/ai-chat.service';
-import { ChatMessage } from '../../Models/chat.models';
+import { ChatMessage } from '../../Models/ai.chat.model';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 

@@ -19,6 +19,7 @@ namespace API.DTOs.UnitDTO
         public string Address { get; set; }
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
+        public string ContractPath { get; set; }
         public float AverageUnitRating { get; set; }
         public string? imageURL { get; set; }
     }

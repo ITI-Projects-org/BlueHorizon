@@ -18,10 +18,10 @@ namespace API.Hubs
             _unitOfWork = unitOfWork;
         }
 
-        public async Task SendMessageToUser(string receiverId, string messageContent)
+        public async Task SendMessage(string receiverId, string messageContent)
         {
             var senderId = Context.UserIdentifier;
-            Console.WriteLine($"[ChatHub] SendMessageToUser received: SenderId = '{senderId}', ReceiverId = '{receiverId}', MessageContent = '{messageContent}'");
+            Console.WriteLine($"[ChatHub] SendMessage received: SenderId = '{senderId}', ReceiverId = '{receiverId}', MessageContent = '{messageContent}'");
 
             if (senderId != null)
             {
@@ -38,25 +38,39 @@ namespace API.Hubs
                 await _unitOfWork.SaveAsync();
                 Console.WriteLine($"[ChatHub] Message saved to database: From '{senderId}' to '{receiverId}'");
 
-
-                var clientProxy = Clients.User(receiverId);
-                if (clientProxy == null)
+                // 🔴 إنشاء الكائن مرة واحدة
+                var messageData = new
                 {
-                    Console.WriteLine($"[ChatHub] WARNING: Receiver '{receiverId}' not found or not currently connected to this Hub instance. Message saved but not sent in real-time.");
+                    Id = message.Id,
+                    SenderId = message.SenderId,
+                    ReceiverId = message.ReceiverId,
+                    MessageContent = message.MessageContent,
+                    TimeStamp = message.TimeStamp,
+                    IsRead = message.IsRead
+                };
+
+                // 🔴 إرسال الرسالة للـ receiver
+                var receiverProxy = Clients.User(receiverId);
+                if (receiverProxy != null)
+                {
+                    await receiverProxy.SendAsync("ReceiveMessage", messageData);
+                    Console.WriteLine($"[ChatHub] Message sent to receiver '{receiverId}'");
                 }
                 else
                 {
+                    Console.WriteLine($"[ChatHub] WARNING: Receiver '{receiverId}' not connected");
+                }
 
-                    await clientProxy.SendAsync("ReceiveMessage", new
-                    {
-                        Id = message.Id,
-                        SenderId = message.SenderId,
-                        ReceiverId = message.ReceiverId,
-                        MessageContent = message.MessageContent,
-                        TimeStamp = message.TimeStamp,
-                        IsRead = message.IsRead
-                    });
-                    Console.WriteLine($"[ChatHub] Message successfully sent in real-time to '{receiverId}' from '{senderId}'.");
+                // 🔴 إرسال الرسالة للـ sender أيضاً (عشان يشوف رسالته في الـ UI)
+                var senderProxy = Clients.User(senderId);
+                if (senderProxy != null)
+                {
+                    await senderProxy.SendAsync("ReceiveMessage", messageData);
+                    Console.WriteLine($"[ChatHub] Message sent to sender '{senderId}'");
+                }
+                else
+                {
+                    Console.WriteLine($"[ChatHub] WARNING: Sender '{senderId}' not connected");
                 }
             }
             else
@@ -68,7 +82,6 @@ namespace API.Hubs
         public override Task OnConnectedAsync()
         {
             Console.WriteLine($"[ChatHub] User Connected: '{Context.UserIdentifier}' (Connection ID: {Context.ConnectionId})");
-
             if (Context.User != null && Context.User.Claims != null && Context.User.Claims.Any())
             {
                 Console.WriteLine("[ChatHub] User Claims on connection:");
@@ -81,7 +94,6 @@ namespace API.Hubs
             {
                 Console.WriteLine("[ChatHub] No claims found for connected user (Context.User is null or has no claims). This indicates an authentication issue.");
             }
-
             return base.OnConnectedAsync();
         }
 

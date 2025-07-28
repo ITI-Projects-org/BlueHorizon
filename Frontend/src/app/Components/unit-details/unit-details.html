@@ -24,6 +24,16 @@
       <i class="bi bi-person-badge me-1"></i>
       <span class="text-muted">Hosted by </span>
       <strong>{{ unit.ownerName }}</strong>
+
+      <!-- زر الدردشة الجديد -->
+      <button
+        class="btn btn-sm btn-outline-primary ms-2 chat-owner-btn"
+        (click)="goToChatWithOwner(unit.ownerId ?? '')"
+        title="Chat with owner"
+      >
+        chat with owner <i class="bi bi-chat-dots"></i>
+        <!-- أيقونة الشات -->
+      </button>
     </div>
   </div>
 
@@ -40,11 +50,11 @@
     </div>
     <div class="col-md-6">
       <div class="feature-card">
-        <i class="bi bi-currency-dollar feature-icon"></i>
+        <i class="bi bi-currency-pound feature-icon"></i>
         <div>
           <h6 class="mb-0">Price per Night</h6>
           <span class="price-highlight"
-            >{{ unit.basePricePerNight | currency }}</span
+            >EGP {{ unit.basePricePerNight | number:'1.2-2' }}</span
           >
         </div>
       </div>
@@ -281,9 +291,11 @@
       </div>
     </div>
 
+
+
     <!-- Image Gallery -->
     <div
-      *ngIf="unit.unitImages && unit.unitImages.length"
+      *ngIf="unit.imagesPaths && unit.imagesPaths.length"
       class="image-gallery mt-4"
     >
       <div class="gallery-card">
@@ -292,7 +304,7 @@
           Property Photos
         </h4>
         <div class="row g-3">
-          @for (item of unit.unitImages; track $index) {
+          @for (item of unit.imagesPaths; track $index) {
           <div class="col-md-4">
             <div class="image-container">
               <img

@@ -20,7 +20,10 @@
   <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
     <i class="bi bi-exclamation-triangle me-2"></i>
     {{ error }}
-    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadMyBookings()">
+    <button
+      class="btn btn-sm btn-outline-danger ms-3"
+      (click)="loadMyBookings()"
+    >
       <i class="bi bi-arrow-clockwise me-1"></i>
       Retry
     </button>
@@ -43,8 +46,12 @@
 
   <!-- Bookings List -->
   <div *ngIf="!loading && !error && bookings.length > 0" class="bookings-grid">
-    <div *ngFor="let booking of bookings; trackBy: trackByBookingId" class="booking-card"
-      [class.upcoming]="isUpcoming(booking.checkInDate)" [class.past]="isPast(booking.checkOutDate)">
+    <div
+      *ngFor="let booking of bookings; trackBy: trackByBookingId"
+      class="booking-card"
+      [class.upcoming]="isUpcoming(booking.checkInDate)"
+      [class.past]="isPast(booking.checkOutDate)"
+    >
       <!-- Card Header -->
       <div class="card-header">
         <div class="property-info">
@@ -55,11 +62,15 @@
             <i class="bi bi-geo-alt me-1"></i>
             {{ booking.unit?.address || 'Address not available' }}
             <span *ngIf="booking.unit?.villageName">
-              - {{ booking.unit?.villageName }}</span>
+              - {{ booking.unit?.villageName }}</span
+            >
           </p>
         </div>
         <div class="status-badge">
-          <span class="badge" [class]="'bg-' + getStatusColor(booking.paymentStatus)">
+          <span
+            class="badge"
+            [class]="'bg-' + getStatusColor(booking.paymentStatus)"
+          >
             <i [class]="getStatusIcon(booking.paymentStatus) + ' me-1'"></i>
             {{ booking.paymentStatus || 'Unknown' }}
           </span>
@@ -74,19 +85,25 @@
             <i class="bi bi-calendar-check text-success"></i>
             <div class="date-details">
               <span class="date-label">Check-in</span>
-              <span class="date-value">{{ formatDate(booking.checkInDate) }}</span>
+              <span class="date-value"
+                >{{ formatDate(booking.checkInDate) }}</span
+              >
             </div>
           </div>
           <div class="duration-indicator">
             <i class="bi bi-arrow-right"></i>
-            <span class="nights">{{ getDaysBetween(booking.checkInDate, booking.checkOutDate) }}
-              nights</span>
+            <span class="nights"
+              >{{ getDaysBetween(booking.checkInDate, booking.checkOutDate) }}
+              nights</span
+            >
           </div>
           <div class="date-item">
             <i class="bi bi-calendar-x text-warning"></i>
             <div class="date-details">
               <span class="date-label">Check-out</span>
-              <span class="date-value">{{ formatDate(booking.checkOutDate) }}</span>
+              <span class="date-value"
+                >{{ formatDate(booking.checkOutDate) }}</span
+              >
             </div>
           </div>
         </div>
@@ -101,7 +118,9 @@
           <div class="detail-item">
             <i class="bi bi-calendar3 text-primary"></i>
             <span class="detail-label">Booked</span>
-            <span class="detail-value">{{ formatDate(booking.bookingDate) }}</span>
+            <span class="detail-value"
+              >{{ formatDate(booking.bookingDate) }}</span
+            >
           </div>
           <div class="detail-item" *ngIf="booking.unit?.unitType">
             <i class="bi bi-house text-secondary"></i>
@@ -120,32 +139,47 @@
           <div class="price-breakdown">
             <div class="price-row">
               <span class="price-label">
-                <i class="bi bi-currency-dollar me-1"></i>
+                <i class="bi bi-currency-pound me-1"></i>
                 Accommodation
               </span>
-              <span class="price-value">${{ booking.ownerPayoutAmount | number:'1.2-2' }}</span>
+              <span class="price-value"
+                >EGP {{ booking.ownerPayoutAmount | number:'1.2-2' }}</span
+              >
             </div>
             <div class="price-row">
               <span class="price-label">
                 <i class="bi bi-percent me-1"></i>
                 Service Fee
               </span>
-              <span class="price-value">${{ booking.platformComission | number:'1.2-2' }}</span>
+              <span class="price-value"
+                >EGP {{ booking.platformComission | number:'1.2-2' }}</span
+              >
             </div>
             <div class="price-row total">
               <span class="price-label">
                 <i class="bi bi-receipt me-1"></i>
                 Total Amount
               </span>
-              <span class="price-value total-amount">${{ booking.totalPrice | number:'1.2-2' }}</span>
+              <span class="price-value total-amount"
+                >EGP {{ booking.totalPrice | number:'1.2-2' }}</span
+              >
             </div>
             <!-- Conditional display for Create QR button or QR Code image -->
             <div class="mt-3">
-              <button *ngIf="!booking.qrCodeUrl" (click)="navigateToCreateQr(booking)" class="btn btn-primary btn-sm">
+              <button
+                *ngIf="!booking.qrCodeUrl"
+                (click)="openQrModal(booking)"
+                class="btn btn-primary btn-sm"
+              >
                 <i class="bi bi-qr-code me-1"></i> Create QR
               </button>
               <div *ngIf="booking.qrCodeUrl" class="qr-code-display">
-                <img [src]="booking.qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 100px" />
+                <img
+                  [src]="booking.qrCodeUrl"
+                  alt="QR Code"
+                  class="img-fluid"
+                  style="max-width: 100px"
+                />
                 <small class="text-muted mt-1">Scan for entry</small>
               </div>
             </div>
@@ -156,17 +190,26 @@
       <!-- Card Footer -->
       <div class="card-footer">
         <div class="action-buttons">
-          <button class="btn btn-outline-primary btn-sm" (click)="viewBookingDetails(booking)">
+          <button
+            class="btn btn-outline-primary btn-sm"
+            (click)="viewBookingDetails(booking)"
+          >
             <i class="bi bi-eye me-1"></i>
             View Details
           </button>
-          <button *ngIf="canCancelBooking(booking)" class="btn btn-outline-danger btn-sm"
-            (click)="cancelBooking(booking)">
+          <button
+            *ngIf="canCancelBooking(booking)"
+            class="btn btn-outline-danger btn-sm"
+            (click)="cancelBooking(booking)"
+          >
             <i class="bi bi-x-circle me-1"></i>
             Cancel
           </button>
-          <button *ngIf="isPast(booking.checkOutDate) && !booking.unitReviewed" class="btn btn-outline-success btn-sm"
-            (click)="leaveReview(booking)">
+          <button
+            *ngIf="isPast(booking.checkOutDate) && !booking.unitReviewed"
+            class="btn btn-outline-success btn-sm"
+            (click)="leaveReview(booking)"
+          >
             <i class="bi bi-star me-1"></i>
             Review
           </button>
@@ -176,10 +219,122 @@
             <i class="bi bi-clock me-1"></i>
             <span *ngIf="isUpcoming(booking.checkInDate)">Upcoming stay</span>
             <span *ngIf="isPast(booking.checkOutDate)">Past stay</span>
-            <span *ngIf="!isUpcoming(booking.checkInDate) && !isPast(booking.checkOutDate)">Current stay</span>
+            <span
+              *ngIf="!isUpcoming(booking.checkInDate) && !isPast(booking.checkOutDate)"
+              >Current stay</span
+            >
           </small>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- QR Code Creation Modal Overlay -->
+  <div *ngIf="showQrModal" class="qr-modal-overlay">
+    <div class="qr-modal-content">
+      <div class="qr-modal-header">
+        <h3 class="qr-modal-title">
+          Create QR Code for Booking #{{ selectedBooking?.id }}
+        </h3>
+        <button (click)="closeQrModal()" class="qr-modal-close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="qrCodeDto" (ngSubmit)="submitQrForm()">
+        <div class="form-group">
+          <label for="tenantNationalId" class="form-label"
+            >Tenant National ID *</label
+          >
+          <input
+            type="text"
+            id="tenantNationalId"
+            formControlName="TenantNationalId"
+            class="form-control"
+            placeholder="Enter Tenant National ID"
+          />
+          <div
+            *ngIf="TenantNationalId.invalid && TenantNationalId.touched"
+            class="error-message"
+          >
+            Tenant National ID is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="villageName" class="form-label">Village Name</label>
+          <input
+            type="text"
+            id="villageName"
+            formControlName="VillageName"
+            class="form-control"
+            placeholder="Village Name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="unitAddress" class="form-label">Unit Address</label>
+          <input
+            type="text"
+            id="unitAddress"
+            formControlName="UnitAddress"
+            class="form-control"
+            placeholder="Unit Address"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="ownerName" class="form-label">Owner Name</label>
+          <input
+            type="text"
+            id="ownerName"
+            formControlName="OwnerName"
+            class="form-control"
+            placeholder="Owner Name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="tenantName" class="form-label">Tenant Name</label>
+          <input
+            type="text"
+            id="tenantName"
+            formControlName="TenantName"
+            class="form-control"
+            placeholder="Tenant Name"
+          />
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="qrError" class="alert alert-danger mb-4">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ qrError }}
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            (click)="closeQrModal()"
+            class="btn btn-cancel"
+            [disabled]="isGeneratingQr"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-submit"
+            [disabled]="qrCodeDto.invalid || isGeneratingQr"
+          >
+            <span
+              *ngIf="isGeneratingQr"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            {{ isGeneratingQr ? 'Generating...' : 'Generate QR Code' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -12,7 +12,7 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
-import { Chat } from './Components/chat/chat';
+import { ChatComponent } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
@@ -23,6 +23,7 @@ import { BookingForm } from './Pages/booking-form/booking-form';
 import { UnitDetailsComponent } from './Components/unit-details/unit-details';
 import { QrCreationComponent } from './Pages/qr-creation.component/qr-creation.component';
 import { tenantGuardGuard } from './Guards/tenant-guard-guard';
+import { PendingUnits } from './Pages/Verification/pending-units/pending-units';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -36,6 +37,7 @@ export const routes: Routes = [
   { path: 'google-login-fail', component: GoogleLoginFail },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
+  { path: 'PendingUnits', component:PendingUnits },
   { path: 'profile', component: Profile },
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
@@ -45,7 +47,7 @@ export const routes: Routes = [
 
   {
     path: 'chat',
-    component: Chat,
+    component: ChatComponent,
     canActivate: [AuthGuard],
   },
   // 4. Catch-all route: Redirects any unmatched URLs to the login page.

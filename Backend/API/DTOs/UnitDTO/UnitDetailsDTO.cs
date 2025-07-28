@@ -6,6 +6,8 @@ namespace API.DTOs.UnitDTO
     {
 
         public string OwnerName { get; set; }
+        public string OwnerId { get; set; }
+
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }

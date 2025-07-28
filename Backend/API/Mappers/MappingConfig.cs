@@ -26,6 +26,10 @@ namespace API.Mappers
 
             CreateMap<RegisterDTO,Admin>().ReverseMap();
 
+            // Unit Verification Mapping
+            CreateMap<Unit, UnitVerificationDTO>()
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UnitAmenities, opt => opt.MapFrom(src => src.UnitAmenities.Select(ua => ua.AmenityId).ToArray()));
 
             #region Unit Mapping
 
@@ -43,15 +47,18 @@ namespace API.Mappers
 
             // UnitDTO to Unit ==> UpdateUnit
             CreateMap<UnitDetailsDTO, Unit>()
-                .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
-                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src=>src.OwnerName))
+                .ForMember(dest => dest.UnitImagesTable, opt => opt.MapFrom(src => src.ImagesPaths))
 
-            CreateMap<Unit,UnitDetailsDTO>().ReverseMap();
+                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()).ReverseMap(); // Ignore UnitAmenities for now
+
+            //CreateMap<Unit, UnitDetailsDTO>().ReverseMap();
+
             #endregion
 
             CreateMap<Message, MessageDto>()
-                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName))
-                .ForMember(dest => dest.ReceiverUsername, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
+                .ForMember(dest => dest.SenderUserName, opt => opt.MapFrom(src => src.SenderUser.UserName))
+                .ForMember(dest => dest.ReceiverUserName, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
                 //.ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => src.SenderUser.PhotoUrl))
                 //.ForMember(dest => dest.ReceiverPhotoUrl, opt => opt.MapFrom(src => src.ReceiverUser.PhotoUrl))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp));

@@ -5,14 +5,16 @@ using API.UnitOfWorks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MessageController : ControllerBase
     {
-        public MessageController(IMapper mapper,IUnitOfWork unitOfWork)
+        public MessageController(IMapper mapper, IUnitOfWork unitOfWork)
         {
             Mapper = mapper;
             UnitOfWork = unitOfWork;
@@ -21,57 +23,73 @@ namespace API.Controllers
         public IMapper Mapper { get; }
         public IUnitOfWork UnitOfWork { get; }
 
-
         // ✅ Get Inbox Messages for Current User
         [HttpGet("inbox")]
         public async Task<IActionResult> GetInbox()
-
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var messages = await UnitOfWork.MessageRepository.GetInboxAsync(userId);
-            var messagesDTO = Mapper.Map<List<MessageDto>>(messages);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(); // أو BadRequest حسب الـ Logic بتاعك
+            }
 
-            return Ok(messagesDTO);
+            // الـ Repository هيرجع InboxItemDto مباشرة، مش محتاج Mapper هنا
+            var inboxItems = await UnitOfWork.MessageRepository.GetInboxAsync(userId);
+
+            return Ok(inboxItems);
         }
 
         // ✅ Get Chat Between Two Users
-        [HttpGet("chat")]
-        public async Task<IActionResult> GetChat( [FromQuery] string otherUserId)
+        [HttpGet("history")]
+        public async Task<IActionResult> GetChat([FromQuery] string otherUserId)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return Unauthorized();
+            }
+            if (string.IsNullOrEmpty(otherUserId))
+            {
+                return BadRequest("Other user ID is required.");
+            }
+
+            // الـ Repository هيرجع MessageDto مباشرة، مش محتاج Mapper هنا
             var messages = await UnitOfWork.MessageRepository.GetChatBetweenUsersAsync(currentUserId, otherUserId);
-            
-            var messagesDTO = Mapper.Map<List<MessageDto>>(messages);
-            return Ok(messagesDTO);
 
+            return Ok(messages);
         }
-
 
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage(SendMessageDTO messageDTO)
         {
-            if (messageDTO == null || messageDTO.MessageContent == null)
+            if (messageDTO == null || string.IsNullOrWhiteSpace(messageDTO.MessageContent))
             {
                 return BadRequest("You Can't send Empty Message");
             }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-
             }
-            var userId  = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             var message = new Message()
             {
                 SenderId = userId,
                 ReceiverId = messageDTO.ReceiverId,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.Now, // أو DateTime.UtcNow حسب تفضيلك
                 MessageContent = messageDTO.MessageContent,
                 IsRead = false,
-
             };
             await UnitOfWork.MessageRepository.AddAsync(message);
             await UnitOfWork.SaveAsync();
-            return Ok();
+
+            // ممكن ترجع الـ message اللي تم إرسالها أو DTO ليها
+            return Ok(Mapper.Map<MessageDto>(message)); // لو عايز ترجع الـ message اللي تم إرسالها
         }
     }
 }
