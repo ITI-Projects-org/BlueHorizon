@@ -11,10 +11,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { QrServise } from '../../Services/qr-service';
+import Swal from 'sweetalert2';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-booking-list',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxSpinnerModule],
   templateUrl: './booking-list.html',
   styleUrl: './booking-list.css',
   standalone: true,
@@ -30,7 +32,8 @@ export class BookingList implements OnInit {
     private bookingService: BookingService,
     private qrService: QrServise,
     private cdr: ChangeDetectorRef,
-    private router: Router // Add Router to constructor
+    private router: Router, // Add Router to constructor
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit() {
@@ -224,7 +227,62 @@ export class BookingList implements OnInit {
     console.log('Cancel booking:', booking);
   }
 
+  confirmCancelBooking(booking: BookingResponseDTO): void {
+    Swal.fire({
+      title: 'Cancel Booking',
+      text: `Are you sure you want to cancel your booking for "${
+        booking.unit?.title || 'this property'
+      }"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Cancel Booking',
+      cancelButtonText: 'Keep Booking',
+      reverseButtons: true,
+      draggable: true,
+      customClass: {
+        confirmButton: 'btn btn-danger',
+        cancelButton: 'btn btn-secondary',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.OnCancelBooking(booking.id);
+      }
+    });
+  }
+
   leaveReview(booking: BookingResponseDTO): void {
     console.log('Leave review for booking:', booking);
+  }
+
+  OnCancelBooking(bookingId: number): void {
+    this.spinner.show();
+    this.bookingService.cancelBooking(bookingId).subscribe({
+      next: (res) => {
+        this.spinner.hide();
+        Swal.fire({
+          title: 'Success',
+          text: res.msg,
+          icon: 'success',
+          draggable: true,
+        }).then(() => {
+          // Refresh the bookings list after successful cancellation
+          this.loadMyBookings();
+        });
+      },
+      error: (error) => {
+        this.spinner.hide();
+        Swal.fire({
+          title: 'Error',
+          text:
+            error.error?.msg ||
+            'An error occurred during canceling your booking',
+          icon: 'error',
+          draggable: true,
+        });
+        console.log(error);
+      },
+    });
   }
 }

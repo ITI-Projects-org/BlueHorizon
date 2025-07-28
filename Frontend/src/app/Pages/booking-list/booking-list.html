@@ -200,10 +200,10 @@
           <button
             *ngIf="canCancelBooking(booking)"
             class="btn btn-outline-danger btn-sm"
-            (click)="cancelBooking(booking)"
+            (click)="confirmCancelBooking(booking)"
           >
             <i class="bi bi-x-circle me-1"></i>
-            Cancel
+            Cancel Booking
           </button>
           <button
             *ngIf="isPast(booking.checkOutDate) && !booking.unitReviewed"
@@ -338,3 +338,13 @@
     </div>
   </div>
 </div>
+
+<!-- Spinner Component -->
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-scale-multiple"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>
