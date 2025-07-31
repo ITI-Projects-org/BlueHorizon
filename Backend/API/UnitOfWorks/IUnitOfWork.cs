@@ -10,26 +10,17 @@ namespace API.UnitOfWorks
         IAmenityRepository AmenityRepository { get; }
         IBookingRepository BookingRepository { get; }
         IMessageRepository MessageRepository { get; }
+        IChatMessageRepository ChatMessageRepository { get; }
         IOwnerReviewRepository OwnerReviewRepository { get; }
+        ITenantRepository TenantRepository { get; }
         IOwnerVerificationDocumentRepository OwnerVerificationDocumentRepository { get; }
         IPaymentTransactionRepository PaymentTransactionRepository { get; }
         IQRCodeRepository QRCodeRepository { get; }
         IUnitAmenityRepository UnitAmenityRepository { get; }
         IUnitRepository UnitRepository { get; }
         IUnitReviewRepository UnitReviewRepository { get; }
+        IUnitImagesRepository UnitImagesRepository { get; }
+
         Task SaveAsync();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

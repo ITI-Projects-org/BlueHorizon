@@ -4,6 +4,7 @@ namespace API.DTOs.UnitDTO
 {
     public class UnitDTO
     {
+        public int? UnitId { get; set; }
         public int Id { get; set; }
         public string OwnerId { get; set; }
         public string Owner { get; set; }
@@ -18,6 +19,10 @@ namespace API.DTOs.UnitDTO
         public string Address { get; set; }
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
+        public string ContractPath { get; set; }
         public float AverageUnitRating { get; set; }
+        public string? imageURL { get; set; }
+        public VerificationStatus VerificationStatus { get; set; }
+        public string VerificationStatusString { get; set; }
     }
 }

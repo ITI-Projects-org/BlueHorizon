@@ -1,15 +1,24 @@
-<p>create-qr works!</p>
+<!-- <p>create-qr works!</p>
 <button (click)="CreateQrCloud()">Create qr code</button>
 
-<button (click)="getQrCloud(39)">Get QR</button>
-
-<!-- @if(qrCodeUrl && !isLoading){
-<div>
-    <img [src]="qrCodeUrl" alt="Booking QR Code" />
-    <p>Show this code at the gate for entry.</p>
-</div>} -->
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="TenantName" class="form-label">Tenant Name *</label>
+                <input
+                  type="text"
+                  id="TenantName"
+                  class="form-control"
+                  formControlName="TenantName"
+                  [class.is-invalid]="TenantName?.invalid && TenantName?.touched"
+                />
+                @if (TenantName?.invalid && TenantName?.touched) {
+                <div class="invalid-feedback">Tenant name is required</div>
+                }
+              </div>
+            </div>
+          </div>
 
 <div>
     <img [src]="[imgPath]">
     {{imgPath}}
-</div>
+</div> -->

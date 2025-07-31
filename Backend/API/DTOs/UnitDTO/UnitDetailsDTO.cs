@@ -6,6 +6,8 @@ namespace API.DTOs.UnitDTO
     {
 
         public string OwnerName { get; set; }
+        public string OwnerId { get; set; }
+
         public string Title { get; set; }
         public string Description { get; set; }
         public UnitType UnitType { get; set; }
@@ -18,5 +20,6 @@ namespace API.DTOs.UnitDTO
         public string VillageName { get; set; }
         public DateTime CreationDate { get; set; }
         public float AverageUnitRating { get; set; }
+        public ICollection<string> ImagesPaths { get; set; }
     }
 }

@@ -8,8 +8,8 @@
         Task<T> AddAsync(T entity);
         T UpdateByIdAsync(int id, T entity);
         T UpdateByIdAsync(string id, T entity);
-        void DeleteByIdAsync(int id);
-        void DeleteByIdAsync(string id);
+        Task DeleteByIdAsync(int id);
+        Task DeleteByIdAsync(string id);
 
 
     }

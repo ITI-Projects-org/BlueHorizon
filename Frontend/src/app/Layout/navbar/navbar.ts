@@ -1,165 +1,252 @@
-// src/app/Layout/navbar/navbar.ts
 import {
   Component,
   HostListener,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
+  OnInit, // تأكد من وجود OnInit هنا
   OnDestroy,
-  OnInit,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-declare var bootstrap: any;
-
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // تأكد من وجود CommonModule هنا
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { SearchService } from './../../Services/search.service';
-import { UnitsService } from '../../Services/units.service';
-import { Router } from '@angular/router';
-import { ISearchCriteria } from '../../Models/isearch-criteria';
+import { filter } from 'rxjs/operators'; // تأكد من استيراد filter من 'rxjs/operators'
+
+// Import services related to user and messages
+import { AuthService } from '../../Services/auth.service';
+import { Messages } from '../../Services/messages';
+import { InboxItem } from '../../Models/chat.models';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
+  // تأكد من وجود CommonModule في الـ imports هنا
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css'],
+  styleUrl: './navbar.css',
 })
-export class Navbar implements AfterViewInit, OnDestroy, OnInit {
-  @ViewChild('mainNavbar') mainNavbar!: ElementRef;
-  @ViewChild('heroSection') heroSection!: ElementRef;
-
-  currentSlide = 0;
-  private slideInterval: any;
-  showMoreOptions = false;
+export class Navbar implements OnInit, OnDestroy { // تأكد من تطبيق الواجهتين OnInit, OnDestroy
   isScrolled = false;
+  private isBrowser: boolean;
+  isHomePage: boolean = false;
+  _isLoggedIn: boolean = false; // **هذه الخاصية هي الأهم لحالة تسجيل الدخول**
 
-  selectedBedrooms?: string | null = null;
-  selectedBathrooms?: string | null = null;
-  minPrice?: number | null = null;
-  maxPrice?: number | null = null;
-  selectedVillage?: string | null = null;
-  selectedType?: string | null = null;
+  // Message and popup related properties and logic
+  showPopup: boolean = false;
+  recentChats: InboxItem[] = [];
+  unreadMessagesCount: number = 0;
+  hubConnection!: HubConnection;
+  currentUserId: string | null = null;
 
-  villages: (string | undefined)[] = [];
-  unitTypes: string[] = [];
-
-  slides = [
-    { image: 'imges/1.jpg', alt: 'Modern Villa' },
-    { image: 'imges/3.jpg', alt: 'Luxury Apartment' },
-    {
-      image: 'imges/photo-1564013799919-ab600027ffc6.jpeg',
-      alt: 'Beautiful House',
-    },
-  ];
+  // Role-based navigation properties
+  userRole: string = '';
+  isOwner: boolean = false;
+  isTenant: boolean = false;
+  isAdmin: boolean = false;
 
   constructor(
-    private searchService: SearchService,
+    @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private unitsService: UnitsService
-  ) {}
+    private authService: AuthService,
+    private messagesService: Messages
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    this.currentUserId = this.authService.getCurrentUserId();
+
+    if (this.isBrowser) {
+      // الاستماع لتغييرات المسار لتحديث isHomePage و _isLoggedIn
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          this.isHomePage =
+            event.urlAfterRedirects === '/' ||
+            event.urlAfterRedirects.startsWith('/home');
+          this.updateNavbarStyle();
+          this._isLoggedIn = this.authService.isLoggedIn(); // **تحديث حالة تسجيل الدخول عند تغيير المسار**
+          this.updateUserRole(); // Update role when route changes
+        });
+    }
+  }
 
   ngOnInit(): void {
-    this.searchService.searchCriteria$.subscribe((criteria) => {
-      this.selectedBedrooms = criteria.selectedBedrooms;
-      this.selectedBathrooms = criteria.selectedBathrooms;
-      this.minPrice = criteria.minPrice;
-      this.maxPrice = criteria.maxPrice;
-      this.selectedVillage = criteria.selectedVillage;
-      this.selectedType = criteria.selectedType;
-    });
+    if (this.isBrowser) {
+      window.addEventListener('scroll', this.onWindowScroll.bind(this));
+      document.addEventListener('click', this.onDocumentClick.bind(this));
+    }
 
-    this.unitsService.getUnits().subscribe((units) => {
-      console.log('Loaded units:', units);
-      console.log('First unit sample:', units[0]);
-      this.villages = Array.from(
-        new Set(units.map((u) => u.villageName).filter((v) => v))
-      );
+    // **تحديث حالة تسجيل الدخول فورًا عند تهيئة المكون**
+    this._isLoggedIn = this.authService.isLoggedIn();
+    this.updateUserRole(); // Update role on component initialization
 
-      const unitTypeMap: { [key: number]: string } = {
-        0: 'Apartment',
-        1: 'Villa',
-        2: 'Chalet',
-      };
+    // جلب المحادثات وبدء SignalR فقط إذا كان المستخدم مسجلًا للدخول
+    if (this._isLoggedIn) {
+      this.fetchRecentChatsForPopup();
+      this.startSignalRConnectionForNavbar();
+    }
+  }
 
-      this.unitTypes = Array.from(
-        new Set(units.map((u) => unitTypeMap[u.unitType!]).filter((t) => t))
-      );
+  ngOnDestroy(): void {
+    if (this.isBrowser) {
+      window.removeEventListener('scroll', this.onWindowScroll.bind(this));
+      document.removeEventListener('click', this.onDocumentClick.bind(this));
+    }
+    if (this.hubConnection && this.hubConnection.state === 'Connected') {
+      this.hubConnection
+        .stop()
+        .then(() => console.log('Navbar SignalR connection stopped.'))
+        .catch((err) => console.error(err));
+    }
+  }
 
-      console.log('Villages:', this.villages);
-      console.log('Types:', this.unitTypes);
-    });
+  // Role-based navigation methods
+  private updateUserRole(): void {
+    if (this._isLoggedIn) {
+      this.userRole = this.authService.getCurrentUserRole() || '';
+      this.isOwner = this.userRole === 'Owner';
+      this.isTenant = this.userRole === 'Tenant';
+      this.isAdmin = this.userRole === 'Admin';
+    } else {
+      this.userRole = '';
+      this.isOwner = false;
+      this.isTenant = false;
+      this.isAdmin = false;
+    }
+  }
+
+  // Navigation visibility methods
+  canSeeAddUnit(): boolean {
+    return this._isLoggedIn && this.isOwner;
+  }
+
+  canSeeMyBookings(): boolean {
+    return this._isLoggedIn && this.isTenant;
+  }
+
+  canSeePendingRequests(): boolean {
+    return this._isLoggedIn && this.isAdmin;
+  }
+
+  canSeeMessages(): boolean {
+    return this._isLoggedIn; // All authenticated users can see messages
+  }
+
+  canSeeProfile(): boolean {
+    return this._isLoggedIn; // All authenticated users can see profile
   }
 
   @HostListener('window:scroll')
   onWindowScroll() {
-    this.isScrolled = window.scrollY > 50;
-    this.updateNavbarStyle();
-  }
-
-  ngAfterViewInit() {
-    this.adjustHeroPadding();
-    this.startSlider();
-    this.updateNavbarStyle();
-    const dropdownElements = document.querySelectorAll('.dropdown-toggle');
-    dropdownElements.forEach((dropdown) => {
-      new bootstrap.Dropdown(dropdown);
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.slideInterval) {
-      clearInterval(this.slideInterval);
+    if (this.isBrowser) {
+      this.isScrolled = window.scrollY > 50;
+      this.updateNavbarStyle();
     }
   }
 
   private updateNavbarStyle() {
-    if (this.mainNavbar) {
-      const navbar = this.mainNavbar.nativeElement;
-      if (this.isScrolled) {
-        navbar.classList.add('scrolled');
+    const navbarElement = document.querySelector('.navbar');
+    if (navbarElement) {
+      if (this.isHomePage && !this.isScrolled) {
+        navbarElement.classList.remove('scrolled');
       } else {
-        navbar.classList.remove('scrolled');
+        navbarElement.classList.add('scrolled');
       }
     }
   }
 
-  private adjustHeroPadding() {
-    if (this.mainNavbar && this.heroSection) {
-      const navbarHeight = this.mainNavbar.nativeElement.offsetHeight;
-      this.heroSection.nativeElement.style.paddingTop = `${navbarHeight}px`;
+  // Popup logic
+  toggleMessagePopup(event?: Event): void {
+    if (event) {
+      event.stopPropagation(); // Prevent event from bubbling up the DOM
+    }
+    this.showPopup = !this.showPopup;
+    if (this.showPopup && this._isLoggedIn) { // استخدام _isLoggedIn
+      this.fetchRecentChatsForPopup(); // Fetch chats only when opening the popup
     }
   }
 
-  private startSlider() {
-    this.slideInterval = setInterval(() => {
-      this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-    }, 5000);
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showPopup && this.isBrowser) {
+      const popupElement = document.querySelector('.message-popup');
+      const iconElement = document.querySelector('.message-icon-container');
+
+      // Ensure elements exist before using contains
+      if (popupElement && iconElement) {
+        // If click is outside both the popup and the icon, close the popup
+        if (
+          !popupElement.contains(event.target as Node) &&
+          !iconElement.contains(event.target as Node)
+        ) {
+          this.showPopup = false;
+        }
+      }
+    }
   }
 
-  goToSlide(index: number) {
-    this.currentSlide = index;
-    clearInterval(this.slideInterval);
-    this.slideInterval = setInterval(() => {
-      this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-    }, 5000);
+  fetchRecentChatsForPopup(): void {
+    this.messagesService.getInboxMessages().subscribe({
+      next: (inboxItems: InboxItem[]) => {
+        this.recentChats = inboxItems.slice(0, 5); // Display only top 5 recent chats in popup
+        this.unreadMessagesCount = inboxItems.reduce(
+          (sum, chat) => sum + chat.unreadCount,
+          0
+        );
+        console.log('Recent chats fetched for popup:', this.recentChats);
+      },
+      error: (err) => {
+        console.error('Error fetching recent chats for navbar:', err);
+        this.recentChats = [];
+        this.unreadMessagesCount = 0;
+      },
+    });
   }
 
-  toggleMoreOptions(event: Event) {
-    event.preventDefault();
-    this.showMoreOptions = !this.showMoreOptions;
+  goToChat(otherUserId: string): void {
+    this.router.navigate(['/chat'], { queryParams: { userId: otherUserId } });
+    this.showPopup = false; // Close the popup after navigating to chat
   }
 
-  applySearchFilters() {
-    const currentCriteria: ISearchCriteria = {
-      selectedBedrooms: this.selectedBedrooms,
-      selectedBathrooms: this.selectedBathrooms,
-      minPrice: this.minPrice,
-      maxPrice: this.maxPrice,
-      selectedVillage: this.selectedVillage,
-      selectedType: this.selectedType,
-    };
-    this.searchService.updateSearchCriteria(currentCriteria);
-    this.router.navigate(['/units']);
+  private startSignalRConnectionForNavbar(): void {
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No JWT token found for Navbar SignalR connection.');
+      return;
+    }
+
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl('https://localhost:7083/chathub', {
+        accessTokenFactory: () => token,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    this.hubConnection
+      .start()
+      .then(() => {
+        console.log('Navbar SignalR connection started.');
+      })
+      .catch((err) =>
+        console.error('Error while starting SignalR connection: ' + err)
+      );
+
+    this.hubConnection.on('ReceiveMessage', () => {
+      this.fetchRecentChatsForPopup(); // Refresh recent chats on new message
+    });
+  }
+
+  // هذه الدالة تم استبدالها بالخاصية _isLoggedIn
+  // لكن إذا كنت لا تزال تستخدمها في أماكن أخرى غير HTML، اتركها.
+  // إذا كنت تستخدمها فقط في HTML، فيمكنك حذفها بعد التعديل.
+  // isLoggedIn(): boolean {
+  //   return this.authService.isLoggedIn();
+  // }
+
+  getCurrentUserName(): string | null {
+    return this.authService.getCurrentUserName();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+    this._isLoggedIn = false; // **تحديث الحالة عند تسجيل الخروج**
+    this.updateUserRole(); // Update role after logout
   }
 }

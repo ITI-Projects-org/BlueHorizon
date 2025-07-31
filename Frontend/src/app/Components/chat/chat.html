@@ -1,33 +1,78 @@
-<div class="chat-container">
-  <h2>Welcome to BlueHorizon Chat</h2>
+<!-- src/app/Components/chat/chat.html -->
 
-  <div class="message-box">
-    <div *ngFor="let msg of messages"
-         [class.my-message-container]="msg.isMyMessage"
-         [class.other-message-container]="!msg.isMyMessage">
-
-      <div class="message-bubble" [class.my-message-bubble]="msg.isMyMessage" [class.other-message-bubble]="!msg.isMyMessage">
-        <strong class="message-sender">{{ msg.from }}:</strong>
-        <span class="message-content">{{ msg.content }}</span>
-        <span *ngIf="msg.timestamp" class="message-timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
-      </div>
-    </div>
+<div class="chat-main-container">
+  <div class="inbox-panel">
+    <h3>Inbox</h3>
+    <ul class="chat-list">
+      <ng-container *ngIf="recentChats && recentChats.length > 0; else noChats">
+        <li
+          *ngFor="let chat of recentChats"
+          [class.active]="chat.otherUserId === selectedChatUserId"
+          (click)="selectChat(chat.otherUserId)"
+          class="clickable"
+        >
+          <div class="chat-item-info">
+            <div class="chat-username">{{ chat.otherUserName }}</div>
+            <div class="last-message-preview">
+              {{ chat.lastMessageContent | slice:0:30 }}{{
+              chat.lastMessageContent.length > 30 ? "..." : "" }}
+            </div>
+          </div>
+          <div class="chat-item-meta">
+            <span class="timestamp"
+              >{{ chat.lastMessageTimestamp | date:'shortTime' }}</span
+            >
+            <span *ngIf="chat.unreadCount > 0" class="badge unread-badge"
+              >{{ chat.unreadCount }}</span
+            >
+          </div>
+        </li>
+      </ng-container>
+      <ng-template #noChats>
+        <li class="no-chats-message">No recent chats.</li>
+      </ng-template>
+    </ul>
   </div>
 
-  <div class="input-section">
-    <input
-      [(ngModel)]="toUserId"
-      (ngModelChange)="onToUserIdChange()"
-      placeholder="Enter receiver user ID"
-      class="user-id-input"
-    />
+  <div class="chat-window">
+    <ng-container *ngIf="selectedChatUserId; else selectChatPrompt">
+      <div class="chat-header">
+        Chat with {{ selectedChatUser?.otherUserName || 'User' }}
+      </div>
 
-    <input
-      [(ngModel)]="messageText"
-      placeholder="Type your message..."
-      class="message-input"
-    />
+      <div class="messages-container" #messagesContainer>
+        <ng-container
+          *ngIf="messages && messages.length > 0; else noCurrentMessages"
+        >
+          <div
+            *ngFor="let message of messages"
+            class="message-bubble"
+            [class.my-message]="message.senderId === currentUserId"
+            [class.other-message]="message.senderId !== currentUserId"
+          >
+            <div class="message-content">{{ message.messageContent }}</div>
+            <div class="message-timestamp">
+              {{ message.timeStamp | date:'shortTime' }}
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noCurrentMessages>
+          <div class="no-messages">No messages yet. Start a conversation!</div>
+        </ng-template>
+      </div>
 
-    <button (click)="sendMessage()">Send</button>
+      <div class="message-input">
+        <input
+          type="text"
+          [(ngModel)]="newMessageContent"
+          (keyup.enter)="sendMessage()"
+          placeholder="Type your message..."
+        />
+        <button (click)="sendMessage()">Send</button>
+      </div>
+    </ng-container>
+    <ng-template #selectChatPrompt>
+      <div class="chat-prompt-message">Select a chat from the inbox.</div>
+    </ng-template>
   </div>
 </div>

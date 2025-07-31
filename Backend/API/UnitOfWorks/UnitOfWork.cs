@@ -66,6 +66,19 @@ namespace API.UnitOfWorks
             }
         }
 
+        public IChatMessageRepository chatMessageRepository;
+        public IChatMessageRepository ChatMessageRepository
+        {
+            get
+            {
+                if (chatMessageRepository == null)
+                {
+                    chatMessageRepository = new ChatMessageRepository(_context);
+                };
+                return chatMessageRepository;
+            }
+        }
+
         public IOwnerReviewRepository ownerReviewRepository;
         public IOwnerReviewRepository OwnerReviewRepository
         {
@@ -169,6 +182,39 @@ namespace API.UnitOfWorks
                 return ownerRepository;
             }
         }
+
+
+
+
+        public ITenantRepository tenantRepository;
+        public ITenantRepository TenantRepository
+        {
+            get
+            {
+                if (tenantRepository == null)
+                {
+                    tenantRepository = new TenantRepository(_context);
+                };
+                return tenantRepository;
+            }
+        }
+
+
+
+        public IUnitImagesRepository unitImagesRepository;
+        public IUnitImagesRepository UnitImagesRepository
+        {
+            get
+            {
+                if (unitImagesRepository == null)
+                {
+                    unitImagesRepository = new UnitImagesRepository(_context);
+                };
+                return unitImagesRepository;
+            }
+        }
+
+        //public ITenantRepository TenantRepository => throw new NotImplementedException();
 
         public void Dispose()
         {

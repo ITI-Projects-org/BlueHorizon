@@ -26,7 +26,7 @@
 }
 
 .property-form h3::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -90,12 +90,12 @@ textarea.form-control {
 
 @media (min-width: 768px) {
   .form-group.col-md-4 {
-      flex: 0 0 33.333%;
-      max-width: 33.333%;
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
   }
   .form-group.col-md-6 {
-      flex: 0 0 50%;
-      max-width: 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
   }
 }
 
@@ -154,14 +154,14 @@ textarea.form-control {
 
 @media (max-width: 767px) {
   .property-form {
-      padding: 20px;
+    padding: 20px;
   }
   .form-row > .form-group {
-      flex: 0 0 100%;
-      max-width: 100%;
-      margin-bottom: 15px;
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 15px;
   }
   .amenities-checkboxes {
-      flex-direction: column;
+    flex-direction: column;
   }
 }

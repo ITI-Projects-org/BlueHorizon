@@ -1,6 +1,88 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
+<div class="container-fluid mt-5">
+  <div class="row">
+    <!-- Owner's Units Section (Left Side) -->
+    <div class="col-md-8" *ngIf="isOwner">
+      <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0">
+            <i class="bi bi-house-door-fill me-2"></i>
+            My Units
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="row" *ngIf="ownerUnits.length > 0; else noUnits">
+            <div class="col-md-6 col-lg-4 mb-4" *ngFor="let unit of ownerUnits">
+              <div class="card h-100 shadow-sm">
+                <div class="position-relative">
+                  <img
+                    [src]="unit.imageURL || 'assets/images/default-unit.jpg'"
+                    class="card-img-top"
+                    alt="Unit Image"
+                    style="height: 200px; object-fit: cover"
+                    onerror="this.src='assets/images/default-unit.jpg'"
+                  />
+                  <div class="position-absolute top-0 end-0 m-2">
+                    <span
+                      class="badge"
+                      [class]="unit.verificationStatusString === 'Verified' ? 'bg-success' : unit.verificationStatusString === 'Pending' ? 'bg-warning' : 'bg-danger'"
+                    >
+                      {{ unit.verificationStatusString || 'Not Verified' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">
+                    {{ unit.title || 'Unit ' + (unit.id || 'N/A') }}
+                  </h5>
+                  <p class="card-text text-muted mb-2">
+                    <i class="bi bi-geo-alt-fill me-1"></i>
+                    {{ unit.villageName || 'Location not specified' }}
+                  </p>
+                  <p class="card-text">
+                    <strong>${{ unit.basePricePerNight }}/night</strong>
+                  </p>
+                  <div class="mt-auto">
+                    <div class="btn-group w-100" role="group">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        (click)="viewUnitDetails(unit.id!)"
+                        title="View Details"
+                        [disabled]="!unit.id"
+                      >
+                        <i class="bi bi-eye-fill"></i>
+                      </button>
+
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="deleteUnit(unit.id!)"
+                        title="Delete Unit"
+                        [disabled]="!unit.id"
+                      >
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noUnits>
+            <div class="text-center py-5">
+              <i class="bi bi-house-door display-1 text-muted"></i>
+              <h5 class="text-muted mt-3">No Units Found</h5>
+              <p class="text-muted">You haven't added any units yet.</p>
+              <button class="btn btn-primary" routerLink="/addunit">
+                <i class="bi bi-plus-circle me-2"></i>
+                Add Your First Unit
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Information Section -->
+    <div class="col-md-4" [class.col-md-12]="!isOwner">
       <div class="card shadow-lg border-0">
         <div class="card-header bg-primary text-white text-center py-4">
           <i class="bi bi-person-circle display-4 mb-3"></i>
@@ -33,6 +115,20 @@
                   >
                   <p class="mb-0 fs-5 fw-semibold">
                     {{email || 'Not available'}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3" *ngIf="isOwner">
+            <div class="col-12">
+              <div class="d-flex align-items-center p-3 bg-light rounded">
+                <i class="bi bi-shield-check text-primary fs-4 me-3"></i>
+                <div>
+                  <small class="text-muted text-uppercase fw-bold">Role</small>
+                  <p class="mb-0 fs-5 fw-semibold text-success">
+                    {{ userRole }}
                   </p>
                 </div>
               </div>

@@ -12,11 +12,18 @@ import { GoogleSignup } from './Pages/google-signup/google-signup';
 import { GoogleLoginSuccess } from './Pages/google-login-success/google-login-success';
 import { GoogleSignupFail } from './Pages/google-signup-fail/google-signup-fail';
 import { GoogleLoginFail } from './Pages/google-login-fail/google-login-fail';
-import { AuthGuard } from './Guards/auth-guard';
-import { Chat } from './Components/chat/chat';
+import { ChatComponent } from './Components/chat/chat';
 import { Profile } from './Pages/profile/profile';
 import { ResetPassword } from './Pages/reset-password/reset-password';
 import { ChangePassword } from './Pages/change-password/change-password';
+import { AddUnit } from './Components/add-unit/add-unit';
+import { AuthGuard } from './Guards/auth-guard-guard';
+import { BookingList } from './Pages/booking-list/booking-list';
+import { BookingForm } from './Pages/booking-form/booking-form';
+import { UnitDetailsComponent } from './Components/unit-details/unit-details';
+import { QrCreationComponent } from './Pages/qr-creation.component/qr-creation.component';
+import { tenantGuardGuard } from './Guards/tenant-guard-guard';
+import { PendingUnits } from './Pages/Verification/pending-units/pending-units';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -30,19 +37,30 @@ export const routes: Routes = [
   { path: 'google-login-fail', component: GoogleLoginFail },
   { path: 'VerifyOwner', component: OwnerVerification },
   { path: 'PendingOwners', component: PendingOwners },
+  { path: 'PendingUnits', component:PendingUnits },
   { path: 'profile', component: Profile },
   { path: 'reset-password', component: ResetPassword },
   { path: 'change-password', component: ChangePassword },
+  { path: 'my-bookings', component: BookingList },
+  { path: 'create-qr', component: QrCreationComponent },
+  // { path: 'add-booking', component: BookingForm },
+
   {
     path: 'chat',
-    component: Chat,
+    component: ChatComponent,
     canActivate: [AuthGuard],
   },
   // 4. Catch-all route: Redirects any unmatched URLs to the login page.
   //    This ensures users don't land on a blank page if they type a wrong URL.
-  { path: 'addReview', component: Review },
+  {
+    path: 'addReview',
+    component: Review,
+    canActivate: [AuthGuard],
+  },
   { path: 'createQr', component: CreateQr },
   { path: 'units', component: Units },
+  { path: 'addunit', component: AddUnit },
+  { path: 'unitDetails/:id', component: UnitDetailsComponent },
   { path: '**', redirectTo: 'login' },
   { path: '', redirectTo: 'units', pathMatch: 'full' },
 ];

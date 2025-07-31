@@ -1,0 +1,153 @@
+<!-- Floating Chat Button -->
+<div
+  class="chat-float-button"
+  (click)="toggleChat()"
+  [class.chat-open]="isChatOpen"
+>
+  <i class="bi bi-robot" *ngIf="!isChatOpen"></i>
+  <i class="bi bi-x" *ngIf="isChatOpen"></i>
+  <span class="chat-notification" *ngIf="!isChatOpen && messages.length === 0">
+    <i class="bi bi-circle-fill"></i>
+  </span>
+</div>
+
+<!-- Chat Container -->
+<div class="chat-container" [class.chat-open]="isChatOpen">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="ai-avatar">
+        <i class="bi bi-robot"></i>
+      </div>
+      <div class="ai-info">
+        <h5 class="ai-name">BlueHorizon AI</h5>
+        <p class="ai-status">
+          <span class="status-dot"></span>
+          Always here to help
+        </p>
+      </div>
+    </div>
+    <div class="chat-actions">
+      <button class="btn-icon" (click)="clearChat()" title="Clear Chat">
+        <i class="bi bi-trash"></i>
+      </button>
+      <button class="btn-icon" (click)="toggleChat()" title="Close">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="messages-container" #messagesContainer>
+    <!-- Welcome Message -->
+    <div class="welcome-message" *ngIf="messages.length === 0 && !isLoading">
+      <div class="welcome-avatar">
+        <i class="bi bi-robot"></i>
+      </div>
+      <div class="welcome-content">
+        <h6>Welcome to BlueHorizon AI!</h6>
+        <p>
+          I'm here to help you with bookings, properties, and any questions
+          about our platform. How can I assist you today?
+        </p>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div *ngFor="let message of messages; let i = index; trackBy: trackMessage">
+      <!-- Date Separator -->
+      <div class="date-separator" *ngIf="shouldShowDateSeparator(i)">
+        <span>{{ formatDate(message.createdAt) }}</span>
+      </div>
+
+      <!-- User Message -->
+      <div class="message user-message" *ngIf="message.isFromUser">
+        <div class="message-content">
+          <p>{{ message.message }}</p>
+          <span class="message-time">{{ formatTime(message.createdAt) }}</span>
+        </div>
+        <div class="message-avatar">
+          <i class="bi bi-person-circle"></i>
+        </div>
+      </div>
+
+      <!-- Bot Response -->
+      <div class="message bot-message" *ngIf="!message.isFromUser">
+        <div class="message-avatar">
+          <i class="bi bi-robot"></i>
+        </div>
+        <div class="message-content">
+          <p [innerHTML]="formatBotMessage(message.response)"></p>
+          <span class="message-time">{{ formatTime(message.createdAt) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="message bot-message" *ngIf="isLoading">
+      <div class="message-avatar">
+        <i class="bi bi-robot"></i>
+      </div>
+      <div class="message-content loading">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="message-time">Now</span>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    <div
+      class="suggestions-container"
+      *ngIf="showSuggestions && suggestions.length > 0 && !isLoading"
+    >
+      <h6 class="suggestions-title">
+        <i class="bi bi-lightbulb me-2"></i>
+        Suggested questions:
+      </h6>
+      <div class="suggestions-grid">
+        <button
+          *ngFor="let suggestion of suggestions"
+          class="suggestion-chip"
+          (click)="sendSuggestion(suggestion)"
+        >
+          {{ suggestion }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="chat-input-area">
+    <div class="input-container">
+      <textarea
+        #messageInput
+        class="chat-input"
+        [(ngModel)]="currentMessage"
+        (keydown)="onInputKeydown($event)"
+        placeholder="Ask me anything about BlueHorizon..."
+        rows="1"
+        [disabled]="isLoading"
+      ></textarea>
+      <button
+        class="send-button"
+        (click)="sendMessage()"
+        [disabled]="!currentMessage.trim() || isLoading"
+      >
+        <i class="bi bi-send-fill" *ngIf="!isLoading"></i>
+        <div class="spinner-border spinner-border-sm" *ngIf="isLoading"></div>
+      </button>
+    </div>
+    <div class="input-footer">
+      <small class="text-muted">
+        <i class="bi bi-shield-check me-1"></i>
+        AI responses are generated to help with platform-related questions
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="chat-backdrop" *ngIf="isChatOpen" (click)="toggleChat()"></div>

@@ -4,6 +4,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RespondVerificationDTO } from '../Models/respond-verification-dto';
 import { isPlatformBrowser } from '@angular/common';
+import { UnitVerificationDTO } from '../Models/unit-verification-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -18,22 +19,38 @@ export class Verification {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
+  // VerifiyOwner(data: FormData) {
+  //   const headers = new HttpHeaders().set(
+  //     'Authorization',
+  //     'Bearer ' + localStorage.getItem('accessToken')
+  //   );
+  //   // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
+  //   return this.http.post(this.verificationURL + '/AddRequest', data, {
+  //     headers: headers,
+  //     responseType: 'text',
+  //   });
+  // }
+
   VerifiyOwner(data: FormData) {
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      'Bearer ' + localStorage.getItem('token')
-    );
+    //const headers = new HttpHeaders().set(
+    //  'Authorization',
+    //  'Bearer ' + localStorage.getItem('accessToken')
+    //);
     // Tell HttpClient to expect a plain text response to avoid JSON parsing errors.
-    return this.http.post(this.verificationURL + '/AddRequest', data, {
-      headers: headers,
-      responseType: 'text',
-    });
+      return this.http.post(this.verificationURL + '/AddRequest', data);
+      //{
+      //    headers: headers,
+      //        responseType: 'text',
+      //}
   }
 
-  isVerified():Observable<{isVerified:boolean}>{
+  isVerified(): Observable<{ isVerified: boolean }> {
     console.log('from is verifed serivce');
     console.log(`${this.verificationURL}/isVerified`);
-    return this.http.get<{isVerified:boolean}>(`${this.verificationURL}/isVerified`,{headers:this.headers});
+    return this.http.get<{ isVerified: boolean }>(
+      `${this.verificationURL}/isVerified`,
+      { headers: this.headers }
+    );
   }
 
   GetPendingOwners(): Observable<OwnerVerificationDTO[]> {
@@ -66,5 +83,33 @@ export class Verification {
       return localStorage.getItem('token')?.toString();
     }
     return null;
+  }
+
+
+// ___________________________________
+// ___________________________________
+// _____________For Units_____________
+// ___________________________________
+// ___________________________________
+
+
+  GetPendingUnits(): Observable<UnitVerificationDTO[]> {
+    return this.http.get<UnitVerificationDTO[]>(
+      `${this.verificationURL}/UnitRequests`,
+      { headers: this.headers }
+    );
+  }
+
+
+
+
+  RespondUnitVerificationDTO(
+    ResoondVerificationDTO: RespondVerificationDTO
+  ): Observable<any> {
+    return this.http.post(
+      `${this.verificationURL}/UnitRespond`,
+      ResoondVerificationDTO,
+      { headers: this.headers }
+    );
   }
 }

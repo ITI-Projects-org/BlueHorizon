@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using API.Repositories.Interfaces;
 
 namespace API.Controllers
 {
@@ -12,18 +13,41 @@ namespace API.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
+
+        readonly IUnitOfWork _unitOfWork;
+        readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
+
+        public UnitController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _photoService = photoService;
+        }
+
+
+
         [HttpGet("All")]
         public async Task<ActionResult> GetAll()
         {
 
-            var units = await _unitOfWork.UnitRepository.GetAllAsync();
+            //var units = await _unitOfWork.UnitRepository.GetAllAsync();
+            var units = await _unitOfWork.UnitRepository.GetAllValidUnits();
+            //var units = await _unitOfWork.UnitRepository.GetAllFiltered();
+            List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
 
+            foreach (var unitdto in unitsdto)
+            {
+                unitdto.UnitId = unitdto.Id;
+                unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
 
-            return Ok(_mapper.Map<List<UnitDTO>>(units));
+            }
+
+            return Ok(unitsdto);
 
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteUnit/{id}")]
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> DeleteById(int id)
         {
@@ -39,7 +63,8 @@ namespace API.Controllers
                 //{
                 //    return Forbid("You Cannot Delete This Unit.");
                 //}
-                 _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+                await _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+                await _unitOfWork.SaveAsync();
 
                 return Ok(new { Message = "Unit Deleted successfully" });
             }
@@ -50,14 +75,7 @@ namespace API.Controllers
 
         }
 
-        readonly IUnitOfWork _unitOfWork;
-        readonly IMapper _mapper;
 
-        public UnitController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
 
         [Authorize(Roles = "Owner")]
         [HttpPost("AddUnit")]
@@ -75,23 +93,45 @@ namespace API.Controllers
                 unit.VerificationStatus = VerificationStatus.Pending;
                 unit.CreationDate = DateTime.Now;
 
+
                 //Handle contract document upload
+                //if (unitDto.ContractDocument != null)
+                //{
+                //    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
+                //    var filePath = Path.Combine("Uploads", "Contracts", fileName);
+                //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                //    using (var stream = new FileStream(filePath, FileMode.Create))
+                //    {
+                //        await unitDto.ContractDocument.CopyToAsync(stream);
+                //    }
+                //    unit.ContractPath = filePath;
+                //}
                 if (unitDto.ContractDocument != null)
                 {
-                    var fileName = $"unit_contract_user:{Guid.NewGuid()}{Path.GetExtension(unitDto.ContractDocument.FileName)}";
-                    var filePath = Path.Combine("Uploads", "Contracts", fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    var res = await _photoService.AddPhotoAsync(unitDto.ContractDocument);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await unitDto.ContractDocument.CopyToAsync(stream);
-                    }
-                    unit.ContractPath = filePath;
+                    unit.ContractPath = res.Url.ToString();
                 }
-
 
                 await _unitOfWork.UnitRepository.AddAsync(unit);
                 await _unitOfWork.SaveAsync();
+                if (unitDto.UnitImages != null && unitDto.UnitImages.Any())
+                {
+                    foreach (var image in unitDto.UnitImages)
+                    {
+                        var res = await _photoService.AddPhotoAsync(image);
+                        //res.Url
+                        UnitImages unitImage = new UnitImages()
+                        {
+                            UnitID = unit.Id,
+                            ImageURL = res.Url.ToString()
+                        };
+                        await _unitOfWork.UnitImagesRepository.AddAsync(unitImage);
+                    }
+                }
+
+
 
                 // Add amenities
                 if (unitDto.AmenityIds != null && unitDto.AmenityIds.Any())
@@ -105,11 +145,12 @@ namespace API.Controllers
                         };
                         await _unitOfWork.UnitAmenityRepository.AddAsync(unitAmenity);
                     }
+
                     await _unitOfWork.SaveAsync();
                 }
 
                 unit.VerificationStatus = VerificationStatus.Pending;
-
+                await _unitOfWork.SaveAsync();
                 return CreatedAtAction(nameof(AddUnit), new { id = unit.Id }, unitDto);
             }
             catch (Exception ex)
@@ -148,7 +189,11 @@ namespace API.Controllers
             {
                 return Content("Unit Not Found");
             }
-            return Ok(_mapper.Map<UnitDetailsDTO>(unit));
+            var unitDetailsDto = _mapper.Map<UnitDetailsDTO>(unit);
+
+            unitDetailsDto.ImagesPaths = await _unitOfWork.UnitImagesRepository.GetImagesByUnitId(unit.Id);
+
+            return Ok(unitDetailsDto);
         }
 
         [HttpPut("{id}")]
@@ -178,14 +223,30 @@ namespace API.Controllers
             }
             return Ok("Unit Updated Successfully");
         }
-
-        [HttpPut("DeleteUnit/{id}")]
-        public async Task<IActionResult> DeleteUnit(int id)
+        [HttpGet("MyUnits")]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult> GetMyUnits()
         {
-            _unitOfWork.UnitRepository.DeleteByIdAsync(id);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+            var units = await _unitOfWork.UnitRepository.GetUnitsByOwnerIdAsync(userId);
+            List<UnitDTO>? unitsdto = _mapper.Map<List<UnitDTO>>(units);
+            foreach (var unitdto in unitsdto)
+            {
+                unitdto.UnitId = unitdto.Id;
+                unitdto.VerificationStatusString = unitdto.VerificationStatus.ToString();
+                unitdto.imageURL = await _unitOfWork.UnitRepository.GetSingleImagePathByUnitId(unitdto.Id);
+            }
+            
+            return Ok(unitsdto);
         }
+        //[HttpPut("DeleteUnit/{id}")]
+        //public async Task<IActionResult> DeleteUnit(int id)
+        //{
+        //    _unitOfWork.UnitRepository.DeleteByIdAsync(id);
+        //    await _unitOfWork.SaveAsync();
+        //    return Ok();
+        //}
     }
 }
-

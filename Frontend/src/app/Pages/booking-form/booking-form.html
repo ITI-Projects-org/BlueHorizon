@@ -1,0 +1,150 @@
+<!-- Modal Overlay -->
+<div *ngIf="isVisible" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="bi bi-calendar-heart me-2"></i>
+        Book Your Perfect Stay
+      </h4>
+      <button type="button" class="close-btn" (click)="closeModal()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Booking Form -->
+      <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+        <!-- Check-in Date -->
+        <div class="form-group mb-3">
+          <label for="checkInDate" class="form-label">
+            <i class="bi bi-calendar-check me-2"></i>
+            Check-in Date
+          </label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-calendar-date"></i>
+            </span>
+            <input
+              type="date"
+              id="checkInDate"
+              class="form-control"
+              formControlName="checkInDate"
+              [min]="today"
+              [class.is-invalid]="checkInDate?.invalid && checkInDate?.touched"
+            />
+          </div>
+          <div
+            *ngIf="checkInDate?.invalid && checkInDate?.touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="checkInDate?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Check-in date is required
+            </div>
+          </div>
+        </div>
+
+        <!-- Check-out Date -->
+        <div class="form-group mb-3">
+          <label for="checkOutDate" class="form-label">
+            <i class="bi bi-calendar-x me-2"></i>
+            Check-out Date
+          </label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-calendar-date"></i>
+            </span>
+            <input
+              type="date"
+              id="checkOutDate"
+              class="form-control"
+              formControlName="checkOutDate"
+              [min]="checkInDate?.value || tomorrow"
+              [class.is-invalid]="checkOutDate?.invalid && checkOutDate?.touched"
+            />
+          </div>
+          <div
+            *ngIf="checkOutDate?.invalid && checkOutDate?.touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="checkOutDate?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Check-out date is required
+            </div>
+          </div>
+        </div>
+
+        <!-- Number of Guests -->
+        <div class="form-group mb-4">
+          <label for="numberOfGuests" class="form-label">
+            <i class="bi bi-people me-2"></i>
+            Number of Guests
+          </label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-person-plus"></i>
+            </span>
+            <input
+              type="number"
+              id="numberOfGuests"
+              class="form-control"
+              formControlName="numberOfGuests"
+              min="1"
+              max="20"
+              placeholder="Enter number of guests"
+              [class.is-invalid]="numberOfGuests?.invalid && numberOfGuests?.touched"
+            />
+          </div>
+          <div
+            *ngIf="numberOfGuests?.invalid && numberOfGuests?.touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="numberOfGuests?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Number of guests is required
+            </div>
+            <div *ngIf="numberOfGuests?.errors?.['min']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              At least 1 guest is required
+            </div>
+            <div *ngIf="numberOfGuests?.errors?.['max']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Maximum 20 guests allowed
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-secondary me-2"
+            (click)="closeModal()"
+            [disabled]="isSubmitting"
+          >
+            <i class="bi bi-x-circle me-1"></i>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="bookingForm.invalid || isSubmitting"
+          >
+            <span
+              *ngIf="isSubmitting"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            <i *ngIf="!isSubmitting" class="bi bi-calendar-check me-1"></i>
+            {{ isSubmitting ? 'Processing...' : 'Confirm Booking' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

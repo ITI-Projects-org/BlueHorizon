@@ -45,13 +45,13 @@ namespace API.Repositories.Implementations
             _context.Set<T>().Update(entity);
             return entity;
         }
-        public async void DeleteByIdAsync(int id)
+        public async Task DeleteByIdAsync(int id)
         {
             _context.Set<T>().Remove(await GetByIdAsync(id));
 
         }
 
-        public async void DeleteByIdAsync(string id)
+        public async Task DeleteByIdAsync(string id)
         {
             _context.Set<T>().Remove(await GetByIdAsync(id));
 

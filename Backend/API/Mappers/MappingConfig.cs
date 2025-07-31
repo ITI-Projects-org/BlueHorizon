@@ -1,7 +1,9 @@
-﻿using API.DTOs;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using API.DTOs;
 using API.DTOs.AmenityDTOs;
 using API.DTOs.AuthenticationDTO;
 using API.DTOs.BookingDTOs;
+using API.DTOs.ChatDTOs;
 using API.DTOs.MessageDTO;
 using API.DTOs.UnitDTO;
 using API.DTOs.VerificationDTO;
@@ -24,12 +26,16 @@ namespace API.Mappers
 
             CreateMap<RegisterDTO,Admin>().ReverseMap();
 
+            // Unit Verification Mapping
+            CreateMap<Unit, UnitVerificationDTO>()
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UnitAmenities, opt => opt.MapFrom(src => src.UnitAmenities.Select(ua => ua.AmenityId).ToArray()));
 
             #region Unit Mapping
 
             // UnitDTO to Unit ==> AddUnit
             CreateMap<AddUnitDTO, Unit>()
-                .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.VerificationStatus, opt => opt.MapFrom(src => VerificationStatus.Pending))
                 .ForMember(dest => dest.AverageUnitRating, opt => opt.MapFrom(src => 0.0f))
                 .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore())
@@ -41,14 +47,18 @@ namespace API.Mappers
 
             // UnitDTO to Unit ==> UpdateUnit
             CreateMap<UnitDetailsDTO, Unit>()
-                .ForMember(dest => dest.Owner, opt => opt.Ignore()) // Ignore Owner for now
-                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()); // Ignore UnitAmenities for now
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src=>src.OwnerName))
+                .ForMember(dest => dest.UnitImagesTable, opt => opt.MapFrom(src => src.ImagesPaths))
+
+                .ForMember(dest => dest.UnitAmenities, opt => opt.Ignore()).ReverseMap(); // Ignore UnitAmenities for now
+
+            //CreateMap<Unit, UnitDetailsDTO>().ReverseMap();
 
             #endregion
 
             CreateMap<Message, MessageDto>()
-                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName))
-                .ForMember(dest => dest.ReceiverUsername, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
+                .ForMember(dest => dest.SenderUserName, opt => opt.MapFrom(src => src.SenderUser.UserName))
+                .ForMember(dest => dest.ReceiverUserName, opt => opt.MapFrom(src => src.ReceiverUser.UserName))
                 //.ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => src.SenderUser.PhotoUrl))
                 //.ForMember(dest => dest.ReceiverPhotoUrl, opt => opt.MapFrom(src => src.ReceiverUser.PhotoUrl))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp));
@@ -58,7 +68,11 @@ namespace API.Mappers
             CreateMap<ReviewDTO, UnitReview>().ReverseMap();
 
             CreateMap<QRDTO,QRCode>().ReverseMap();
+            CreateMap<UnitDTO, Unit>().ReverseMap();
+
+
             CreateMap<Booking, BookingDTO>().ReverseMap();
+            CreateMap<Booking, addBookingDTO>().ReverseMap();
 
             CreateMap<Booking, BookingSlotDTO>()
                  .ForMember(dest => dest.CheckInDate, opt => opt.MapFrom(src => src.CheckInDate))
@@ -67,6 +81,11 @@ namespace API.Mappers
             // Map Unit to BookedSlotsDTO
             CreateMap<Unit, BookedSlotsDTO>()
                 .ForMember(dest => dest.BookingSlots, opt => opt.MapFrom(src => src.Bookings));
+
+            // Chat Message Mappings
+            CreateMap<ChatMessage, ChatMessageResponseDTO>().ReverseMap();
+            CreateMap<ChatMessageRequestDTO, ChatMessage>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }
