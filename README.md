@@ -33,10 +33,10 @@ A sophisticated **B2B2C rental marketplace** specifically designed for tourist v
 │         (ASP.NET Core Web API)          │
 ├─────────────────────────────────────────┤
 │           Business Logic                │
-│        (Services & UnitOfWork)         │
+│        (Services & UnitOfWork)          │
 ├─────────────────────────────────────────┤
-│          Data Access Layer             │
-│       (Repositories & EF Core)         │
+│          Data Access Layer              │
+│       (Repositories & EF Core)          │
 ├─────────────────────────────────────────┤
 │             Database                    │
 │          (SQL Server)                   │
