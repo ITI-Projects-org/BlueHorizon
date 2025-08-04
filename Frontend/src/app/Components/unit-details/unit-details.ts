@@ -54,7 +54,7 @@ export class UnitDetailsComponent implements OnInit {
       .GetUnitById(id)
       .pipe(
         catchError((err) => {
-          this.error = 'Failed to load unit details.';
+          // this.error = 'Failed to load unit details. Error: ';{err};
           this.loading = false;
 
           return of(null);

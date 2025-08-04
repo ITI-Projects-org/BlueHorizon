@@ -429,39 +429,50 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Slightly darker overlay */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(8px); /* More pronounced blur */
-  animation: fadeIn 0.3s ease-out forwards; /* Added fade-in animation for overlay */
+  backdrop-filter: blur(8px);
+  /* More pronounced blur */
+  animation: fadeIn 0.3s ease-out forwards;
+  /* Added fade-in animation for overlay */
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 .qr-modal-content {
-  background: linear-gradient(
-    145deg,
-    #ffffff,
-    #f0f2f5
-  ); /* Subtle gradient background */
-  border-radius: 20px; /* More rounded corners */
-  padding: 3rem; /* Increased padding */
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25); /* Stronger, softer shadow */
+  background: linear-gradient(145deg,
+      #ffffff,
+      #f0f2f5);
+  /* Subtle gradient background */
+  border-radius: 20px;
+  /* More rounded corners */
+  padding: 3rem;
+  /* Increased padding */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  /* Stronger, softer shadow */
   width: 90%;
-  max-width: 550px; /* Slightly wider modal */
+  max-width: 550px;
+  /* Slightly wider modal */
   position: relative;
-  transform: translateY(-30px); /* More pronounced initial animation position */
+  transform: translateY(-30px);
+  /* More pronounced initial animation position */
   opacity: 0;
-  animation: slideInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Smoother, bouncier animation */
+  height: 100vh;
+  overflow-y: auto;
+  animation: slideInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  /* Smoother, bouncier animation */
 }
 
 @keyframes slideInUp {
@@ -469,6 +480,7 @@
     transform: translateY(-50px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -479,66 +491,89 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem; /* Increased margin */
-  padding-bottom: 1.25rem; /* Increased padding */
-  border-bottom: 1px solid #e0e0e0; /* Lighter border */
+  margin-bottom: 2.5rem;
+  /* Increased margin */
+  padding-bottom: 1.25rem;
+  /* Increased padding */
+  border-bottom: 1px solid #e0e0e0;
+  /* Lighter border */
 }
 
 .qr-modal-title {
-  font-size: 2rem; /* Larger title */
+  font-size: 2rem;
+  /* Larger title */
   font-weight: 700;
-  color: #212529; /* Darker text for contrast */
+  color: #212529;
+  /* Darker text for contrast */
   margin: 0;
-  letter-spacing: -0.5px; /* Tighter letter spacing */
+  letter-spacing: -0.5px;
+  /* Tighter letter spacing */
 }
 
 .qr-modal-close {
   background: none;
   border: none;
-  font-size: 2rem; /* Larger close icon */
-  color: #888; /* Softer color */
+  font-size: 2rem;
+  /* Larger close icon */
+  color: #888;
+  /* Softer color */
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease; /* Added transform transition */
+  transition: color 0.3s ease, transform 0.2s ease;
+  /* Added transform transition */
 }
 
 .qr-modal-close:hover {
-  color: #e74c3c; /* Brighter red on hover */
-  transform: rotate(90deg); /* Rotate effect on hover */
+  color: #e74c3c;
+  /* Brighter red on hover */
+  transform: rotate(90deg);
+  /* Rotate effect on hover */
 }
 
 /* Form Group Styles */
 .form-group {
-  margin-bottom: 1.75rem; /* Increased spacing */
+  margin-bottom: 1.75rem;
+  /* Increased spacing */
 }
 
 .form-label {
   display: block;
-  margin-bottom: 0.8rem; /* Increased spacing */
-  font-size: 1rem; /* Slightly larger font */
+  margin-bottom: 0.8rem;
+  /* Increased spacing */
+  font-size: 1rem;
+  /* Slightly larger font */
   font-weight: 600;
-  color: #343a40; /* Darker label text */
+  color: #343a40;
+  /* Darker label text */
 }
 
 .form-control {
   width: 100%;
-  padding: 1rem 1.2rem; /* Increased padding */
-  border: 1px solid #dcdcdc; /* Lighter border */
-  border-radius: 10px; /* More rounded input fields */
-  font-size: 1.05rem; /* Slightly larger font */
+  padding: 1rem 1.2rem;
+  /* Increased padding */
+  border: 1px solid #dcdcdc;
+  /* Lighter border */
+  border-radius: 10px;
+  /* More rounded input fields */
+  font-size: 1.05rem;
+  /* Slightly larger font */
   color: #343a40;
   transition: all 0.3s ease;
-  background-color: #fcfcfc; /* Slightly off-white background */
+  background-color: #fcfcfc;
+  /* Slightly off-white background */
 }
 
 .form-control:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.3); /* More prominent focus shadow */
+  box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.3);
+  /* More prominent focus shadow */
   outline: none;
 }
 
 .error-message {
-  color: #e74c3c; /* Brighter red for errors */
-  font-size: 0.9rem; /* Slightly larger error message */
+  color: #e74c3c;
+  /* Brighter red for errors */
+  font-size: 0.9rem;
+  /* Slightly larger error message */
   margin-top: 0.6rem;
   font-weight: 500;
 }
@@ -547,15 +582,20 @@
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1.25rem; /* Increased gap */
-  margin-top: 3rem; /* Increased margin */
+  gap: 1.25rem;
+  /* Increased gap */
+  margin-top: 3rem;
+  /* Increased margin */
 }
 
 .btn-cancel {
-  background-color: #95a5a6; /* Softer gray */
+  background-color: #95a5a6;
+  /* Softer gray */
   color: white;
-  padding: 0.9rem 1.8rem; /* Larger buttons */
-  border-radius: 10px; /* More rounded buttons */
+  padding: 0.9rem 1.8rem;
+  /* Larger buttons */
+  border-radius: 10px;
+  /* More rounded buttons */
   border: none;
   cursor: pointer;
   font-size: 1.05rem;
@@ -572,14 +612,15 @@
 }
 
 .btn-submit {
-  background: linear-gradient(
-    45deg,
-    #007bff 0%,
-    #0056b3 100%
-  ); /* Gradient background */
+  background: linear-gradient(45deg,
+      #007bff 0%,
+      #0056b3 100%);
+  /* Gradient background */
   color: white;
-  padding: 0.9rem 1.8rem; /* Larger buttons */
-  border-radius: 10px; /* More rounded buttons */
+  padding: 0.9rem 1.8rem;
+  /* Larger buttons */
+  border-radius: 10px;
+  /* More rounded buttons */
   border: none;
   cursor: pointer;
   font-size: 1.05rem;
@@ -592,11 +633,10 @@
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(
-    45deg,
-    #0056b3 0%,
-    #003f80 100%
-  ); /* Darker gradient on hover */
+  background: linear-gradient(45deg,
+      #0056b3 0%,
+      #003f80 100%);
+  /* Darker gradient on hover */
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
 }
@@ -610,26 +650,33 @@
 /* QR Code Display in Card */
 .qr-code-display {
   text-align: center;
-  margin-top: 1.5rem; /* Increased margin */
+  margin-top: 1.5rem;
+  /* Increased margin */
 }
 
 .qr-code-display img {
-  border: 1px solid #e0e0e0; /* Lighter border */
-  padding: 8px; /* Increased padding */
-  border-radius: 10px; /* More rounded corners */
+  border: 1px solid #e0e0e0;
+  /* Lighter border */
+  padding: 8px;
+  /* Increased padding */
+  border-radius: 10px;
+  /* More rounded corners */
   background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* Subtle shadow */
 }
 
 /* Responsive adjustments for modal */
 @media (max-width: 576px) {
   .qr-modal-content {
-    padding: 2rem; /* Adjusted padding for smaller screens */
+    padding: 2rem;
+    /* Adjusted padding for smaller screens */
     margin: 0 1rem;
   }
 
   .qr-modal-title {
-    font-size: 1.75rem; /* Adjusted font size */
+    font-size: 1.75rem;
+    /* Adjusted font size */
   }
 
   .modal-actions {

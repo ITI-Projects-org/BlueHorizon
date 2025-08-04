@@ -228,7 +228,7 @@ export class AddUnit implements OnInit {
         // Log the raw response if available
         console.error('Raw Error:', err);
 
-        alert('Error adding unit. Check console for details.');
+        // alert('Error adding unit. Check console for details.');
       },
     });
   }

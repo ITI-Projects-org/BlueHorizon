@@ -215,7 +215,7 @@
 }
 
 .booking-card {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, #b3bcc7 0%, #0056b3 100%);
   color: white;
   border-radius: 16px;
   padding: 2rem;
@@ -247,8 +247,8 @@
 }
 
 .booking-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgb(40,167,69);
+  border-color: rgb(40,167,69); 
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
@@ -438,10 +438,12 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25),
       0 4px 12px rgba(0, 123, 255, 0.3);
   }
+
   50% {
     box-shadow: 0 0 0 6px rgba(0, 123, 255, 0.15),
       0 6px 16px rgba(0, 123, 255, 0.4);
   }
+
   100% {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25),
       0 4px 12px rgba(0, 123, 255, 0.3);
